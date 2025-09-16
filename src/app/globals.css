@@ -1,8 +1,21 @@
 @import "tailwindcss";
+@import "../styles/design-tokens.css";
+
+/* TindaGo Global Styles */
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  /* TindaGo Color Variables */
+  --tindago-primary: #3BB77E;
+  --tindago-primary-light: #4FC58B;
+  --tindago-primary-dark: #2A8B5F;
+  --tindago-light-green: #EFFBE7;
+  --tindago-white: #FFFFFF;
+  --tindago-black: #000000;
+  --tindago-text-secondary: rgba(0, 0, 0, 0.6);
+  --tindago-shadow: rgba(0, 0, 0, 0.25);
 }
 
 @theme inline {
@@ -12,15 +25,177 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Global Reset and Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'ABeeZee', 'Geist', system-ui, -apple-system, sans-serif;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* TindaGo Animations */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* TindaGo Component Utilities */
+.tindago-fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
+.tindago-slide-up {
+  animation: slideInUp 0.5s ease-out;
+}
+
+.tindago-pulse {
+  animation: pulse 2s infinite;
+}
+
+.tindago-spinner {
+  animation: spin 1s linear infinite;
+}
+
+/* TindaGo Button Hover Effects */
+.tindago-button {
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.tindago-button:hover {
+  transform: translateY(-1px);
+}
+
+.tindago-button:active {
+  transform: translateY(0);
+}
+
+.tindago-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Form Styles */
+input, select, textarea {
+  font-family: inherit;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--tindago-light-green);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--tindago-primary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--tindago-primary-dark);
+}
+
+/* Responsive Design Helpers */
+@media (max-width: 480px) {
+  body {
+    font-size: 14px;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  body {
+    font-size: 15px;
+  }
+}
+
+@media (min-width: 769px) {
+  body {
+    font-size: 16px;
+  }
+}
+
+/* Design System Utility Classes */
+.design-token-color {
+  background-color: var(--color-primary-500);
+}
+
+.design-token-spacing {
+  padding: var(--space-4);
+}
+
+.design-token-typography {
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
+}
+
+.design-token-radius {
+  border-radius: var(--radius-md);
+}
+
+.design-token-shadow {
+  box-shadow: var(--shadow-md);
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

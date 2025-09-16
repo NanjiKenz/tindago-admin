@@ -1,0 +1,333 @@
+/**
+ * TindaGo Admin Dashboard Responsive Styles
+ *
+ * CSS file for responsive design and layout adjustments
+ * Based on TindaGo baseline scaling system (440x956)
+ */
+
+/* Keyframes for loading spinner */
+@keyframes tindago-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Base responsive breakpoints */
+.admin-main-screen {
+  --mobile: 480px;
+  --tablet: 768px;
+  --desktop: 1024px;
+  --large: 1440px;
+}
+
+/* Mobile First Responsive Design */
+
+/* Mobile devices (up to 480px) */
+@media (max-width: 480px) {
+  .admin-main-screen .stats-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  .admin-main-screen .main-content-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  .admin-main-screen .quick-actions-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  .admin-main-screen .header-section {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 16px !important;
+  }
+
+  .admin-main-screen .time-info {
+    align-items: flex-start !important;
+  }
+
+  /* Adjust padding for mobile */
+  .admin-main-screen .main-container {
+    padding: 0 16px !important;
+  }
+
+  .admin-main-screen .card {
+    padding: 20px !important;
+  }
+
+  /* Smaller font sizes for mobile */
+  .admin-main-screen .welcome-text {
+    font-size: 1rem !important;
+  }
+
+  .admin-main-screen .brand-title {
+    font-size: 1.5rem !important;
+  }
+}
+
+/* Small tablets (481px to 768px) */
+@media (min-width: 481px) and (max-width: 768px) {
+  .admin-main-screen .stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 20px !important;
+  }
+
+  .admin-main-screen .main-content-grid {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+
+  .admin-main-screen .quick-actions-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+/* Large tablets (769px to 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .admin-main-screen .stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .admin-main-screen .main-content-grid {
+    grid-template-columns: 1.5fr 1fr !important;
+  }
+}
+
+/* Desktop (1025px and above) */
+@media (min-width: 1025px) {
+  .admin-main-screen .stats-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+  }
+
+  .admin-main-screen .main-content-grid {
+    grid-template-columns: 2fr 1fr !important;
+  }
+}
+
+/* Large desktop (1441px and above) */
+@media (min-width: 1441px) {
+  .admin-main-screen .main-container {
+    max-width: 1400px !important;
+  }
+}
+
+/* High-density displays */
+@media (min-resolution: 192dpi), (min-resolution: 2dppx) {
+  .admin-main-screen .activity-icon {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+}
+
+/* Hover and interaction states */
+@media (hover: hover) {
+  .admin-main-screen .stat-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .admin-main-screen .stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15) !important;
+  }
+
+  .admin-main-screen .activity-item:hover {
+    background-color: rgba(59, 183, 126, 0.05) !important;
+    transform: translateX(4px);
+    transition: all 0.2s ease;
+  }
+}
+
+/* Touch device optimizations */
+@media (hover: none) {
+  .admin-main-screen .stat-card {
+    transform: none !important;
+  }
+
+  .admin-main-screen .activity-item {
+    transform: none !important;
+  }
+
+  /* Larger touch targets for mobile */
+  .admin-main-screen .button {
+    min-height: 48px !important;
+    padding: 12px 24px !important;
+  }
+}
+
+/* Landscape orientation adjustments */
+@media (orientation: landscape) and (max-height: 600px) {
+  .admin-main-screen .header-section {
+    padding-top: 16px !important;
+    padding-bottom: 16px !important;
+  }
+
+  .admin-main-screen .brand-title {
+    font-size: 1.5rem !important;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .admin-main-screen {
+    --background-primary: #1a1a1a;
+    --background-secondary: #2d2d2d;
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.7);
+    --text-tertiary: rgba(255, 255, 255, 0.5);
+    --border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  /* Override light mode colors in dark mode */
+  .admin-main-screen .dark-mode-bg {
+    background-color: var(--background-primary) !important;
+  }
+
+  .admin-main-screen .dark-mode-card {
+    background-color: var(--background-secondary) !important;
+    border-color: var(--border-color) !important;
+  }
+
+  .admin-main-screen .dark-mode-text-primary {
+    color: var(--text-primary) !important;
+  }
+
+  .admin-main-screen .dark-mode-text-secondary {
+    color: var(--text-secondary) !important;
+  }
+
+  .admin-main-screen .dark-mode-text-tertiary {
+    color: var(--text-tertiary) !important;
+  }
+}
+
+/* Reduced motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .admin-main-screen * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .admin-main-screen .loading-spinner {
+    animation: none !important;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .admin-main-screen .card {
+    border: 2px solid #000000 !important;
+  }
+
+  .admin-main-screen .button {
+    border: 2px solid currentColor !important;
+  }
+
+  .admin-main-screen .status-indicator {
+    border: 1px solid #000000 !important;
+  }
+}
+
+/* Print styles */
+@media print {
+  .admin-main-screen {
+    background: white !important;
+    color: black !important;
+    box-shadow: none !important;
+  }
+
+  .admin-main-screen .decorative-element {
+    display: none !important;
+  }
+
+  .admin-main-screen .button {
+    display: none !important;
+  }
+
+  .admin-main-screen .interactive-element {
+    display: none !important;
+  }
+
+  .admin-main-screen .page-break-before {
+    page-break-before: always;
+  }
+
+  .admin-main-screen .no-print {
+    display: none !important;
+  }
+}
+
+/* Utility classes for responsive design */
+.admin-main-screen .grid-auto-fit {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.admin-main-screen .flex-responsive {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.admin-main-screen .text-responsive {
+  font-size: clamp(0.875rem, 2.5vw, 1.125rem);
+}
+
+.admin-main-screen .padding-responsive {
+  padding: clamp(16px, 4vw, 32px);
+}
+
+.admin-main-screen .margin-responsive {
+  margin: clamp(8px, 2vw, 24px);
+}
+
+/* Container queries support (modern browsers) */
+@supports (container-type: inline-size) {
+  .admin-main-screen {
+    container-type: inline-size;
+  }
+
+  @container (max-width: 600px) {
+    .admin-main-screen .stats-grid {
+      grid-template-columns: 1fr !important;
+    }
+  }
+
+  @container (min-width: 601px) and (max-width: 900px) {
+    .admin-main-screen .stats-grid {
+      grid-template-columns: repeat(2, 1fr) !important;
+    }
+  }
+
+  @container (min-width: 901px) {
+    .admin-main-screen .stats-grid {
+      grid-template-columns: repeat(4, 1fr) !important;
+    }
+  }
+}
+
+/* Custom scrollbar for activity panel */
+.admin-main-screen .activity-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(59, 183, 126, 0.3) transparent;
+}
+
+.admin-main-screen .activity-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.admin-main-screen .activity-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.admin-main-screen .activity-scroll::-webkit-scrollbar-thumb {
+  background-color: rgba(59, 183, 126, 0.3);
+  border-radius: 3px;
+}
+
+.admin-main-screen .activity-scroll::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(59, 183, 126, 0.5);
+}
