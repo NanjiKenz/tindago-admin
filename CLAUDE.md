@@ -213,3 +213,10 @@ FIGMA_FILE_ID=8I1Nr3vQZllDDknSevstvH
 ### Key Documentation References
 - **Database Schema**: `firebase-database-structure.md` - Complete Firebase structure
 - **Web Design Agent**: `doc/TindaGo-Web-Design-to-Code-Agent.md` - Agent for converting admin Figma designs to Next.js
+- **Auth Setup**: `AUTH_SETUP.md` - Admin authentication setup guide
+
+# important-instruction-reminders
+Do what has been asked; nothing more, nothing less.
+NEVER create files unless they're absolutely necessary for achieving your goal.
+ALWAYS prefer editing an existing file to creating a new one.
+NEVER proactively create documentation files (*.md) or README files. Only create documentation files if explicitly requested by the User.

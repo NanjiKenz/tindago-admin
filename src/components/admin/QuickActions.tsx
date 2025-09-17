@@ -32,7 +32,7 @@ export const QuickActions: React.FC = () => {
     },
     {
       title: 'Generate Report',
-      iconSrc: '/images/admin-dashboard/report-action-icon.png',
+      iconSrc: '/images/admin-dashboard/report-icon.png',
       onClick: () => handleAction('Generate Report'),
       position: { x: 30.33, y: 180 }
     },

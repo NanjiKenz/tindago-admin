@@ -20,124 +20,137 @@ const DashboardPage: React.FC = () => {
 
   return (
     <div
-      className="relative"
+      className="min-h-screen relative overflow-hidden lg:overflow-visible"
       style={{
-        width: '1440px',
-        height: '1024px',
-        backgroundColor: '#F3F5F9'
+        width: '100vw',
+        maxWidth: '1440px',
+        minHeight: '1024px',
+        backgroundColor: '#F3F5F9',
+        margin: '0 auto' // Center on larger screens
       }}
     >
       {/* Sidebar - 273px wide, positioned at x:0, y:0 */}
       <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      {/* Top Header - 1167px wide, positioned at x:273, y:0 */}
+      {/* Main Dashboard Container */}
       <div
-        className="absolute"
+        className="absolute lg:left-[273px] left-0 lg:w-[1167px] w-full"
         style={{
-          left: '273px',
           top: '0px',
-          width: '1167px',
-          height: '80px'
+          minHeight: '1024px'
         }}
       >
-        <AdminHeader onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
-      </div>
-
-      {/* Main Content Area */}
-      <div
-        className="absolute"
-        style={{
-          left: '273px',
-          top: '80px',
-          width: '1167px',
-          height: '944px'
-        }}
-      >
-        {/* Page Title Section - Positioned at x:293, y:120 */}
+        {/* Top Header - Full width, positioned at x:0, y:0 (relative to main container) */}
         <div
-          className="absolute"
+          className="absolute w-full"
           style={{
-            left: '20px', // Relative to main content area
-            top: '40px',
-            width: '443px',
-            height: '79px'
+            left: '0px',
+            top: '0px',
+            height: '80px',
+            zIndex: 10
           }}
         >
-          <h1
+          <AdminHeader onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
+        </div>
+
+        {/* Main Content Area - Below header */}
+        <div
+          className="absolute w-full lg:px-5 px-4"
+          style={{
+            left: '0px',
+            top: '80px',
+            minHeight: '944px',
+            paddingTop: '40px'
+          }}
+        >
+          {/* Page Title Section - Exact Figma positioning */}
+          <div
+            className="absolute"
             style={{
-              fontFamily: 'Clash Grotesk Variable',
-              fontWeight: 500,
-              fontSize: '48px',
-              lineHeight: '1.23em',
-              color: '#1E1E1E',
-              marginBottom: '10px'
+              left: '20px',
+              top: '40px',
+              width: '600px',
+              height: '79px'
             }}
           >
-            Dashboard
-          </h1>
-          <p
+            <h1
+              style={{
+                fontFamily: 'Clash Grotesk Variable',
+                fontWeight: 500,
+                fontSize: '48px',
+                lineHeight: '1.2em',
+                color: '#1E1E1E',
+                marginBottom: '8px',
+                margin: 0
+              }}
+            >
+              Dashboard
+            </h1>
+            <p
+              style={{
+                fontFamily: 'Clash Grotesk Variable',
+                fontWeight: 400,
+                fontSize: '16px',
+                lineHeight: '1.2em',
+                color: 'rgba(30, 30, 30, 0.6)',
+                margin: 0
+              }}
+            >
+              Welcome back! Here's what's happening with your TindaGo today.
+            </p>
+          </div>
+
+          {/* Stats Cards - Exact Figma positioning */}
+          <div
+            className="absolute"
             style={{
-              fontFamily: 'Clash Grotesk Variable',
-              fontWeight: 400,
-              fontSize: '16px',
-              lineHeight: '1.23em',
-              color: 'rgba(30, 30, 30, 0.5)'
+              left: '35px',
+              top: '131px',
+              width: '1095px',
+              height: '150px'
             }}
           >
-            Welcome back! Here's what's happening with your TindaGo today.
-          </p>
-        </div>
+            <StatsCards />
+          </div>
 
-        {/* Stats Cards - Positioned at x:308-1133, y:211 */}
-        <div
-          className="absolute"
-          style={{
-            left: '35px',
-            top: '131px',
-            width: '1095px',
-            height: '150px'
-          }}
-        >
-          <StatsCards />
-        </div>
+          {/* Sales Analytics Chart - Exact Figma positioning */}
+          <div
+            className="absolute"
+            style={{
+              left: '40px',
+              top: '301px',
+              width: '620px',
+              height: '300px'
+            }}
+          >
+            <SalesAnalytics />
+          </div>
 
-        {/* Sales Analytics Chart - Positioned at x:313, y:381 */}
-        <div
-          className="absolute"
-          style={{
-            left: '40px',
-            top: '301px',
-            width: '620px',
-            height: '300px'
-          }}
-        >
-          <SalesAnalytics />
-        </div>
+          {/* Sales Target - Exact Figma positioning */}
+          <div
+            className="absolute"
+            style={{
+              left: '680px',
+              top: '301px',
+              width: '447px',
+              height: '300px'
+            }}
+          >
+            <SalesTarget />
+          </div>
 
-        {/* Sales Target - Positioned at x:953, y:381 */}
-        <div
-          className="absolute"
-          style={{
-            left: '680px',
-            top: '301px',
-            width: '447px',
-            height: '300px'
-          }}
-        >
-          <SalesTarget />
-        </div>
-
-        {/* Quick Actions - Positioned at x:313, y:701 */}
-        <div
-          className="absolute"
-          style={{
-            left: '40px',
-            top: '621px',
-            width: '1087px',
-            height: '303px'
-          }}
-        >
-          <QuickActions />
+          {/* Quick Actions - Exact Figma positioning */}
+          <div
+            className="absolute"
+            style={{
+              left: '40px',
+              top: '621px',
+              width: '1087px',
+              height: '303px'
+            }}
+          >
+            <QuickActions />
+          </div>
         </div>
       </div>
 

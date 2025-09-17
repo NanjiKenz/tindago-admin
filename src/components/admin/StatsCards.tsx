@@ -69,65 +69,63 @@ export const StatsCards: React.FC = () => {
     <div
       className="relative"
       style={{
-        width: '1095px', // Total width from first card x:308 to last card end
-        height: '150px',
-        marginLeft: '35px', // Adjusted for container alignment
-        marginTop: '12px'
+        width: '1095px',
+        height: '150px'
       }}
     >
       {stats.map((stat, index) => (
         <div
           key={index}
-          className="absolute bg-white rounded-2xl shadow-sm"
+          className="absolute bg-white rounded-2xl"
           style={{
-            left: `${index * 275}px`, // 275px spacing between cards (270px width + 5px gap)
+            left: `${index * 275}px`, // Exact 275px spacing between cards
             top: '0px',
             width: '270px',
             height: '150px',
-            padding: '10px'
+            boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)', // Soft shadow matching Figma
+            border: '1px solid rgba(0, 0, 0, 0.05)'
           }}
         >
           {/* Card Content */}
           <div className="relative w-full h-full">
-            {/* Icon in top right */}
+            {/* Icon in top right - Exact Figma positioning */}
             <div
-              className="absolute rounded-2xl flex items-center justify-center shadow-sm"
+              className="absolute rounded-xl flex items-center justify-center"
               style={{
-                right: '30px',
-                top: '25px',
-                width: '30px',
-                height: '30px',
-                backgroundColor: stat.iconBgColor,
-                padding: '5px'
+                right: '20px',
+                top: '20px',
+                width: '32px',
+                height: '32px',
+                backgroundColor: stat.iconBgColor
               }}
             >
               <Image
                 src={stat.iconSrc}
                 alt={stat.title}
-                width={20}
-                height={20}
+                width={16}
+                height={16}
                 className="object-contain"
                 style={{ filter: 'brightness(0) invert(1)' }}
               />
             </div>
 
-            {/* Title and Subtitle */}
+            {/* Title and Subtitle - Exact Figma positioning */}
             <div
               className="absolute"
               style={{
-                left: '30px',
-                top: '25px',
-                width: '111px'
+                left: '20px',
+                top: '20px',
+                width: '150px'
               }}
             >
               <p
                 style={{
                   fontFamily: 'Clash Grotesk Variable',
                   fontWeight: 500,
-                  fontSize: '16px',
-                  lineHeight: '1.23em',
+                  fontSize: '14px',
+                  lineHeight: '1.2em',
                   color: '#1E1E1E',
-                  marginBottom: '2px'
+                  marginBottom: '4px'
                 }}
               >
                 {stat.title}
@@ -137,68 +135,68 @@ export const StatsCards: React.FC = () => {
                   fontFamily: 'Clash Grotesk Variable',
                   fontWeight: 400,
                   fontSize: '12px',
-                  lineHeight: '1.23em',
-                  color: 'rgba(30, 30, 30, 0.5)'
+                  lineHeight: '1.2em',
+                  color: 'rgba(30, 30, 30, 0.6)'
                 }}
               >
                 {stat.subtitle}
               </p>
             </div>
 
-            {/* Value */}
+            {/* Value - Perfectly aligned to Figma */}
             <div
               className="absolute"
               style={{
                 left: '20px',
-                bottom: '50px',
-                padding: '10px'
+                bottom: '45px'
               }}
             >
               <p
                 style={{
                   fontFamily: 'Clash Grotesk Variable',
-                  fontWeight: 600,
-                  fontSize: '32px',
-                  lineHeight: '1.23em',
-                  color: '#1E1E1E'
+                  fontWeight: 700,
+                  fontSize: '28px',
+                  lineHeight: '1.1em',
+                  color: '#1E1E1E',
+                  margin: 0
                 }}
               >
                 {stat.value}
               </p>
             </div>
 
-            {/* Change Indicator */}
+            {/* Change Indicator - Exact Figma positioning */}
             <div
               className="absolute flex items-center"
               style={{
-                right: '30px',
-                bottom: '25px'
+                right: '20px',
+                bottom: '20px',
+                gap: '6px'
               }}
             >
-              {/* Arrow Icon */}
+              {/* Arrow Icon - Perfect SVG matching Figma */}
               <svg
-                width="11.39"
+                width="12"
                 height="8"
                 viewBox="0 0 12 8"
-                style={{
-                  marginRight: '5px'
-                }}
+                fill="none"
               >
                 <path
-                  d="M1 7L6 2L11 7"
-                  stroke={stat.changeType === 'positive' ? '#4DB95B' : '#D32B47'}
-                  strokeWidth="1"
-                  fill="none"
+                  d={stat.changeType === 'positive' ? 'M1 7L6 2L11 7' : 'M1 1L6 6L11 1'}
+                  stroke={stat.changeType === 'positive' ? '#22C55E' : '#EF4444'}
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 />
               </svg>
 
               <span
                 style={{
                   fontFamily: 'Clash Grotesk Variable',
-                  fontWeight: 400,
-                  fontSize: '10px',
-                  lineHeight: '1.23em',
-                  color: stat.changeType === 'positive' ? '#4DB95B' : '#D32B47'
+                  fontWeight: 500,
+                  fontSize: '12px',
+                  lineHeight: '1.2em',
+                  color: stat.changeType === 'positive' ? '#22C55E' : '#EF4444'
                 }}
               >
                 {stat.change}
