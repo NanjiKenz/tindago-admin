@@ -26,7 +26,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
   ];
 
   const renderIcon = (iconName: string) => {
-    const iconMap: { [key: string]: JSX.Element } = {
+    const iconMap: { [key: string]: React.ReactNode } = {
       dashboard: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
@@ -170,7 +170,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
 // Clean Professional Sidebar Component
 const Sidebar: React.FC<{
   navigation: Array<{ name: string; href: string; icon: string; current: boolean }>;
-  renderIcon: (iconName: string) => JSX.Element;
+  renderIcon: (iconName: string) => React.ReactNode;
 }> = ({ navigation, renderIcon }) => {
   return (
     <div className="flex flex-col h-full bg-white border-r border-gray-200">

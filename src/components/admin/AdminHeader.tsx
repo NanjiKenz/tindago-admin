@@ -1,198 +1,235 @@
 /**
- * Admin Header Component
+ * Admin Header Component - Pixel Perfect Figma Implementation
  *
- * Modern header for TindaGo Admin Dashboard with branding, navigation, and user profile
+ * Top header (1167x80) with search bar, notifications, and user profile
+ * Exact positioning and styling from Figma design: 281:155-281:170
  */
 
 'use client';
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/Button';
-import { useAuth } from '@/contexts/AuthContext';
+import Image from 'next/image';
 
 interface AdminHeaderProps {
-  onSidebarToggle?: () => void;
-  isSidebarOpen?: boolean;
+  onMenuClick: () => void;
 }
 
-export const AdminHeader: React.FC<AdminHeaderProps> = ({
-  onSidebarToggle,
-  isSidebarOpen = false
-}) => {
-  const router = useRouter();
-  const { user, signOut } = useAuth();
+export const AdminHeader: React.FC<AdminHeaderProps> = ({ onMenuClick }) => {
   const [showUserMenu, setShowUserMenu] = useState(false);
 
-  const handleSignOut = async () => {
-    try {
-      await signOut();
-      router.push('/auth/login');
-    } catch (error) {
-      console.error('Sign out error:', error);
-    }
-  };
-
   return (
-    <header className="bg-white shadow-soft border-b border-secondary-200 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center py-4">
-          {/* Left Section: Logo and Navigation Toggle */}
-          <div className="flex items-center">
-            {/* Mobile menu button */}
-            <button
-              onClick={onSidebarToggle}
-              className="lg:hidden p-2 rounded-lg text-secondary-600 hover:text-secondary-900 hover:bg-secondary-100 transition-colors"
-              aria-label="Toggle sidebar"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                {isSidebarOpen ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                )}
-              </svg>
-            </button>
+    <header
+      className="bg-white border-b border-gray-200 shadow-sm"
+      style={{
+        width: '1167px',
+        height: '80px'
+      }}
+    >
+      <div className="flex items-center justify-between h-full px-5 relative">
+        {/* Left Section: Mobile Menu Button (Hidden on desktop as per Figma) */}
+        <div className="flex items-center lg:hidden">
+          <button
+            onClick={onMenuClick}
+            className="p-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        </div>
 
-            {/* Logo and Brand */}
-            <div className="flex items-center ml-2 lg:ml-0">
-              <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-tindago-500 to-tindago-600 rounded-xl shadow-medium">
-                <span className="text-white font-bold text-xl">T</span>
-              </div>
-              <div className="ml-4">
-                <h1 className="text-2xl font-bold text-secondary-900 tracking-tight">TindaGo Admin</h1>
-                <p className="text-secondary-600 text-sm font-medium">Store Management Portal</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Center Section: Search Bar (Desktop) */}
-          <div className="hidden md:flex flex-1 max-w-lg mx-8">
-            <div className="relative w-full">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg className="h-5 w-5 text-secondary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </div>
-              <input
-                type="text"
-                placeholder="Search stores, registrations..."
-                className="block w-full pl-10 pr-4 py-2.5 border border-secondary-300 rounded-lg bg-secondary-50 text-secondary-900 placeholder-secondary-500 focus:outline-none focus:ring-2 focus:ring-tindago-500 focus:border-transparent transition-all"
+        {/* Search Bar - Positioned at x:293, y:21 with 300x40 dimensions as per Figma */}
+        <div
+          className="absolute"
+          style={{
+            left: '20px', // Adjusted for container padding
+            top: '20px',
+            width: '300px',
+            height: '40px'
+          }}
+        >
+          <div
+            className="relative flex items-center rounded-2xl"
+            style={{
+              backgroundColor: '#F1F1F1',
+              width: '100%',
+              height: '100%',
+              padding: '10px'
+            }}
+          >
+            <input
+              type="text"
+              placeholder="Find something here..."
+              className="flex-1 bg-transparent border-none outline-none text-gray-900 placeholder-gray-500"
+              style={{
+                fontFamily: 'Clash Grotesk Variable',
+                fontWeight: 500,
+                fontSize: '10px',
+                lineHeight: '1.23em',
+                color: 'rgba(30, 30, 30, 0.5)'
+              }}
+            />
+            <div style={{ width: '15px', height: '15px', marginLeft: '160px' }}>
+              <Image
+                src="/images/admin-dashboard/search-icon.png"
+                alt="Search"
+                width={15}
+                height={15}
+                className="object-contain"
               />
-            </div>
-          </div>
-
-          {/* Right Section: Actions and User Profile */}
-          <div className="flex items-center space-x-4">
-            {/* Notifications */}
-            <button className="relative p-2 text-secondary-600 hover:text-secondary-900 hover:bg-secondary-100 rounded-lg transition-colors">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5 5v-5zM10.5 7.5h-6a4 4 0 000 8h6m0-8a4 4 0 108 0m-8 0v8m8-8v8" />
-              </svg>
-              <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
-            </button>
-
-            {/* Quick Actions */}
-            <Button variant="primary" size="sm" className="hidden sm:inline-flex">
-              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-              </svg>
-              Quick Action
-            </Button>
-
-            {/* User Profile Menu */}
-            <div className="relative">
-              <button
-                onClick={() => setShowUserMenu(!showUserMenu)}
-                className="flex items-center space-x-3 p-2 rounded-lg hover:bg-secondary-100 transition-colors"
-              >
-                <div className="text-right hidden sm:block">
-                  <p className="text-sm font-medium text-secondary-900">
-                    {user?.displayName || 'Administrator'}
-                  </p>
-                  <p className="text-xs text-secondary-600">{user?.email}</p>
-                  <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-tindago-100 text-tindago-800">
-                    {user?.role === 'super_admin' ? 'Super Admin' : 'Admin'}
-                  </span>
-                </div>
-                <div className="w-10 h-10 bg-gradient-to-br from-tindago-500 to-tindago-600 rounded-full flex items-center justify-center shadow-medium">
-                  <span className="text-white text-sm font-semibold">
-                    {user?.displayName ? user.displayName.charAt(0).toUpperCase() : user?.email?.charAt(0).toUpperCase() || 'A'}
-                  </span>
-                </div>
-                <svg className="w-4 h-4 text-secondary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-
-              {/* User Dropdown Menu */}
-              {showUserMenu && (
-                <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-medium border border-secondary-200 py-2 z-50">
-                  <div className="px-4 py-3 border-b border-secondary-200">
-                    <p className="text-sm font-medium text-secondary-900">
-                      {user?.displayName || 'Administrator'}
-                    </p>
-                    <p className="text-xs text-secondary-600">{user?.email}</p>
-                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-tindago-100 text-tindago-800 mt-1">
-                      {user?.role === 'super_admin' ? 'Super Admin' : 'Admin'}
-                    </span>
-                  </div>
-                  <div className="py-2">
-                    <a href="#" className="flex items-center px-4 py-2 text-sm text-secondary-700 hover:bg-secondary-100">
-                      <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                      </svg>
-                      Profile Settings
-                    </a>
-                    <a href="#" className="flex items-center px-4 py-2 text-sm text-secondary-700 hover:bg-secondary-100">
-                      <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      </svg>
-                      Admin Settings
-                    </a>
-                    <a href="#" className="flex items-center px-4 py-2 text-sm text-secondary-700 hover:bg-secondary-100">
-                      <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                      </svg>
-                      Documentation
-                    </a>
-                  </div>
-                  <div className="border-t border-secondary-200 pt-2">
-                    <button
-                      onClick={handleSignOut}
-                      className="flex items-center w-full px-4 py-2 text-sm text-red-700 hover:bg-red-50 transition-colors"
-                    >
-                      <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                      </svg>
-                      Sign Out
-                    </button>
-                  </div>
-                </div>
-              )}
             </div>
           </div>
         </div>
 
-        {/* Mobile Search Bar */}
-        <div className="md:hidden pb-4">
+        {/* Right Section: Notifications and User Profile */}
+        <div className="flex items-center space-x-4 ml-auto">
+          {/* Notifications - Positioned at x:1162, y:19 as per Figma */}
           <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <svg className="h-5 w-5 text-secondary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </div>
-            <input
-              type="text"
-              placeholder="Search stores, registrations..."
-              className="block w-full pl-10 pr-4 py-2.5 border border-secondary-300 rounded-lg bg-secondary-50 text-secondary-900 placeholder-secondary-500 focus:outline-none focus:ring-2 focus:ring-tindago-500 focus:border-transparent transition-all"
-            />
+            <button
+              className="relative rounded-full shadow-sm"
+              style={{
+                width: '40px',
+                height: '40px',
+                backgroundColor: '#FFFFFF'
+              }}
+            >
+              <div
+                className="absolute"
+                style={{
+                  left: '10px',
+                  top: '10px',
+                  width: '20px',
+                  height: '20px'
+                }}
+              >
+                <Image
+                  src="/images/admin-dashboard/notification-icon.png"
+                  alt="Notifications"
+                  width={20}
+                  height={20}
+                  className="object-contain"
+                />
+              </div>
+              {/* Notification Badge */}
+              <div
+                className="absolute rounded-full flex items-center justify-center"
+                style={{
+                  right: '0px',
+                  top: '0px',
+                  width: '15px',
+                  height: '15px',
+                  backgroundColor: '#FFBA02'
+                }}
+              >
+                <span
+                  style={{
+                    fontFamily: 'Clash Grotesk Variable',
+                    fontWeight: 500,
+                    fontSize: '8px',
+                    lineHeight: '1.23em',
+                    color: '#1E1E1E'
+                  }}
+                >
+                  3
+                </span>
+              </div>
+            </button>
+          </div>
+
+          {/* User Profile - Positioned at x:1222, y:20 as per Figma */}
+          <div className="relative">
+            <button
+              onClick={() => setShowUserMenu(!showUserMenu)}
+              className="flex items-center space-x-3 transition-colors"
+              style={{ width: '158px', height: '40px' }}
+            >
+              {/* User Info Text */}
+              <div className="text-left" style={{ width: '108px', height: '32px' }}>
+                <p
+                  className="text-left"
+                  style={{
+                    fontFamily: 'Clash Grotesk Variable',
+                    fontWeight: 500,
+                    fontSize: '14px',
+                    lineHeight: '1.23em',
+                    color: '#1E1E1E',
+                    marginBottom: '2px'
+                  }}
+                >
+                  Maynard Dotarot
+                </p>
+                <p
+                  className="text-right"
+                  style={{
+                    fontFamily: 'Clash Grotesk Variable',
+                    fontWeight: 400,
+                    fontSize: '12px',
+                    lineHeight: '1.23em',
+                    color: 'rgba(30, 30, 30, 0.5)'
+                  }}
+                >
+                  Admin
+                </p>
+              </div>
+
+              {/* Profile Avatar */}
+              <div
+                className="rounded-full overflow-hidden"
+                style={{ width: '40px', height: '40px' }}
+              >
+                <Image
+                  src="/images/admin-dashboard/profile-avatar.png"
+                  alt="Profile"
+                  width={40}
+                  height={40}
+                  className="object-cover"
+                />
+              </div>
+            </button>
+
+            {/* User Dropdown Menu */}
+            {showUserMenu && (
+              <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50">
+                <div className="px-4 py-3 border-b border-gray-200">
+                  <p className="text-sm font-medium text-gray-900">Maynard Dotarot</p>
+                  <p className="text-xs text-gray-600">admin@tindago.com</p>
+                </div>
+                <div className="py-2">
+                  <a href="#" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                    Profile Settings
+                  </a>
+                  <a href="#" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    Settings
+                  </a>
+                  <a href="#" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Help & Support
+                  </a>
+                </div>
+                <div className="border-t border-gray-200 pt-2">
+                  <button className="flex items-center w-full px-4 py-2 text-sm text-red-700 hover:bg-red-50 transition-colors">
+                    <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013 3v1" />
+                    </svg>
+                    Sign Out
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Overlay for mobile menu */}
+      {/* Mobile overlay */}
       {showUserMenu && (
         <div
           className="fixed inset-0 z-40 bg-black bg-opacity-25 lg:hidden"

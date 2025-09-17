@@ -13,7 +13,7 @@ interface StatsCardProps {
   value: string | number;
   change: number;
   changeType: 'increase' | 'decrease';
-  icon: JSX.Element;
+  icon: React.ReactNode;
   color: 'blue' | 'green' | 'purple' | 'orange';
 }
 

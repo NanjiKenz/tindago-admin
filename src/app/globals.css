@@ -1,6 +1,9 @@
 @import "tailwindcss";
 @import "../styles/design-tokens.css";
 
+/* Fonts for Figma Design */
+@import url('https://fonts.googleapis.com/css2?family=Clash+Grotesk:wght@400;500;600;700&display=swap');
+
 /* TindaGo Global Styles */
 
 :root {

@@ -10,7 +10,12 @@
       "Bash(npx tsc:*)",
       "Bash(npx eslint:*)",
       "Bash(rm:*)",
-      "Bash(npx expo start:*)"
+      "Bash(npx expo start:*)",
+      "Bash(npm search:*)",
+      "mcp__figma-developer-mcp__get_figma_data",
+      "Bash(cat:*)",
+      "Bash(npm run dev:*)",
+      "mcp__figma-developer-mcp__download_figma_images"
     ],
     "deny": [],
     "ask": []
