@@ -53,14 +53,12 @@
   "figmaIntegration": {
     "enabled": true,
     "pixelPerfectMode": true,
-    "assetDownloadPath": "public/images/admin-dashboard/",
     "coordinatePreservation": true,
     "exactPositioning": true,
-    "scriptIntegration": true,
-    "autoExecuteScripts": true,
-    "enableDesignExtractor": true,
-    "enableTokenSync": true,
+    "designTokenUsage": true,
+    "skipImageExtraction": true,
     "componentGeneration": true,
+    "cssVariableUtilities": true,
     "tailwindCSS": true,
     "reactGeneration": true
   },
@@ -79,21 +77,21 @@
     "scriptIntegration": true,
     "designExtraction": {
       "enabled": true,
-      "defaultNodeId": "281-115",
-      "outputDirectory": "figma-extracted-design",
-      "generateSpecs": true,
-      "generateComponents": true
+      "coordinateOnly": true,
+      "skipAssets": true,
+      "outputDirectory": "src/components/admin",
+      "useDesignTokens": true
     },
     "tokenSync": {
       "enabled": true,
       "outputFile": "src/styles/design-tokens.css",
-      "autoSync": true
+      "useExistingTokens": true
     }
   },
   "scriptExecutionConfig": {
-    "enableNodeScripts": true,
-    "allowFigmaScripts": true,
-    "scriptTimeout": 300000,
+    "enableNodeScripts": false,
+    "allowFigmaScripts": false,
+    "directMCPIntegration": true,
     "environmentVariables": {
       "loadDotEnv": true,
       "figmaAccessToken": "FIGMA_ACCESS_TOKEN",

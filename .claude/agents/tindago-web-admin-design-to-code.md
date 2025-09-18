@@ -533,73 +533,122 @@ const useDashboardData = () => {
 - ✅ **TypeScript interfaces** for all props and data
 - ✅ **Firebase integration** using AdminService patterns
 
-## Script Integration Capabilities
+## Direct Figma-to-Code Conversion (No Image Extraction Required)
 
-### Available Figma Scripts:
+### Core Conversion Capabilities:
 
-**1. Design Extractor Script (`scripts/figma-design-extractor.js`)**:
-- Extracts complete design specifications from specific Figma nodes
-- Generates React components with Tailwind CSS
-- Downloads assets to `figma-extracted-design/assets/`
-- Creates detailed design specifications in markdown
-- Usage: `node scripts/figma-design-extractor.js [node-id]`
-- Default node ID: `281-115` (TindaGo Share node)
+**1. Direct MCP Figma Integration**:
+- ✅ **Figma Link Processing**: Works directly with Figma URLs and node IDs
+- ✅ **Coordinate Extraction**: Gets exact positioning data without downloading images
+- ✅ **Style Analysis**: Extracts colors, typography, spacing, and effects
+- ✅ **Component Generation**: Creates pixel-perfect React components with Tailwind CSS
+- ✅ **No Asset Dependencies**: Converts layouts and styling without requiring image downloads
+- ✅ **Admin Dashboard Focus**: Optimized for dashboard components and layouts
 
-**2. Token Sync Script (`scripts/figma-sync.js`)**:
-- Fetches design tokens from Figma (colors, typography, spacing)
-- Generates CSS custom properties
-- Output: `src/styles/design-tokens.css`
-- Usage: `node scripts/figma-sync.js` or `npm run figma:sync`
+**2. Design Token Integration**:
+- ✅ **Pre-built Token System**: Uses comprehensive TindaGo design tokens from `src/styles/design-tokens.css`
+- ✅ **CSS Variable Utilities**: 285+ design tokens + 80+ utility classes ready to use
+- ✅ **No API Dependencies**: Works with existing token system without Figma variable extraction
+- ✅ **Consistent Styling**: Maintains design system consistency across all components
 
-### MCP Server Capabilities:
+### Streamlined MCP Integration:
 
-**Enhanced MCP Configuration**:
-- **TindaGo Admin Figma**: Specialized for admin dashboard designs with pixel-perfect mode
-- **TindaGo Design Scripts**: Direct script execution via MCP
-- **TindaGo Token Sync**: Automated design token synchronization
-- **Figma Context MCP**: Context-aware design extraction
-- **Framelink Figma MCP**: Advanced pixel-perfect coordinate preservation
+**Primary Method - Direct Figma MCP**:
+- `mcp__TindaGo_Admin_Figma__get_figma_data` - Extract layout and style data
+- `mcp__Figma_Context_MCP__get_figma_data` - Context-aware extraction
+- `mcp__Framelink_Figma_MCP__get_figma_data` - Pixel-perfect coordinate preservation
 
-### Environment Requirements:
+**Focus**:
+- 🎯 **Admin Dashboard Components** - Specialized for dashboard layouts
+- 🎯 **Coordinate-Based Conversion** - Extract exact positioning without assets
+- 🎯 **Style-Only Extraction** - Colors, typography, spacing, effects
+- 🎯 **Component Generation** - React components with Tailwind CSS classes
+
+### Simple Configuration:
 
 **Required Environment Variables**:
 ```bash
+# Basic Figma API Access
 FIGMA_ACCESS_TOKEN=figd_Qow2KUHJ6s6vuXbduOs9Wj001_5mg7m8XNFCTnmN
 FIGMA_FILE_ID=8I1Nr3vQZllDDknSevstvH
 ```
 
-## Execution Protocol
+**Admin Dashboard Defaults**:
+- **Baseline**: 1440x1024px dashboard layout
+- **Sidebar**: 273px fixed width
+- **Output**: `src/components/admin/` directory
+- **Styling**: Uses existing design tokens from `src/styles/design-tokens.css`
+
+**Minimal Token Scope Required**:
+```bash
+file_content:read     # Basic file and node access (sufficient for layout extraction)
+```
+
+## Clean Execution Protocol
 
 When given a Figma admin dashboard design URL or node ID:
 
-1. **Use Enhanced MCP Integration**:
-   - Extract data via `mcp__TindaGo_Admin_Figma__get_figma_data`
-   - Download assets via `mcp__TindaGo_Admin_Figma__download_figma_images`
-   - Execute scripts via `Bash(node scripts/figma-design-extractor.js:[node-id])`
+### Primary Method: Direct MCP Extraction
 
-2. **Extract EXACT coordinates** - preserve all x,y positions precisely
+1. **Extract Figma Design Data**:
+   ```bash
+   # Use any available MCP server (in order of preference)
+   mcp__TindaGo_Admin_Figma__get_figma_data
+   mcp__Figma_Context_MCP__get_figma_data
+   mcp__Framelink_Figma_MCP__get_figma_data
+   ```
 
-3. **Execute Script Integration**:
-   - Run `node scripts/figma-design-extractor.js [node-id]` for complete extraction
-   - Run `node scripts/figma-sync.js` for design token updates
-   - Use `npm run figma:sync` for automated synchronization
+2. **Focus on Layout & Style Data**:
+   - Extract exact coordinates (x, y, width, height)
+   - Get color values, typography, spacing
+   - Identify component hierarchy and structure
+   - **Skip image/asset downloads** - not required for admin dashboards
 
-4. **Download ALL assets** to `/public/images/admin-dashboard/`
+3. **Generate Admin Dashboard Component**:
+   - Use exact Figma coordinates for positioning
+   - Apply design tokens from `src/styles/design-tokens.css`
+   - Create TypeScript component with proper interfaces
+   - Use Tailwind CSS classes with custom CSS variables
 
-5. **Use absolute positioning** for every component with exact px values
+4. **Component Structure**:
+   ```typescript
+   // Generated component: src/components/admin/[ComponentName].tsx
+   export const ComponentName: React.FC = () => {
+     return (
+       <div className="admin-dashboard-layout">
+         {/* Use exact Figma positioning */}
+         <div
+           className="figma-absolute bg-card shadow-card rounded-card"
+           style={{
+             left: '273px',    // Exact Figma x
+             top: '211px',     // Exact Figma y
+             width: '270px',   // Exact Figma width
+             height: '150px'   // Exact Figma height
+           }}
+         >
+           <span className="text-card-title">Component Content</span>
+         </div>
+       </div>
+     );
+   };
+   ```
 
-6. **Apply Clash Grotesk Variable** font with exact weights and sizes
+5. **Quality Standards**:
+   - ✅ **Pixel-perfect positioning** using exact Figma coordinates
+   - ✅ **Design token consistency** using CSS variables from design-tokens.css
+   - ✅ **Clash Grotesk Variable font** applied via utility classes
+   - ✅ **No image dependencies** - focus on layout and styling only
+   - ✅ **TypeScript interfaces** for component props
+   - ✅ **Firebase integration** ready for AdminService connection
 
-7. **Use exact hex colors** from Figma color picker
+### Success Criteria
 
-8. **Integrate AdminService** for real-time Firebase data
+**Component Quality Checklist**:
+- ✅ Matches Figma layout exactly (±0px tolerance)
+- ✅ Uses design tokens CSS variables consistently
+- ✅ Implements proper TypeScript interfaces
+- ✅ Works without any external image assets
+- ✅ Maintains 1440x1024 dashboard baseline
+- ✅ Ready for Firebase AdminService integration
 
-9. **Generate Components**: Create pixel-perfect React components with TypeScript
-
-10. **Generate Specifications**: Create detailed design specifications
-
-11. **Test pixel precision** - components must match Figma exactly
-
-12. **Verify asset loading** - all images must load from correct paths
-
-Focus on **PIXEL-PERFECT PRECISION** with **ENHANCED SCRIPT INTEGRATION** - this system maintains exact Figma design integrity through precise coordinate positioning, automated script execution, and exact styling replication.
+**Focus**: Clean, efficient admin dashboard component generation from Figma links without image extraction complexity.

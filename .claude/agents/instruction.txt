@@ -1,17 +1,17 @@
 🎯 TindaGo Web Admin Design-to-Code Agent Examples
 
-## Pixel-Perfect Figma Conversion Examples
+## Clean Figma-to-Code Conversion (No Image Extraction)
 
 ### Simple Activation (Admin Dashboard Figma Conversion):
 
 @tindago-web-admin-design-to-code
 
-Convert this Figma admin dashboard design to pixel-perfect Next.js:
+Convert this Figma admin dashboard design to Next.js component:
 https://www.figma.com/design/8I1Nr3vQZllDDknSevstvH/TindaGo-Admin?node-id=102-123&t=vt1DdLoecuG6NBUJ-4
 
-Use exact positioning, Clash Grotesk Variable font, and 1440x1024 baseline with 273px sidebar.
+Use exact positioning, design tokens CSS variables, and 1440x1024 baseline with 273px sidebar.
 
-### Complex Request with Exact Requirements:
+### Complex Request with Design Token Usage:
 
 @tindago-web-admin-design-to-code
 
@@ -21,13 +21,12 @@ https://www.figma.com/design/8I1Nr3vQZllDDknSevstvH/TindaGo-Admin?node-id=102-45
 Requirements:
 - Store registration approval dashboard with pixel-perfect positioning
 - Use absolute positioning with exact Figma coordinates (x:308px, y:211px style)
-- Clash Grotesk Variable font family throughout
-- Exact colors: #0077BE for active states, #F3F5F9 background
-- Assets to /public/images/admin-dashboard/ folder
+- Apply design tokens from src/styles/design-tokens.css
+- Use CSS variable utilities: .bg-active, .text-primary, .stats-card
 - Firebase AdminService integration for real-time data
-- 273px sidebar with exact TindaGo logo positioning
+- 273px sidebar baseline without image dependencies
 
-Create components with exact Figma coordinate preservation.
+Create components using design token CSS variables.
 
 ### Positioning Error Fix Example:
 
@@ -43,60 +42,30 @@ The stats cards are not aligned properly. In Figma they are:
 
 But your code uses responsive grid instead of absolute positioning. Please fix with exact pixel coordinates and 275px spacing between cards.
 
-### Font and Typography Error:
+### Design Token Usage Fix:
 
 @tindago-web-admin-design-to-code
 
-The typography doesn't match my dashboard. You used Tailwind classes but I need:
+The styling doesn't use our design tokens properly. Please use:
 
-Dashboard title:
-- fontFamily: 'Clash Grotesk Variable'
-- fontWeight: 500
-- fontSize: '48px'
-- lineHeight: '1.2em'
-- color: '#1E1E1E'
+Typography utilities:
+- .text-dashboard-title (48px Clash Grotesk Variable)
+- .text-card-value (28px weight 700)
+- .text-card-title (14px weight 500)
+- .text-primary, .text-secondary
 
-Card values:
-- fontFamily: 'Clash Grotesk Variable'
-- fontWeight: 700
-- fontSize: '28px'
-- lineHeight: '1.1em'
+Background utilities:
+- .bg-dashboard (#F3F5F9)
+- .bg-active (#0077BE)
+- .bg-card (#FFFFFF)
+- .bg-stat-purple, .bg-stat-green
 
-Please use exact style objects instead of Tailwind classes.
+Component utilities:
+- .stats-card (270x150px with proper shadows)
+- .nav-item with .active state
+- .admin-dashboard-layout
 
-### Asset Path Error:
-
-@tindago-web-admin-design-to-code
-
-Assets are not loading. You used generic paths but I need exact paths:
-
-❌ Wrong: `/images/dashboard/icon.png`
-✅ Correct: `/images/admin-dashboard/dashboard-icon.png`
-
-All icons must go to `/public/images/admin-dashboard/` and follow naming:
-- dashboard-icon.png
-- customer-card-icon.png
-- tindago-logo.png
-- expand-arrow.png
-
-Please fix all asset paths.
-
-### Color Mismatch Fix:
-
-@tindago-web-admin-design-to-code
-
-Colors don't match the design. You used Tailwind colors but I need exact hex:
-
-❌ Wrong: className="bg-blue-600 bg-gray-50"
-✅ Correct: backgroundColor: '#0077BE', backgroundColor: '#F3F5F9'
-
-Required exact colors:
-- Active nav item: #0077BE
-- Dashboard background: #F3F5F9
-- Text primary: #1E1E1E
-- Text secondary: rgba(30, 30, 30, 0.6)
-- Purple stat icon: #A855F7
-- Green stat icon: #22C55E
+Use CSS variables from src/styles/design-tokens.css instead of hardcoded values.
 
 ### Complete Dashboard Integration:
 
@@ -106,15 +75,15 @@ Create a complete admin dashboard from this Figma:
 https://www.figma.com/design/8I1Nr3vQZllDDknSevstvH/TindaGo-Admin?node-id=281-115
 
 Include:
-- Pixel-perfect 1440x1024 container with exact positioning
-- 273px sidebar with TindaGo logo at exact coordinates (x:-48, y:-86)
-- Stats cards with 275px spacing and exact icon positioning
-- Header at 80px height with search, notifications, profile
+- .admin-dashboard-layout container (1440x1024 baseline)
+- .sidebar-container (273px width) using design tokens
+- .stats-card components with exact Figma positioning
+- .admin-header (80px height) with utility classes
 - AdminService integration for Firebase real-time data
-- Exact Clash Grotesk Variable typography
-- All assets downloaded to admin-dashboard folder
+- CSS variable utilities from design-tokens.css
+- No image extraction - layout and styling only
 
-Make it match the existing dashboard components exactly.
+Make it match the existing dashboard components using our design token system.
 
 ## 🚀 Pro Tips for Best Results
 
@@ -130,11 +99,11 @@ Make it match the existing dashboard components exactly.
 ### What the Agent Will Do:
 
 ✅ **Extract exact Figma coordinates** and preserve them precisely
-✅ **Download all assets** to `/public/images/admin-dashboard/`
+✅ **Use design token CSS variables** from src/styles/design-tokens.css
 ✅ **Use absolute positioning** with exact px values from Figma
-✅ **Apply Clash Grotesk Variable** font with exact weights/sizes
-✅ **Use exact hex colors** never Tailwind approximations
-✅ **Create pixel-perfect components** matching your dashboard style
+✅ **Apply utility classes** .bg-card, .text-primary, .stats-card
+✅ **Skip image extraction** - focus on layout and styling only
+✅ **Create pixel-perfect components** using design token system
 ✅ **Integrate AdminService** for Firebase real-time data
 ✅ **Follow 1440x1024 baseline** with 273px sidebar system
 
@@ -143,17 +112,17 @@ Make it match the existing dashboard components exactly.
 **Issue**: Agent uses responsive classes instead of absolute positioning
 **Solution**: Say "Use exact absolute positioning with pixel coordinates from Figma"
 
-**Issue**: Agent uses wrong font family
-**Solution**: Say "Must use Clash Grotesk Variable font family, not Inter"
+**Issue**: Agent doesn't use design tokens
+**Solution**: Say "Use CSS variable utilities from src/styles/design-tokens.css"
 
-**Issue**: Agent uses Tailwind color classes
-**Solution**: Say "Use exact hex colors in style objects, not Tailwind classes"
+**Issue**: Agent creates hardcoded styles
+**Solution**: Say "Use .bg-card, .text-primary, .stats-card utility classes"
 
-**Issue**: Assets don't load
-**Solution**: Say "Download to /public/images/admin-dashboard/ with exact naming"
+**Issue**: Agent tries to download images
+**Solution**: Say "Skip image extraction, focus on layout and styling only"
 
 **Issue**: Layout doesn't match dashboard
-**Solution**: Say "Follow existing dashboard component patterns with 273px sidebar"
+**Solution**: Say "Use .admin-dashboard-layout and design token system"
 
 ## Key Success Patterns
 
@@ -164,7 +133,7 @@ Make it match the existing dashboard components exactly.
 Convert this admin dashboard:
 [Figma URL with node-id]
 
-Use pixel-perfect positioning from Figma coordinates, Clash Grotesk Variable font, exact hex colors, and download assets to admin-dashboard folder. Match existing dashboard implementation with 273px sidebar and 1440x1024 baseline.
+Use pixel-perfect positioning from Figma coordinates, design token CSS variables from src/styles/design-tokens.css, and utility classes. Skip image extraction. Match existing dashboard implementation with 273px sidebar and 1440x1024 baseline.
 ```
 
 ### ❌ Avoid Generic Requests:
@@ -174,6 +143,6 @@ Use pixel-perfect positioning from Figma coordinates, Clash Grotesk Variable fon
 Make a dashboard from this Figma link.
 ```
 
-The agent specializes in **PIXEL-PERFECT FIGMA-TO-CODE CONVERSION** using your exact coordinate positioning system, not generic admin dashboard creation. Always specify precision requirements for best results.
+The agent specializes in **CLEAN FIGMA-TO-CODE CONVERSION** using design tokens and CSS variables, without image extraction complexity. Always specify design token usage for best results.
 
-**Focus**: This agent converts admin dashboard Figma designs to exact Next.js implementations that match your established pixel-perfect positioning system.
+**Focus**: This agent converts admin dashboard Figma designs to Next.js components using the established design token system and pixel-perfect positioning.
