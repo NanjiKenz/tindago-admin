@@ -1,4 +1,4 @@
-# TindaGo Share Design Specifications
+  # TindaGo Share Design Specifications
 
 Generated on: 9/18/2025, 8:11:20 AM
 

@@ -13,6 +13,7 @@ import Image from 'next/image';
 interface AdminSidebarProps {
   isOpen: boolean;
   onClose: () => void;
+  currentPage?: string;
 }
 
 interface NavItem {
@@ -24,7 +25,7 @@ interface NavItem {
   children?: NavItem[];
 }
 
-export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen, onClose }) => {
+export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen, onClose, currentPage = 'dashboard' }) => {
   const [manageDropdownOpen, setManageDropdownOpen] = useState(true); // Default open as in Figma
 
   const navigation: NavItem[] = [
@@ -96,7 +97,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen, onClose }) =
           {/* Navigation Menu - Starting at y:139 as per Figma */}
           <nav className="flex-1" style={{ paddingLeft: '27px', paddingRight: '27px' }}>
             <div className="space-y-0">
-              {/* Dashboard - Active Item */}
+              {/* Dashboard */}
               <a
                 href="/dashboard"
                 className="w-full group flex items-center rounded-2xl transition-colors"
@@ -104,7 +105,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen, onClose }) =
                   width: '220px',
                   height: '40px',
                   padding: '0 20px 0 10px',
-                  backgroundColor: '#0077BE',
+                  backgroundColor: currentPage === 'dashboard' ? '#0077BE' : 'transparent',
                   marginBottom: '20px'
                 }}
               >
@@ -116,7 +117,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen, onClose }) =
                       width={25}
                       height={25}
                       className="object-contain"
-                      style={{ filter: 'brightness(0) invert(1)' }}
+                      style={{ filter: currentPage === 'dashboard' ? 'brightness(0) invert(1)' : 'none' }}
                     />
                   </div>
                   <span
@@ -125,7 +126,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen, onClose }) =
                       fontWeight: 500,
                       fontSize: '14px',
                       lineHeight: '1.23em',
-                      color: '#FFFFFF'
+                      color: currentPage === 'dashboard' ? '#FFFFFF' : '#1E1E1E'
                     }}
                   >
                     Dashboard
@@ -141,6 +142,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen, onClose }) =
                   width: '220px',
                   height: '40px',
                   padding: '0 20px 0 10px',
+                  backgroundColor: currentPage === 'analytics' ? '#0077BE' : 'transparent',
                   marginBottom: '20px'
                 }}
               >
@@ -152,6 +154,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen, onClose }) =
                       width={25}
                       height={25}
                       className="object-contain"
+                      style={{ filter: currentPage === 'analytics' ? 'brightness(0) invert(1)' : 'none' }}
                     />
                   </div>
                   <span
@@ -160,7 +163,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen, onClose }) =
                       fontWeight: 500,
                       fontSize: '14px',
                       lineHeight: '1.23em',
-                      color: '#1E1E1E'
+                      color: currentPage === 'analytics' ? '#FFFFFF' : '#1E1E1E'
                     }}
                   >
                     Report & Analytic
