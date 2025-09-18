@@ -1,0 +1,2149 @@
+{
+  "meta": {
+    "extractedAt": "2025-09-18T00:11:20.847Z",
+    "nodeId": "281:2",
+    "nodeName": "Admin",
+    "nodeType": "FRAME",
+    "figmaFileId": "8I1Nr3vQZllDDknSevstvH"
+  },
+  "design": {
+    "id": "281:2",
+    "name": "Admin",
+    "type": "FRAME",
+    "visible": true,
+    "layout": {
+      "width": 1440,
+      "height": 2631,
+      "x": 0,
+      "y": 0,
+      "constraints": {
+        "vertical": "TOP",
+        "horizontal": "LEFT"
+      }
+    },
+    "effects": [],
+    "fills": [
+      {
+        "type": "SOLID",
+        "color": "#f3f5f9"
+      }
+    ],
+    "strokes": [],
+    "strokeWeight": 1,
+    "strokeAlign": "INSIDE",
+    "children": [
+      {
+        "id": "281:3",
+        "name": "Third sec",
+        "type": "FRAME",
+        "visible": true,
+        "layout": {
+          "width": 1440,
+          "height": 600,
+          "x": 0,
+          "y": 1570,
+          "constraints": {
+            "vertical": "TOP",
+            "horizontal": "LEFT"
+          }
+        },
+        "effects": [],
+        "fills": [],
+        "strokes": [],
+        "strokeWeight": 1,
+        "strokeAlign": "INSIDE",
+        "children": [
+          {
+            "id": "281:4",
+            "name": "Rectangle 51",
+            "type": "RECTANGLE",
+            "visible": true,
+            "layout": {
+              "width": 1360,
+              "height": 500,
+              "x": 40,
+              "y": 1620,
+              "constraints": {
+                "vertical": "CENTER",
+                "horizontal": "CENTER"
+              },
+              "cornerRadius": 30
+            },
+            "effects": [
+              {
+                "type": "DROP_SHADOW",
+                "visible": true,
+                "radius": 5,
+                "color": "rgba(0, 0, 0, 0.25)",
+                "offset": {
+                  "x": 0,
+                  "y": 0
+                },
+                "spread": 2,
+                "blendMode": "NORMAL"
+              }
+            ],
+            "fills": [
+              {
+                "type": "GRADIENT_LINEAR",
+                "color": null,
+                "gradientStops": [
+                  {
+                    "position": 0,
+                    "color": "#071939"
+                  },
+                  {
+                    "position": 1,
+                    "color": "#14469f"
+                  }
+                ]
+              }
+            ],
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeAlign": "INSIDE",
+            "children": []
+          },
+          {
+            "id": "281:5",
+            "name": "166shots_so 1",
+            "type": "RECTANGLE",
+            "visible": true,
+            "layout": {
+              "width": 945,
+              "height": 613,
+              "x": -52,
+              "y": 1507,
+              "constraints": {
+                "vertical": "TOP",
+                "horizontal": "LEFT"
+              }
+            },
+            "effects": [],
+            "fills": [
+              {
+                "type": "IMAGE",
+                "color": null
+              }
+            ],
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeAlign": "INSIDE",
+            "children": []
+          },
+          {
+            "id": "281:6",
+            "name": "Download our app and enjoy using it",
+            "type": "TEXT",
+            "visible": true,
+            "layout": {
+              "width": 403,
+              "height": 237,
+              "x": 874,
+              "y": 1652,
+              "constraints": {
+                "vertical": "TOP",
+                "horizontal": "LEFT"
+              }
+            },
+            "effects": [],
+            "fills": [
+              {
+                "type": "SOLID",
+                "color": "#ffffff"
+              }
+            ],
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeAlign": "OUTSIDE",
+            "children": [],
+            "text": {
+              "characters": "Download our\napp and enjoy \nusing it",
+              "style": {
+                "fontFamily": "Clash Grotesk Variable",
+                "fontWeight": 500,
+                "fontSize": 64,
+                "lineHeight": 78.72000122070312,
+                "letterSpacing": 0,
+                "textAlign": "LEFT",
+                "textColor": "#ffffff"
+              }
+            }
+          },
+          {
+            "id": "281:7",
+            "name": "Apple",
+            "type": "GROUP",
+            "visible": true,
+            "layout": {
+              "width": 170,
+              "height": 50,
+              "x": 874,
+              "y": 1931,
+              "constraints": {
+                "vertical": "TOP",
+                "horizontal": "LEFT"
+              },
+              "rectangleCornerRadii": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            "effects": [],
+            "fills": [],
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeAlign": "INSIDE",
+            "children": [
+              {
+                "id": "281:8",
+                "name": "Rectangle 50",
+                "type": "RECTANGLE",
+                "visible": true,
+                "layout": {
+                  "width": 170,
+                  "height": 50,
+                  "x": 874,
+                  "y": 1931,
+                  "constraints": {
+                    "vertical": "TOP",
+                    "horizontal": "LEFT"
+                  },
+                  "cornerRadius": 20
+                },
+                "effects": [],
+                "fills": [],
+                "strokes": [
+                  {
+                    "type": "SOLID",
+                    "color": "#ffffff"
+                  }
+                ],
+                "strokeWeight": 2,
+                "strokeAlign": "INSIDE",
+                "children": []
+              },
+              {
+                "id": "281:9",
+                "name": "Group",
+                "type": "GROUP",
+                "visible": true,
+                "layout": {
+                  "width": 114,
+                  "height": 32,
+                  "x": 902,
+                  "y": 1940,
+                  "constraints": {
+                    "vertical": "CENTER",
+                    "horizontal": "CENTER"
+                  }
+                },
+                "effects": [],
+                "fills": [],
+                "strokes": [],
+                "strokeWeight": 1,
+                "strokeAlign": "INSIDE",
+                "children": [
+                  {
+                    "id": "281:10",
+                    "name": "Apple Inc",
+                    "type": "RECTANGLE",
+                    "visible": true,
+                    "layout": {
+                      "width": 30,
+                      "height": 30,
+                      "x": 902,
+                      "y": 1940,
+                      "constraints": {
+                        "vertical": "TOP",
+                        "horizontal": "LEFT"
+                      }
+                    },
+                    "effects": [],
+                    "fills": [
+                      {
+                        "type": "IMAGE",
+                        "color": null
+                      }
+                    ],
+                    "strokes": [],
+                    "strokeWeight": 1,
+                    "strokeAlign": "INSIDE",
+                    "children": []
+                  },
+                  {
+                    "id": "281:11",
+                    "name": "Download on the",
+                    "type": "TEXT",
+                    "visible": true,
+                    "layout": {
+                      "width": 74,
+                      "height": 12,
+                      "x": 942,
+                      "y": 1940,
+                      "constraints": {
+                        "vertical": "TOP",
+                        "horizontal": "LEFT"
+                      }
+                    },
+                    "effects": [],
+                    "fills": [
+                      {
+                        "type": "SOLID",
+                        "color": "#ffffff"
+                      }
+                    ],
+                    "strokes": [],
+                    "strokeWeight": 1,
+                    "strokeAlign": "OUTSIDE",
+                    "children": [],
+                    "text": {
+                      "characters": "Download on the",
+                      "style": {
+                        "fontFamily": "Clash Grotesk Variable",
+                        "fontWeight": 500,
+                        "fontSize": 10,
+                        "lineHeight": 12.300000190734863,
+                        "letterSpacing": 0,
+                        "textAlign": "CENTER",
+                        "textColor": "#ffffff"
+                      }
+                    }
+                  },
+                  {
+                    "id": "281:12",
+                    "name": "App Store",
+                    "type": "TEXT",
+                    "visible": true,
+                    "layout": {
+                      "width": 73,
+                      "height": 20,
+                      "x": 942,
+                      "y": 1952,
+                      "constraints": {
+                        "vertical": "TOP",
+                        "horizontal": "LEFT"
+                      }
+                    },
+                    "effects": [],
+                    "fills": [
+                      {
+                        "type": "SOLID",
+                        "color": "#ffffff"
+                      }
+                    ],
+                    "strokes": [],
+                    "strokeWeight": 1,
+                    "strokeAlign": "OUTSIDE",
+                    "children": [],
+                    "text": {
+                      "characters": "App Store",
+                      "style": {
+                        "fontFamily": "Clash Grotesk Variable",
+                        "fontWeight": 500,
+                        "fontSize": 16,
+                        "lineHeight": 19.68000030517578,
+                        "letterSpacing": 0,
+                        "textAlign": "CENTER",
+                        "textColor": "#ffffff"
+                      }
+                    }
+                  },
+                  {
+                    "id": "281:13",
+                    "name": "Apple Inc",
+                    "type": "RECTANGLE",
+                    "visible": true,
+                    "layout": {
+                      "width": 30,
+                      "height": 30,
+                      "x": 902,
+                      "y": 1940,
+                      "constraints": {
+                        "vertical": "TOP",
+                        "horizontal": "LEFT"
+                      }
+                    },
+                    "effects": [],
+                    "fills": [
+                      {
+                        "type": "IMAGE",
+                        "color": null
+                      }
+                    ],
+                    "strokes": [],
+                    "strokeWeight": 1,
+                    "strokeAlign": "INSIDE",
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "281:14",
+            "name": "Google play",
+            "type": "GROUP",
+            "visible": true,
+            "layout": {
+              "width": 170,
+              "height": 50,
+              "x": 1064,
+              "y": 1931,
+              "constraints": {
+                "vertical": "TOP",
+                "horizontal": "LEFT"
+              },
+              "rectangleCornerRadii": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            "effects": [],
+            "fills": [],
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeAlign": "INSIDE",
+            "children": [
+              {
+                "id": "281:15",
+                "name": "Rectangle 50",
+                "type": "RECTANGLE",
+                "visible": true,
+                "layout": {
+                  "width": 170,
+                  "height": 50,
+                  "x": 1064,
+                  "y": 1931,
+                  "constraints": {
+                    "vertical": "TOP",
+                    "horizontal": "LEFT"
+                  },
+                  "cornerRadius": 20
+                },
+                "effects": [],
+                "fills": [],
+                "strokes": [
+                  {
+                    "type": "SOLID",
+                    "color": "#f3f5f9"
+                  }
+                ],
+                "strokeWeight": 2,
+                "strokeAlign": "INSIDE",
+                "children": []
+              },
+              {
+                "id": "281:16",
+                "name": "Group",
+                "type": "GROUP",
+                "visible": true,
+                "layout": {
+                  "width": 123,
+                  "height": 32,
+                  "x": 1088,
+                  "y": 1940,
+                  "constraints": {
+                    "vertical": "CENTER",
+                    "horizontal": "CENTER"
+                  }
+                },
+                "effects": [],
+                "fills": [],
+                "strokes": [],
+                "strokeWeight": 1,
+                "strokeAlign": "INSIDE",
+                "children": [
+                  {
+                    "id": "281:17",
+                    "name": "GET IT ON",
+                    "type": "TEXT",
+                    "visible": true,
+                    "layout": {
+                      "width": 44,
+                      "height": 12,
+                      "x": 1128,
+                      "y": 1940,
+                      "constraints": {
+                        "vertical": "TOP",
+                        "horizontal": "LEFT"
+                      }
+                    },
+                    "effects": [],
+                    "fills": [
+                      {
+                        "type": "SOLID",
+                        "color": "#f3f5f9"
+                      }
+                    ],
+                    "strokes": [],
+                    "strokeWeight": 1,
+                    "strokeAlign": "OUTSIDE",
+                    "children": [],
+                    "text": {
+                      "characters": "GET IT ON",
+                      "style": {
+                        "fontFamily": "Clash Grotesk Variable",
+                        "fontWeight": 500,
+                        "fontSize": 10,
+                        "lineHeight": 12.300000190734863,
+                        "letterSpacing": 0,
+                        "textAlign": "LEFT",
+                        "textColor": "#f3f5f9"
+                      }
+                    }
+                  },
+                  {
+                    "id": "281:18",
+                    "name": "Google Play",
+                    "type": "TEXT",
+                    "visible": true,
+                    "layout": {
+                      "width": 83,
+                      "height": 20,
+                      "x": 1128,
+                      "y": 1952,
+                      "constraints": {
+                        "vertical": "TOP",
+                        "horizontal": "LEFT"
+                      }
+                    },
+                    "effects": [],
+                    "fills": [
+                      {
+                        "type": "SOLID",
+                        "color": "#f3f5f9"
+                      }
+                    ],
+                    "strokes": [],
+                    "strokeWeight": 1,
+                    "strokeAlign": "OUTSIDE",
+                    "children": [],
+                    "text": {
+                      "characters": "Google Play",
+                      "style": {
+                        "fontFamily": "Clash Grotesk Variable",
+                        "fontWeight": 500,
+                        "fontSize": 16,
+                        "lineHeight": 19.68000030517578,
+                        "letterSpacing": 0,
+                        "textAlign": "LEFT",
+                        "textColor": "#f3f5f9"
+                      }
+                    }
+                  },
+                  {
+                    "id": "281:19",
+                    "name": "Google Play",
+                    "type": "RECTANGLE",
+                    "visible": true,
+                    "layout": {
+                      "width": 30,
+                      "height": 30,
+                      "x": 1088,
+                      "y": 1940,
+                      "constraints": {
+                        "vertical": "TOP",
+                        "horizontal": "LEFT"
+                      }
+                    },
+                    "effects": [],
+                    "fills": [
+                      {
+                        "type": "IMAGE",
+                        "color": null
+                      }
+                    ],
+                    "strokes": [],
+                    "strokeWeight": 1,
+                    "strokeAlign": "INSIDE",
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "281:20",
+            "name": "Privacy",
+            "type": "TEXT",
+            "visible": true,
+            "layout": {
+              "width": 47,
+              "height": 19,
+              "x": 874,
+              "y": 2087,
+              "constraints": {
+                "vertical": "TOP",
+                "horizontal": "LEFT"
+              }
+            },
+            "effects": [],
+            "fills": [
+              {
+                "type": "SOLID",
+                "color": "#ffffff"
+              }
+            ],
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeAlign": "OUTSIDE",
+            "children": [],
+            "text": {
+              "characters": "Privacy",
+              "style": {
+                "fontFamily": "Clash Grotesk Variable",
+                "fontWeight": 500,
+                "fontSize": 14,
+                "lineHeight": 17.220001220703125,
+                "letterSpacing": 0,
+                "textAlign": "CENTER",
+                "textColor": "#ffffff"
+              }
+            }
+          },
+          {
+            "id": "281:21",
+            "name": "Terms",
+            "type": "TEXT",
+            "visible": true,
+            "layout": {
+              "width": 47,
+              "height": 19,
+              "x": 961,
+              "y": 2087,
+              "constraints": {
+                "vertical": "TOP",
+                "horizontal": "LEFT"
+              }
+            },
+            "effects": [],
+            "fills": [
+              {
+                "type": "SOLID",
+                "color": "#ffffff"
+              }
+            ],
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeAlign": "OUTSIDE",
+            "children": [],
+            "text": {
+              "characters": "Terms",
+              "style": {
+                "fontFamily": "Clash Grotesk Variable",
+                "fontWeight": 500,
+                "fontSize": 14,
+                "lineHeight": 17.220001220703125,
+                "letterSpacing": 0,
+                "textAlign": "CENTER",
+                "textColor": "#ffffff"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "281:22",
+        "name": "Second sec",
+        "type": "FRAME",
+        "visible": true,
+        "layout": {
+          "width": 1440,
+          "height": 600,
+          "x": 0,
+          "y": 870,
+          "constraints": {
+            "vertical": "TOP",
+            "horizontal": "LEFT"
+          }
+        },
+        "effects": [],
+        "fills": [],
+        "strokes": [],
+        "strokeWeight": 1,
+        "strokeAlign": "INSIDE",
+        "children": [
+          {
+            "id": "281:23",
+            "name": "Rectangle 51",
+            "type": "RECTANGLE",
+            "visible": true,
+            "layout": {
+              "width": 1440,
+              "height": 600,
+              "x": 0,
+              "y": 870,
+              "constraints": {
+                "vertical": "TOP",
+                "horizontal": "LEFT"
+              }
+            },
+            "effects": [],
+            "fills": [
+              {
+                "type": "SOLID",
+                "color": "#f3f5f9"
+              }
+            ],
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeAlign": "INSIDE",
+            "children": []
+          },
+          {
+            "id": "281:24",
+            "name": "Learn more",
+            "type": "FRAME",
+            "visible": true,
+            "layout": {
+              "width": 150,
+              "height": 50,
+              "x": 40,
+              "y": 1188,
+              "constraints": {
+                "vertical": "CENTER",
+                "horizontal": "LEFT"
+              },
+              "layoutMode": "HORIZONTAL",
+              "primaryAxisSizingMode": "FIXED",
+              "counterAxisSizingMode": "FIXED",
+              "primaryAxisAlignItems": "CENTER",
+              "counterAxisAlignItems": "CENTER",
+              "paddingLeft": 10,
+              "paddingRight": 10,
+              "paddingTop": 10,
+              "paddingBottom": 10,
+              "itemSpacing": 10,
+              "cornerRadius": 30
+            },
+            "effects": [
+              {
+                "type": "DROP_SHADOW",
+                "visible": true,
+                "radius": 5,
+                "color": "rgba(0, 0, 0, 0.25)",
+                "offset": {
+                  "x": 0,
+                  "y": 0
+                },
+                "blendMode": "NORMAL"
+              }
+            ],
+            "fills": [
+              {
+                "type": "SOLID",
+                "color": "#0077be"
+              }
+            ],
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeAlign": "INSIDE",
+            "children": [
+              {
+                "id": "281:25",
+                "name": "Learn more",
+                "type": "TEXT",
+                "visible": true,
+                "layout": {
+                  "width": 105,
+                  "height": 25,
+                  "x": 62.5,
+                  "y": 1200.5,
+                  "constraints": {
+                    "vertical": "TOP",
+                    "horizontal": "LEFT"
+                  }
+                },
+                "effects": [],
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": "#ffffff"
+                  }
+                ],
+                "strokes": [],
+                "strokeWeight": 1,
+                "strokeAlign": "OUTSIDE",
+                "children": [],
+                "text": {
+                  "characters": "Learn more",
+                  "style": {
+                    "fontFamily": "Clash Grotesk Variable",
+                    "fontWeight": 500,
+                    "fontSize": 20,
+                    "lineHeight": 24.600000381469727,
+                    "letterSpacing": 0,
+                    "textAlign": "CENTER",
+                    "textColor": "#ffffff"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "id": "281:26",
+            "name": "Take control of your daily essentials with a convenient platform that lets you browse, order, track, manage, and receive all your sari-sari needs in one app, effortlessly.",
+            "type": "TEXT",
+            "visible": true,
+            "layout": {
+              "width": 594,
+              "height": 75,
+              "x": 40,
+              "y": 1078,
+              "constraints": {
+                "vertical": "TOP",
+                "horizontal": "LEFT"
+              }
+            },
+            "effects": [],
+            "fills": [
+              {
+                "type": "SOLID",
+                "color": "#1e1e1e"
+              }
+            ],
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeAlign": "OUTSIDE",
+            "children": [],
+            "text": {
+              "characters": "Take control of your daily essentials with a convenient platform that\n lets you browse, order, track, manage, and receive all \nyour sari-sari needs in one app, effortlessly.",
+              "style": {
+                "fontFamily": "Clash Grotesk Variable",
+                "fontWeight": 500,
+                "fontSize": 20,
+                "lineHeight": 24.600000381469727,
+                "letterSpacing": 0,
+                "textAlign": "LEFT",
+                "textColor": "#1e1e1e"
+              }
+            }
+          },
+          {
+            "id": "281:27",
+            "name": "Shopping & delivery made simple.",
+            "type": "TEXT",
+            "visible": true,
+            "layout": {
+              "width": 423,
+              "height": 118,
+              "x": 40,
+              "y": 950,
+              "constraints": {
+                "vertical": "TOP",
+                "horizontal": "LEFT"
+              }
+            },
+            "effects": [],
+            "fills": [
+              {
+                "type": "SOLID",
+                "color": "#1e1e1e"
+              }
+            ],
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeAlign": "OUTSIDE",
+            "children": [],
+            "text": {
+              "characters": "Shopping & delivery\n made simple.",
+              "style": {
+                "fontFamily": "Clash Grotesk Variable",
+                "fontWeight": 500,
+                "fontSize": 48,
+                "lineHeight": 59.040000915527344,
+                "letterSpacing": 0,
+                "textAlign": "LEFT",
+                "textColor": "#1e1e1e"
+              }
+            }
+          },
+          {
+            "id": "281:28",
+            "name": "image 1",
+            "type": "RECTANGLE",
+            "visible": true,
+            "layout": {
+              "width": 955,
+              "height": 716,
+              "x": 598,
+              "y": 813,
+              "constraints": {
+                "vertical": "TOP",
+                "horizontal": "LEFT"
+              }
+            },
+            "effects": [],
+            "fills": [
+              {
+                "type": "IMAGE",
+                "color": null
+              }
+            ],
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeAlign": "INSIDE",
+            "children": []
+          }
+        ]
+      },
+      {
+        "id": "281:29",
+        "name": "nav bar",
+        "type": "FRAME",
+        "visible": true,
+        "layout": {
+          "width": 1440,
+          "height": 100,
+          "x": 0,
+          "y": 0,
+          "constraints": {
+            "vertical": "TOP",
+            "horizontal": "LEFT"
+          }
+        },
+        "effects": [],
+        "fills": [],
+        "strokes": [],
+        "strokeWeight": 1,
+        "strokeAlign": "INSIDE",
+        "children": [
+          {
+            "id": "281:30",
+            "name": "2-removebg-preview 3",
+            "type": "RECTANGLE",
+            "visible": true,
+            "layout": {
+              "width": 500,
+              "height": 500,
+              "x": -91,
+              "y": -165,
+              "constraints": {
+                "vertical": "TOP",
+                "horizontal": "LEFT"
+              }
+            },
+            "effects": [],
+            "fills": [
+              {
+                "type": "IMAGE",
+                "color": null
+              }
+            ],
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeAlign": "INSIDE",
+            "children": []
+          },
+          {
+            "id": "281:31",
+            "name": "Singup",
+            "type": "FRAME",
+            "visible": true,
+            "layout": {
+              "width": 150,
+              "height": 50,
+              "x": 1250,
+              "y": 27,
+              "constraints": {
+                "vertical": "CENTER",
+                "horizontal": "LEFT"
+              },
+              "layoutMode": "HORIZONTAL",
+              "primaryAxisSizingMode": "FIXED",
+              "counterAxisSizingMode": "FIXED",
+              "primaryAxisAlignItems": "CENTER",
+              "counterAxisAlignItems": "CENTER",
+              "paddingLeft": 10,
+              "paddingRight": 10,
+              "paddingTop": 10,
+              "paddingBottom": 10,
+              "itemSpacing": 10,
+              "cornerRadius": 30
+            },
+            "effects": [
+              {
+                "type": "DROP_SHADOW",
+                "visible": true,
+                "radius": 5,
+                "color": "rgba(0, 0, 0, 0.25)",
+                "offset": {
+                  "x": 0,
+                  "y": 0
+                },
+                "blendMode": "NORMAL"
+              }
+            ],
+            "fills": [
+              {
+                "type": "SOLID",
+                "color": "#0077be"
+              }
+            ],
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeAlign": "INSIDE",
+            "children": [
+              {
+                "id": "281:32",
+                "name": "Sign up",
+                "type": "TEXT",
+                "visible": true,
+                "layout": {
+                  "width": 66,
+                  "height": 25,
+                  "x": 1292,
+                  "y": 39.5,
+                  "constraints": {
+                    "vertical": "TOP",
+                    "horizontal": "LEFT"
+                  }
+                },
+                "effects": [],
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": "#ffffff"
+                  }
+                ],
+                "strokes": [],
+                "strokeWeight": 1,
+                "strokeAlign": "OUTSIDE",
+                "children": [],
+                "text": {
+                  "characters": "Sign up",
+                  "style": {
+                    "fontFamily": "Clash Grotesk Variable",
+                    "fontWeight": 500,
+                    "fontSize": 20,
+                    "lineHeight": 24.600000381469727,
+                    "letterSpacing": 0,
+                    "textAlign": "CENTER",
+                    "textColor": "#ffffff"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "id": "281:33",
+            "name": "Log in",
+            "type": "FRAME",
+            "visible": true,
+            "layout": {
+              "width": 150,
+              "height": 50,
+              "x": 1090,
+              "y": 27,
+              "constraints": {
+                "vertical": "CENTER",
+                "horizontal": "LEFT"
+              },
+              "layoutMode": "HORIZONTAL",
+              "primaryAxisSizingMode": "FIXED",
+              "counterAxisSizingMode": "FIXED",
+              "primaryAxisAlignItems": "CENTER",
+              "counterAxisAlignItems": "CENTER",
+              "paddingLeft": 10,
+              "paddingRight": 10,
+              "paddingTop": 10,
+              "paddingBottom": 10,
+              "itemSpacing": 10,
+              "cornerRadius": 30
+            },
+            "effects": [],
+            "fills": [],
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeAlign": "INSIDE",
+            "children": [
+              {
+                "id": "281:34",
+                "name": "Log in",
+                "type": "TEXT",
+                "visible": true,
+                "layout": {
+                  "width": 52,
+                  "height": 25,
+                  "x": 1139,
+                  "y": 39.5,
+                  "constraints": {
+                    "vertical": "TOP",
+                    "horizontal": "LEFT"
+                  }
+                },
+                "effects": [],
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": "#1e1e1e"
+                  }
+                ],
+                "strokes": [],
+                "strokeWeight": 1,
+                "strokeAlign": "OUTSIDE",
+                "children": [],
+                "text": {
+                  "characters": "Log in",
+                  "style": {
+                    "fontFamily": "Clash Grotesk Variable",
+                    "fontWeight": 500,
+                    "fontSize": 20,
+                    "lineHeight": 24.600000381469727,
+                    "letterSpacing": 0,
+                    "textAlign": "CENTER",
+                    "textColor": "#1e1e1e"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "281:35",
+        "name": "Label",
+        "type": "GROUP",
+        "visible": true,
+        "layout": {
+          "width": 1298,
+          "height": 649,
+          "x": 25,
+          "y": 85,
+          "constraints": {
+            "vertical": "TOP",
+            "horizontal": "LEFT"
+          }
+        },
+        "effects": [],
+        "fills": [],
+        "strokes": [],
+        "strokeWeight": 1,
+        "strokeAlign": "INSIDE",
+        "children": [
+          {
+            "id": "281:36",
+            "name": "ef13b18d-e7d7-46b1-bc1e-d503cdb1716e-removebg-preview",
+            "type": "RECTANGLE",
+            "visible": true,
+            "layout": {
+              "width": 531,
+              "height": 469,
+              "x": 25,
+              "y": 265,
+              "constraints": {
+                "vertical": "TOP",
+                "horizontal": "LEFT"
+              }
+            },
+            "effects": [],
+            "fills": [
+              {
+                "type": "IMAGE",
+                "color": null
+              }
+            ],
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeAlign": "INSIDE",
+            "children": []
+          },
+          {
+            "id": "281:37",
+            "name": "pink-empty-shopping-basket-online-shopping-concept-pink-background-3d-rendering-removebg-preview",
+            "type": "RECTANGLE",
+            "visible": true,
+            "layout": {
+              "width": 590,
+              "height": 423,
+              "x": 733,
+              "y": 85,
+              "constraints": {
+                "vertical": "TOP",
+                "horizontal": "LEFT"
+              }
+            },
+            "effects": [],
+            "fills": [
+              {
+                "type": "IMAGE",
+                "color": null
+              }
+            ],
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeAlign": "INSIDE",
+            "children": []
+          },
+          {
+            "id": "281:38",
+            "name": "Bili kahit saan, kuha kahit kailan!",
+            "type": "TEXT",
+            "visible": true,
+            "layout": {
+              "width": 760,
+              "height": 236,
+              "x": 340,
+              "y": 302,
+              "constraints": {
+                "vertical": "CENTER",
+                "horizontal": "CENTER"
+              }
+            },
+            "effects": [],
+            "fills": [
+              {
+                "type": "SOLID",
+                "color": "#000000"
+              }
+            ],
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeAlign": "OUTSIDE",
+            "children": [],
+            "text": {
+              "characters": "Bili kahit saan, \nkuha kahit kailan!",
+              "style": {
+                "fontFamily": "Clash Grotesk Variable",
+                "fontWeight": 600,
+                "fontSize": 96,
+                "lineHeight": 118.08000183105469,
+                "letterSpacing": 0,
+                "textAlign": "CENTER",
+                "textColor": "#000000"
+              }
+            }
+          },
+          {
+            "id": "281:39",
+            "name": "Delve into your neighborhood's shopping needs with comprehensive insights in one app",
+            "type": "TEXT",
+            "visible": true,
+            "layout": {
+              "width": 422,
+              "height": 50,
+              "x": 509,
+              "y": 640,
+              "constraints": {
+                "vertical": "TOP",
+                "horizontal": "CENTER"
+              }
+            },
+            "effects": [],
+            "fills": [
+              {
+                "type": "SOLID",
+                "color": "#1e1e1e"
+              }
+            ],
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeAlign": "OUTSIDE",
+            "children": [],
+            "text": {
+              "characters": "Delve into your neighborhood's shopping needs \nwith comprehensive insights in one app",
+              "style": {
+                "fontFamily": "Clash Grotesk Variable",
+                "fontWeight": 500,
+                "fontSize": 20,
+                "lineHeight": 24.600000381469727,
+                "letterSpacing": 0,
+                "textAlign": "CENTER",
+                "textColor": "#1e1e1e"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "281:40",
+        "name": "Apple",
+        "type": "GROUP",
+        "visible": true,
+        "layout": {
+          "width": 170,
+          "height": 50,
+          "x": 540,
+          "y": 720,
+          "constraints": {
+            "vertical": "TOP",
+            "horizontal": "LEFT"
+          },
+          "rectangleCornerRadii": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "effects": [],
+        "fills": [],
+        "strokes": [],
+        "strokeWeight": 1,
+        "strokeAlign": "INSIDE",
+        "children": [
+          {
+            "id": "281:41",
+            "name": "Rectangle 50",
+            "type": "RECTANGLE",
+            "visible": true,
+            "layout": {
+              "width": 170,
+              "height": 50,
+              "x": 540,
+              "y": 720,
+              "constraints": {
+                "vertical": "TOP",
+                "horizontal": "LEFT"
+              },
+              "cornerRadius": 20
+            },
+            "effects": [],
+            "fills": [],
+            "strokes": [
+              {
+                "type": "SOLID",
+                "color": "#1e1e1e"
+              }
+            ],
+            "strokeWeight": 2,
+            "strokeAlign": "INSIDE",
+            "children": []
+          },
+          {
+            "id": "281:42",
+            "name": "Group",
+            "type": "GROUP",
+            "visible": true,
+            "layout": {
+              "width": 114,
+              "height": 32,
+              "x": 568,
+              "y": 729,
+              "constraints": {
+                "vertical": "CENTER",
+                "horizontal": "CENTER"
+              }
+            },
+            "effects": [],
+            "fills": [],
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeAlign": "INSIDE",
+            "children": [
+              {
+                "id": "281:43",
+                "name": "Apple Inc",
+                "type": "RECTANGLE",
+                "visible": true,
+                "layout": {
+                  "width": 30,
+                  "height": 30,
+                  "x": 568,
+                  "y": 729,
+                  "constraints": {
+                    "vertical": "TOP",
+                    "horizontal": "LEFT"
+                  }
+                },
+                "effects": [],
+                "fills": [
+                  {
+                    "type": "IMAGE",
+                    "color": null
+                  }
+                ],
+                "strokes": [],
+                "strokeWeight": 1,
+                "strokeAlign": "INSIDE",
+                "children": []
+              },
+              {
+                "id": "281:44",
+                "name": "Download on the",
+                "type": "TEXT",
+                "visible": true,
+                "layout": {
+                  "width": 74,
+                  "height": 12,
+                  "x": 608,
+                  "y": 729,
+                  "constraints": {
+                    "vertical": "TOP",
+                    "horizontal": "LEFT"
+                  }
+                },
+                "effects": [],
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": "#000000"
+                  }
+                ],
+                "strokes": [],
+                "strokeWeight": 1,
+                "strokeAlign": "OUTSIDE",
+                "children": [],
+                "text": {
+                  "characters": "Download on the",
+                  "style": {
+                    "fontFamily": "Clash Grotesk Variable",
+                    "fontWeight": 500,
+                    "fontSize": 10,
+                    "lineHeight": 12.300000190734863,
+                    "letterSpacing": 0,
+                    "textAlign": "CENTER",
+                    "textColor": "#000000"
+                  }
+                }
+              },
+              {
+                "id": "281:45",
+                "name": "App Store",
+                "type": "TEXT",
+                "visible": true,
+                "layout": {
+                  "width": 73,
+                  "height": 20,
+                  "x": 608,
+                  "y": 741,
+                  "constraints": {
+                    "vertical": "TOP",
+                    "horizontal": "LEFT"
+                  }
+                },
+                "effects": [],
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": "#000000"
+                  }
+                ],
+                "strokes": [],
+                "strokeWeight": 1,
+                "strokeAlign": "OUTSIDE",
+                "children": [],
+                "text": {
+                  "characters": "App Store",
+                  "style": {
+                    "fontFamily": "Clash Grotesk Variable",
+                    "fontWeight": 500,
+                    "fontSize": 16,
+                    "lineHeight": 19.68000030517578,
+                    "letterSpacing": 0,
+                    "textAlign": "CENTER",
+                    "textColor": "#000000"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "281:46",
+        "name": "Google play",
+        "type": "GROUP",
+        "visible": true,
+        "layout": {
+          "width": 170,
+          "height": 50,
+          "x": 730,
+          "y": 720,
+          "constraints": {
+            "vertical": "TOP",
+            "horizontal": "LEFT"
+          },
+          "rectangleCornerRadii": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "effects": [],
+        "fills": [],
+        "strokes": [],
+        "strokeWeight": 1,
+        "strokeAlign": "INSIDE",
+        "children": [
+          {
+            "id": "281:47",
+            "name": "Rectangle 50",
+            "type": "RECTANGLE",
+            "visible": true,
+            "layout": {
+              "width": 170,
+              "height": 50,
+              "x": 730,
+              "y": 720,
+              "constraints": {
+                "vertical": "TOP",
+                "horizontal": "LEFT"
+              },
+              "cornerRadius": 20
+            },
+            "effects": [],
+            "fills": [],
+            "strokes": [
+              {
+                "type": "SOLID",
+                "color": "#1e1e1e"
+              }
+            ],
+            "strokeWeight": 2,
+            "strokeAlign": "INSIDE",
+            "children": []
+          },
+          {
+            "id": "281:48",
+            "name": "Group",
+            "type": "GROUP",
+            "visible": true,
+            "layout": {
+              "width": 123,
+              "height": 32,
+              "x": 754,
+              "y": 729,
+              "constraints": {
+                "vertical": "CENTER",
+                "horizontal": "CENTER"
+              }
+            },
+            "effects": [],
+            "fills": [],
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeAlign": "INSIDE",
+            "children": [
+              {
+                "id": "281:49",
+                "name": "GET IT ON",
+                "type": "TEXT",
+                "visible": true,
+                "layout": {
+                  "width": 44,
+                  "height": 12,
+                  "x": 794,
+                  "y": 729,
+                  "constraints": {
+                    "vertical": "TOP",
+                    "horizontal": "LEFT"
+                  }
+                },
+                "effects": [],
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": "#000000"
+                  }
+                ],
+                "strokes": [],
+                "strokeWeight": 1,
+                "strokeAlign": "OUTSIDE",
+                "children": [],
+                "text": {
+                  "characters": "GET IT ON",
+                  "style": {
+                    "fontFamily": "Clash Grotesk Variable",
+                    "fontWeight": 500,
+                    "fontSize": 10,
+                    "lineHeight": 12.300000190734863,
+                    "letterSpacing": 0,
+                    "textAlign": "LEFT",
+                    "textColor": "#000000"
+                  }
+                }
+              },
+              {
+                "id": "281:50",
+                "name": "Google Play",
+                "type": "TEXT",
+                "visible": true,
+                "layout": {
+                  "width": 83,
+                  "height": 20,
+                  "x": 794,
+                  "y": 741,
+                  "constraints": {
+                    "vertical": "TOP",
+                    "horizontal": "LEFT"
+                  }
+                },
+                "effects": [],
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": "#000000"
+                  }
+                ],
+                "strokes": [],
+                "strokeWeight": 1,
+                "strokeAlign": "OUTSIDE",
+                "children": [],
+                "text": {
+                  "characters": "Google Play",
+                  "style": {
+                    "fontFamily": "Clash Grotesk Variable",
+                    "fontWeight": 500,
+                    "fontSize": 16,
+                    "lineHeight": 19.68000030517578,
+                    "letterSpacing": 0,
+                    "textAlign": "LEFT",
+                    "textColor": "#000000"
+                  }
+                }
+              },
+              {
+                "id": "281:51",
+                "name": "Google Play",
+                "type": "RECTANGLE",
+                "visible": true,
+                "layout": {
+                  "width": 30,
+                  "height": 30,
+                  "x": 754,
+                  "y": 729,
+                  "constraints": {
+                    "vertical": "TOP",
+                    "horizontal": "LEFT"
+                  }
+                },
+                "effects": [],
+                "fills": [
+                  {
+                    "type": "IMAGE",
+                    "color": null
+                  }
+                ],
+                "strokes": [],
+                "strokeWeight": 1,
+                "strokeAlign": "INSIDE",
+                "children": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "281:52",
+        "name": "Rectangle 52",
+        "type": "RECTANGLE",
+        "visible": true,
+        "layout": {
+          "width": 1457,
+          "height": 380,
+          "x": -9,
+          "y": 2251,
+          "constraints": {
+            "vertical": "TOP",
+            "horizontal": "LEFT"
+          },
+          "cornerRadius": 20
+        },
+        "effects": [
+          {
+            "type": "DROP_SHADOW",
+            "visible": true,
+            "radius": 5,
+            "color": "rgba(0, 0, 0, 0.25)",
+            "offset": {
+              "x": 0,
+              "y": 0
+            },
+            "spread": 2,
+            "blendMode": "NORMAL"
+          }
+        ],
+        "fills": [
+          {
+            "type": "SOLID",
+            "color": "#ffffff"
+          }
+        ],
+        "strokes": [],
+        "strokeWeight": 2,
+        "strokeAlign": "INSIDE",
+        "children": []
+      },
+      {
+        "id": "281:53",
+        "name": "2-removebg-preview 2",
+        "type": "RECTANGLE",
+        "visible": true,
+        "layout": {
+          "width": 500,
+          "height": 500,
+          "x": -79,
+          "y": 2131,
+          "constraints": {
+            "vertical": "TOP",
+            "horizontal": "LEFT"
+          }
+        },
+        "effects": [],
+        "fills": [
+          {
+            "type": "IMAGE",
+            "color": null
+          }
+        ],
+        "strokes": [],
+        "strokeWeight": 1,
+        "strokeAlign": "INSIDE",
+        "children": []
+      },
+      {
+        "id": "281:54",
+        "name": "TindaGo. All Rights Reserved 2025.",
+        "type": "TEXT",
+        "visible": true,
+        "layout": {
+          "width": 218,
+          "height": 17,
+          "x": 40,
+          "y": 2584,
+          "constraints": {
+            "vertical": "TOP",
+            "horizontal": "LEFT"
+          }
+        },
+        "effects": [],
+        "fills": [
+          {
+            "type": "SOLID",
+            "color": "#1e1e1e"
+          }
+        ],
+        "strokes": [],
+        "strokeWeight": 1,
+        "strokeAlign": "OUTSIDE",
+        "children": [],
+        "text": {
+          "characters": "TindaGo. All Rights Reserved 2025.",
+          "style": {
+            "fontFamily": "Clash Grotesk Variable",
+            "fontWeight": 500,
+            "fontSize": 14,
+            "lineHeight": 17.220001220703125,
+            "letterSpacing": 0,
+            "textAlign": "CENTER",
+            "textColor": "#1e1e1e"
+          }
+        }
+      },
+      {
+        "id": "281:55",
+        "name": "Terms of services",
+        "type": "TEXT",
+        "visible": true,
+        "layout": {
+          "width": 112,
+          "height": 17,
+          "x": 860,
+          "y": 2584,
+          "constraints": {
+            "vertical": "TOP",
+            "horizontal": "LEFT"
+          }
+        },
+        "effects": [],
+        "fills": [
+          {
+            "type": "SOLID",
+            "color": "#1e1e1e"
+          }
+        ],
+        "strokes": [],
+        "strokeWeight": 1,
+        "strokeAlign": "OUTSIDE",
+        "children": [],
+        "text": {
+          "characters": "Terms of services",
+          "style": {
+            "fontFamily": "Clash Grotesk Variable",
+            "fontWeight": 500,
+            "fontSize": 14,
+            "lineHeight": 17.220001220703125,
+            "letterSpacing": 0,
+            "textAlign": "LEFT",
+            "textColor": "#1e1e1e"
+          }
+        }
+      },
+      {
+        "id": "281:56",
+        "name": "Learn more",
+        "type": "TEXT",
+        "visible": true,
+        "layout": {
+          "width": 74,
+          "height": 17,
+          "x": 857,
+          "y": 2371,
+          "constraints": {
+            "vertical": "TOP",
+            "horizontal": "LEFT"
+          }
+        },
+        "effects": [],
+        "fills": [
+          {
+            "type": "SOLID",
+            "color": "#1e1e1e"
+          }
+        ],
+        "strokes": [],
+        "strokeWeight": 1,
+        "strokeAlign": "OUTSIDE",
+        "children": [],
+        "text": {
+          "characters": "Learn more",
+          "style": {
+            "fontFamily": "Clash Grotesk Variable",
+            "fontWeight": 500,
+            "fontSize": 14,
+            "lineHeight": 17.220001220703125,
+            "letterSpacing": 0,
+            "textAlign": "LEFT",
+            "textColor": "#1e1e1e"
+          }
+        }
+      },
+      {
+        "id": "281:57",
+        "name": "X",
+        "type": "TEXT",
+        "visible": true,
+        "layout": {
+          "width": 10,
+          "height": 17,
+          "x": 1024,
+          "y": 2371,
+          "constraints": {
+            "vertical": "TOP",
+            "horizontal": "LEFT"
+          }
+        },
+        "effects": [],
+        "fills": [
+          {
+            "type": "SOLID",
+            "color": "#1e1e1e"
+          }
+        ],
+        "strokes": [],
+        "strokeWeight": 1,
+        "strokeAlign": "OUTSIDE",
+        "children": [],
+        "text": {
+          "characters": "X",
+          "style": {
+            "fontFamily": "Clash Grotesk Variable",
+            "fontWeight": 500,
+            "fontSize": 14,
+            "lineHeight": 17.220001220703125,
+            "letterSpacing": 0,
+            "textAlign": "LEFT",
+            "textColor": "#1e1e1e"
+          }
+        }
+      },
+      {
+        "id": "281:58",
+        "name": "Contact us",
+        "type": "TEXT",
+        "visible": true,
+        "layout": {
+          "width": 68,
+          "height": 17,
+          "x": 1188,
+          "y": 2371,
+          "constraints": {
+            "vertical": "TOP",
+            "horizontal": "LEFT"
+          }
+        },
+        "effects": [],
+        "fills": [
+          {
+            "type": "SOLID",
+            "color": "#1e1e1e"
+          }
+        ],
+        "strokes": [],
+        "strokeWeight": 1,
+        "strokeAlign": "OUTSIDE",
+        "children": [],
+        "text": {
+          "characters": "Contact us",
+          "style": {
+            "fontFamily": "Clash Grotesk Variable",
+            "fontWeight": 500,
+            "fontSize": 14,
+            "lineHeight": 17.220001220703125,
+            "letterSpacing": 0,
+            "textAlign": "LEFT",
+            "textColor": "#1e1e1e"
+          }
+        }
+      },
+      {
+        "id": "281:59",
+        "name": "Facebook",
+        "type": "TEXT",
+        "visible": true,
+        "layout": {
+          "width": 61,
+          "height": 17,
+          "x": 1024,
+          "y": 2445,
+          "constraints": {
+            "vertical": "TOP",
+            "horizontal": "LEFT"
+          }
+        },
+        "effects": [],
+        "fills": [
+          {
+            "type": "SOLID",
+            "color": "#1e1e1e"
+          }
+        ],
+        "strokes": [],
+        "strokeWeight": 1,
+        "strokeAlign": "OUTSIDE",
+        "children": [],
+        "text": {
+          "characters": "Facebook",
+          "style": {
+            "fontFamily": "Clash Grotesk Variable",
+            "fontWeight": 500,
+            "fontSize": 14,
+            "lineHeight": 17.220001220703125,
+            "letterSpacing": 0,
+            "textAlign": "LEFT",
+            "textColor": "#1e1e1e"
+          }
+        }
+      },
+      {
+        "id": "281:60",
+        "name": "instagram",
+        "type": "TEXT",
+        "visible": true,
+        "layout": {
+          "width": 65,
+          "height": 17,
+          "x": 1024,
+          "y": 2408,
+          "constraints": {
+            "vertical": "TOP",
+            "horizontal": "LEFT"
+          }
+        },
+        "effects": [],
+        "fills": [
+          {
+            "type": "SOLID",
+            "color": "#1e1e1e"
+          }
+        ],
+        "strokes": [],
+        "strokeWeight": 1,
+        "strokeAlign": "OUTSIDE",
+        "children": [],
+        "text": {
+          "characters": "instagram",
+          "style": {
+            "fontFamily": "Clash Grotesk Variable",
+            "fontWeight": 500,
+            "fontSize": 14,
+            "lineHeight": 17.220001220703125,
+            "letterSpacing": 0,
+            "textAlign": "LEFT",
+            "textColor": "#1e1e1e"
+          }
+        }
+      },
+      {
+        "id": "281:61",
+        "name": "Navigation",
+        "type": "TEXT",
+        "visible": true,
+        "layout": {
+          "width": 94,
+          "height": 25,
+          "x": 860,
+          "y": 2316,
+          "constraints": {
+            "vertical": "TOP",
+            "horizontal": "LEFT"
+          }
+        },
+        "effects": [],
+        "fills": [
+          {
+            "type": "SOLID",
+            "color": "#1e1e1e"
+          }
+        ],
+        "strokes": [],
+        "strokeWeight": 1,
+        "strokeAlign": "OUTSIDE",
+        "children": [],
+        "text": {
+          "characters": "Navigation",
+          "style": {
+            "fontFamily": "Clash Grotesk Variable",
+            "fontWeight": 500,
+            "fontSize": 20,
+            "lineHeight": 24.600000381469727,
+            "letterSpacing": 0,
+            "textAlign": "LEFT",
+            "textColor": "#1e1e1e"
+          }
+        }
+      },
+      {
+        "id": "281:62",
+        "name": "Contacts",
+        "type": "TEXT",
+        "visible": true,
+        "layout": {
+          "width": 82,
+          "height": 25,
+          "x": 1188,
+          "y": 2316,
+          "constraints": {
+            "vertical": "TOP",
+            "horizontal": "LEFT"
+          }
+        },
+        "effects": [],
+        "fills": [
+          {
+            "type": "SOLID",
+            "color": "#1e1e1e"
+          }
+        ],
+        "strokes": [],
+        "strokeWeight": 1,
+        "strokeAlign": "OUTSIDE",
+        "children": [],
+        "text": {
+          "characters": "Contacts",
+          "style": {
+            "fontFamily": "Clash Grotesk Variable",
+            "fontWeight": 500,
+            "fontSize": 20,
+            "lineHeight": 24.600000381469727,
+            "letterSpacing": 0,
+            "textAlign": "LEFT",
+            "textColor": "#1e1e1e"
+          }
+        }
+      },
+      {
+        "id": "281:63",
+        "name": "Connect",
+        "type": "TEXT",
+        "visible": true,
+        "layout": {
+          "width": 76,
+          "height": 25,
+          "x": 1024,
+          "y": 2316,
+          "constraints": {
+            "vertical": "TOP",
+            "horizontal": "LEFT"
+          }
+        },
+        "effects": [],
+        "fills": [
+          {
+            "type": "SOLID",
+            "color": "#1e1e1e"
+          }
+        ],
+        "strokes": [],
+        "strokeWeight": 1,
+        "strokeAlign": "OUTSIDE",
+        "children": [],
+        "text": {
+          "characters": "Connect",
+          "style": {
+            "fontFamily": "Clash Grotesk Variable",
+            "fontWeight": 500,
+            "fontSize": 20,
+            "lineHeight": 24.600000381469727,
+            "letterSpacing": 0,
+            "textAlign": "LEFT",
+            "textColor": "#1e1e1e"
+          }
+        }
+      },
+      {
+        "id": "281:64",
+        "name": "Privacy Policy",
+        "type": "TEXT",
+        "visible": true,
+        "layout": {
+          "width": 86,
+          "height": 17,
+          "x": 1012,
+          "y": 2584,
+          "constraints": {
+            "vertical": "TOP",
+            "horizontal": "LEFT"
+          }
+        },
+        "effects": [],
+        "fills": [
+          {
+            "type": "SOLID",
+            "color": "#1e1e1e"
+          }
+        ],
+        "strokes": [],
+        "strokeWeight": 1,
+        "strokeAlign": "OUTSIDE",
+        "children": [],
+        "text": {
+          "characters": "Privacy Policy",
+          "style": {
+            "fontFamily": "Clash Grotesk Variable",
+            "fontWeight": 500,
+            "fontSize": 14,
+            "lineHeight": 17.220001220703125,
+            "letterSpacing": 0,
+            "textAlign": "LEFT",
+            "textColor": "#1e1e1e"
+          }
+        }
+      }
+    ]
+  },
+  "assets": {
+    "281:5": "281:5.png",
+    "281:10": "281:10.png",
+    "281:13": "281:13.png",
+    "281:19": "281:19.png",
+    "281:28": "281:28.png",
+    "281:30": "281:30.png",
+    "281:36": "281:36.png",
+    "281:37": "281:37.png",
+    "281:43": "281:43.png",
+    "281:51": "281:51.png",
+    "281:53": "281:53.png"
+  },
+  "implementation": {
+    "reactComponent": "import React from 'react';\n\nconst TindaGoShare = () => {\n  return (\n    <div className=\"w-[1440px] h-[2631px] bg-[#f3f5f9]\">\n      <div className=\"w-[1440px] h-[600px]\">\n        <div className=\"w-[1360px] h-[500px] rounded-[30px]\">\n        </div>\n        <div className=\"w-[945px] h-[613px]\">\n        </div>\n        <div className=\"w-[403px] h-[237px] bg-[#ffffff] text-[64px] font-[500] text-[#ffffff] text-left\">\n          Download our\napp and enjoy \nusing it\n        </div>\n        <div className=\"w-[170px] h-[50px]\">\n          <div className=\"w-[170px] h-[50px] rounded-[20px]\">\n          </div>\n          <div className=\"w-[114px] h-[32px]\">\n            <div className=\"w-[30px] h-[30px]\">\n            </div>\n            <div className=\"w-[74px] h-[12px] bg-[#ffffff] text-[10px] font-[500] text-[#ffffff] text-center\">\n              Download on the\n            </div>\n            <div className=\"w-[73px] h-[20px] bg-[#ffffff] text-[16px] font-[500] text-[#ffffff] text-center\">\n              App Store\n            </div>\n            <div className=\"w-[30px] h-[30px]\">\n            </div>\n          </div>\n        </div>\n        <div className=\"w-[170px] h-[50px]\">\n          <div className=\"w-[170px] h-[50px] rounded-[20px]\">\n          </div>\n          <div className=\"w-[123px] h-[32px]\">\n            <div className=\"w-[44px] h-[12px] bg-[#f3f5f9] text-[10px] font-[500] text-[#f3f5f9] text-left\">\n              GET IT ON\n            </div>\n            <div className=\"w-[83px] h-[20px] bg-[#f3f5f9] text-[16px] font-[500] text-[#f3f5f9] text-left\">\n              Google Play\n            </div>\n            <div className=\"w-[30px] h-[30px]\">\n            </div>\n          </div>\n        </div>\n        <div className=\"w-[47px] h-[19px] bg-[#ffffff] text-[14px] font-[500] text-[#ffffff] text-center\">\n          Privacy\n        </div>\n        <div className=\"w-[47px] h-[19px] bg-[#ffffff] text-[14px] font-[500] text-[#ffffff] text-center\">\n          Terms\n        </div>\n      </div>\n      <div className=\"w-[1440px] h-[600px]\">\n        <div className=\"w-[1440px] h-[600px] bg-[#f3f5f9]\">\n        </div>\n        <div className=\"w-[150px] h-[50px] bg-[#0077be] rounded-[30px]\">\n          <div className=\"w-[105px] h-[25px] bg-[#ffffff] text-[20px] font-[500] text-[#ffffff] text-center\">\n            Learn more\n          </div>\n        </div>\n        <div className=\"w-[594px] h-[75px] bg-[#1e1e1e] text-[20px] font-[500] text-[#1e1e1e] text-left\">\n          Take control of your daily essentials with a convenient platform that\n lets you browse, order, track, manage, and receive all \nyour sari-sari needs in one app, effortlessly.\n        </div>\n        <div className=\"w-[423px] h-[118px] bg-[#1e1e1e] text-[48px] font-[500] text-[#1e1e1e] text-left\">\n          Shopping & delivery\n made simple.\n        </div>\n        <div className=\"w-[955px] h-[716px]\">\n        </div>\n      </div>\n      <div className=\"w-[1440px] h-[100px]\">\n        <div className=\"w-[500px] h-[500px]\">\n        </div>\n        <div className=\"w-[150px] h-[50px] bg-[#0077be] rounded-[30px]\">\n          <div className=\"w-[66px] h-[25px] bg-[#ffffff] text-[20px] font-[500] text-[#ffffff] text-center\">\n            Sign up\n          </div>\n        </div>\n        <div className=\"w-[150px] h-[50px] rounded-[30px]\">\n          <div className=\"w-[52px] h-[25px] bg-[#1e1e1e] text-[20px] font-[500] text-[#1e1e1e] text-center\">\n            Log in\n          </div>\n        </div>\n      </div>\n      <div className=\"w-[1298px] h-[649px]\">\n        <div className=\"w-[531px] h-[469px]\">\n        </div>\n        <div className=\"w-[590px] h-[423px]\">\n        </div>\n        <div className=\"w-[760px] h-[236px] bg-[#000000] text-[96px] font-[600] text-[#000000] text-center\">\n          Bili kahit saan, \nkuha kahit kailan!\n        </div>\n        <div className=\"w-[422px] h-[50px] bg-[#1e1e1e] text-[20px] font-[500] text-[#1e1e1e] text-center\">\n          Delve into your neighborhood's shopping needs \nwith comprehensive insights in one app\n        </div>\n      </div>\n      <div className=\"w-[170px] h-[50px]\">\n        <div className=\"w-[170px] h-[50px] rounded-[20px]\">\n        </div>\n        <div className=\"w-[114px] h-[32px]\">\n          <div className=\"w-[30px] h-[30px]\">\n          </div>\n          <div className=\"w-[74px] h-[12px] bg-[#000000] text-[10px] font-[500] text-[#000000] text-center\">\n            Download on the\n          </div>\n          <div className=\"w-[73px] h-[20px] bg-[#000000] text-[16px] font-[500] text-[#000000] text-center\">\n            App Store\n          </div>\n        </div>\n      </div>\n      <div className=\"w-[170px] h-[50px]\">\n        <div className=\"w-[170px] h-[50px] rounded-[20px]\">\n        </div>\n        <div className=\"w-[123px] h-[32px]\">\n          <div className=\"w-[44px] h-[12px] bg-[#000000] text-[10px] font-[500] text-[#000000] text-left\">\n            GET IT ON\n          </div>\n          <div className=\"w-[83px] h-[20px] bg-[#000000] text-[16px] font-[500] text-[#000000] text-left\">\n            Google Play\n          </div>\n          <div className=\"w-[30px] h-[30px]\">\n          </div>\n        </div>\n      </div>\n      <div className=\"w-[1457px] h-[380px] bg-[#ffffff] rounded-[20px]\">\n      </div>\n      <div className=\"w-[500px] h-[500px]\">\n      </div>\n      <div className=\"w-[218px] h-[17px] bg-[#1e1e1e] text-[14px] font-[500] text-[#1e1e1e] text-center\">\n        TindaGo. All Rights Reserved 2025.\n      </div>\n      <div className=\"w-[112px] h-[17px] bg-[#1e1e1e] text-[14px] font-[500] text-[#1e1e1e] text-left\">\n        Terms of services\n      </div>\n      <div className=\"w-[74px] h-[17px] bg-[#1e1e1e] text-[14px] font-[500] text-[#1e1e1e] text-left\">\n        Learn more\n      </div>\n      <div className=\"w-[10px] h-[17px] bg-[#1e1e1e] text-[14px] font-[500] text-[#1e1e1e] text-left\">\n        X\n      </div>\n      <div className=\"w-[68px] h-[17px] bg-[#1e1e1e] text-[14px] font-[500] text-[#1e1e1e] text-left\">\n        Contact us\n      </div>\n      <div className=\"w-[61px] h-[17px] bg-[#1e1e1e] text-[14px] font-[500] text-[#1e1e1e] text-left\">\n        Facebook\n      </div>\n      <div className=\"w-[65px] h-[17px] bg-[#1e1e1e] text-[14px] font-[500] text-[#1e1e1e] text-left\">\n        instagram\n      </div>\n      <div className=\"w-[94px] h-[25px] bg-[#1e1e1e] text-[20px] font-[500] text-[#1e1e1e] text-left\">\n        Navigation\n      </div>\n      <div className=\"w-[82px] h-[25px] bg-[#1e1e1e] text-[20px] font-[500] text-[#1e1e1e] text-left\">\n        Contacts\n      </div>\n      <div className=\"w-[76px] h-[25px] bg-[#1e1e1e] text-[20px] font-[500] text-[#1e1e1e] text-left\">\n        Connect\n      </div>\n      <div className=\"w-[86px] h-[17px] bg-[#1e1e1e] text-[14px] font-[500] text-[#1e1e1e] text-left\">\n        Privacy Policy\n      </div>\n    </div>\n  );\n};\n\nexport default TindaGoShare;",
+    "tailwindClasses": "w-[1440px] h-[2631px] bg-[#f3f5f9]"
+  }
+}

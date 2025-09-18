@@ -4,24 +4,100 @@
       "WebFetch(domain:docs.anthropic.com)",
       "WebSearch",
       "mcp__Framelink_Figma_MCP__get_figma_data",
-      "Bash(mkdir:*)",
       "mcp__Framelink_Figma_MCP__download_figma_images",
+      "mcp__figma-developer-mcp__get_figma_data",
+      "mcp__figma-developer-mcp__download_figma_images",
+      "mcp__Figma_Context_MCP__get_figma_data",
+      "mcp__Figma_Context_MCP__download_figma_images",
+      "mcp__TindaGo_Admin_Figma__get_figma_data",
+      "mcp__TindaGo_Admin_Figma__download_figma_images",
+      "mcp__TindaGo_Design_Scripts__extract_design",
+      "mcp__TindaGo_Token_Sync__sync_tokens",
+      "WebFetch(domain:www.figma.com)",
+      "WebFetch(domain:api.figma.com)",
+      "Bash(mkdir:*)",
       "Bash(mv:*)",
+      "Bash(cp:*)",
       "Bash(npx tsc:*)",
       "Bash(npx eslint:*)",
       "Bash(rm:*)",
       "Bash(npx expo start:*)",
       "Bash(npm search:*)",
-      "mcp__figma-developer-mcp__get_figma_data",
       "Bash(cat:*)",
       "Bash(npm run dev:*)",
-      "mcp__figma-developer-mcp__download_figma_images"
+      "Bash(npm run build:*)",
+      "Bash(npm run lint:*)",
+      "Bash(npm install:*)",
+      "Bash(ls:*)",
+      "Bash(pwd:*)",
+      "Bash(node scripts/figma-sync.js:*)",
+      "Bash(node scripts/figma-design-extractor.js:*)",
+      "Bash(npm run figma:sync:*)",
+      "Bash(npm run figma:watch:*)",
+      "Bash(dotenv:*)",
+      "Bash(axios:*)",
+      "Bash(node:*)",
+      "Bash(curl:*)"
     ],
     "deny": [],
     "ask": []
   },
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
-    "Framelink Figma MCP"
-  ]
+    "Framelink Figma MCP",
+    "Figma Context MCP",
+    "TindaGo Admin Figma",
+    "TindaGo Design Scripts",
+    "TindaGo Token Sync"
+  ],
+  "figmaIntegration": {
+    "enabled": true,
+    "pixelPerfectMode": true,
+    "assetDownloadPath": "public/images/admin-dashboard/",
+    "coordinatePreservation": true,
+    "exactPositioning": true,
+    "scriptIntegration": true,
+    "autoExecuteScripts": true,
+    "enableDesignExtractor": true,
+    "enableTokenSync": true,
+    "componentGeneration": true,
+    "tailwindCSS": true,
+    "reactGeneration": true
+  },
+  "adminDashboardConfig": {
+    "baseline": {
+      "width": 1440,
+      "height": 1024
+    },
+    "sidebar": {
+      "width": 273,
+      "exactPositioning": true
+    },
+    "fontFamily": "Clash Grotesk Variable",
+    "colorPrecision": true,
+    "absolutePositioning": true,
+    "scriptIntegration": true,
+    "designExtraction": {
+      "enabled": true,
+      "defaultNodeId": "281-115",
+      "outputDirectory": "figma-extracted-design",
+      "generateSpecs": true,
+      "generateComponents": true
+    },
+    "tokenSync": {
+      "enabled": true,
+      "outputFile": "src/styles/design-tokens.css",
+      "autoSync": true
+    }
+  },
+  "scriptExecutionConfig": {
+    "enableNodeScripts": true,
+    "allowFigmaScripts": true,
+    "scriptTimeout": 300000,
+    "environmentVariables": {
+      "loadDotEnv": true,
+      "figmaAccessToken": "FIGMA_ACCESS_TOKEN",
+      "figmaFileId": "FIGMA_FILE_ID"
+    }
+  }
 }

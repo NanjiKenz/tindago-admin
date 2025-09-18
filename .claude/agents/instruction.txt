@@ -1,71 +1,179 @@
-🎯 Example Usage
+🎯 TindaGo Web Admin Design-to-Code Agent Examples
 
-Simple Activation (Admin Dashboard Figma Conversion):
+## Pixel-Perfect Figma Conversion Examples
+
+### Simple Activation (Admin Dashboard Figma Conversion):
 
 @tindago-web-admin-design-to-code
 
-Convert this Figma admin dashboard design to Next.js:
+Convert this Figma admin dashboard design to pixel-perfect Next.js:
 https://www.figma.com/design/8I1Nr3vQZllDDknSevstvH/TindaGo-Admin?node-id=102-123&t=vt1DdLoecuG6NBUJ-4
 
-This is the store registration management dashboard for TindaGo Admin.
+Use exact positioning, Clash Grotesk Variable font, and 1440x1024 baseline with 273px sidebar.
 
-Complex Request:
+### Complex Request with Exact Requirements:
 
 @tindago-web-admin-design-to-code
 
 I need help with this Figma admin design:
 https://www.figma.com/design/8I1Nr3vQZllDDknSevstvH/TindaGo-Admin?node-id=102-456
 
-It's an admin dashboard with:
-- Store registration approval cards
-- Filter and search functionality
-- Status indicators and action buttons
-- Integration with Firebase database
+Requirements:
+- Store registration approval dashboard with pixel-perfect positioning
+- Use absolute positioning with exact Figma coordinates (x:308px, y:211px style)
+- Clash Grotesk Variable font family throughout
+- Exact colors: #0077BE for active states, #F3F5F9 background
+- Assets to /public/images/admin-dashboard/ folder
+- Firebase AdminService integration for real-time data
+- 273px sidebar with exact TindaGo logo positioning
 
-Please create the Next.js components with AdminService integration.
+Create components with exact Figma coordinate preservation.
 
-Error Handling Example:
-
-@tindago-web-admin-design-to-code
-
-I'm getting this error when implementing your previous solution:
-
-ERROR: Module not found: @/lib/adminService
-at AdminDashboard.tsx:15
-
-The dashboard should show store registrations with approve/reject buttons.
-Can you fix this and update the component?
-
-Follow-up Work:
+### Positioning Error Fix Example:
 
 @tindago-web-admin-design-to-code
 
-Can you add real-time updates to the admin dashboard you created earlier?
-I need:
-- Live store registration notifications
-- Auto-refresh when data changes
-- Loading states for async operations
-- Error handling for Firebase failures
+I'm getting positioning issues with your previous solution:
 
-🚀 Pro Tips
+The stats cards are not aligned properly. In Figma they are:
+- Card 1: x:308px, y:211px, 270px wide
+- Card 2: x:583px, y:211px, 270px wide
+- Card 3: x:858px, y:211px, 270px wide
+- Card 4: x:1133px, y:211px, 270px wide
 
-For Best Results:
+But your code uses responsive grid instead of absolute positioning. Please fix with exact pixel coordinates and 275px spacing between cards.
 
-1. Always include Figma URL when converting admin designs
-2. Describe the admin functionality (store management, user admin, etc.)
-3. Mention any Firebase integration needed
-4. Paste full error messages when you encounter issues
-5. Reference previous admin work the agent did for you
+### Font and Typography Error:
 
-The Agent Will:
+@tindago-web-admin-design-to-code
 
-- ✅ Extract Figma data automatically
-- ✅ Download all required assets to public/images/
-- ✅ Create pixel-perfect Next.js admin components
-- ✅ Integrate with existing AdminService and Firebase
-- ✅ Follow TindaGo admin patterns and authentication
-- ✅ Learn from any errors you share
+The typography doesn't match my dashboard. You used Tailwind classes but I need:
 
-Just @mention the agent and describe what admin functionality you need. It has all our established admin patterns and will learn from anything new you encounter.
+Dashboard title:
+- fontFamily: 'Clash Grotesk Variable'
+- fontWeight: 500
+- fontSize: '48px'
+- lineHeight: '1.2em'
+- color: '#1E1E1E'
 
-Focus: This agent is for ADMIN DASHBOARDS to manage the TindaGo React Native app, not for creating TindaGo app features on web.
+Card values:
+- fontFamily: 'Clash Grotesk Variable'
+- fontWeight: 700
+- fontSize: '28px'
+- lineHeight: '1.1em'
+
+Please use exact style objects instead of Tailwind classes.
+
+### Asset Path Error:
+
+@tindago-web-admin-design-to-code
+
+Assets are not loading. You used generic paths but I need exact paths:
+
+❌ Wrong: `/images/dashboard/icon.png`
+✅ Correct: `/images/admin-dashboard/dashboard-icon.png`
+
+All icons must go to `/public/images/admin-dashboard/` and follow naming:
+- dashboard-icon.png
+- customer-card-icon.png
+- tindago-logo.png
+- expand-arrow.png
+
+Please fix all asset paths.
+
+### Color Mismatch Fix:
+
+@tindago-web-admin-design-to-code
+
+Colors don't match the design. You used Tailwind colors but I need exact hex:
+
+❌ Wrong: className="bg-blue-600 bg-gray-50"
+✅ Correct: backgroundColor: '#0077BE', backgroundColor: '#F3F5F9'
+
+Required exact colors:
+- Active nav item: #0077BE
+- Dashboard background: #F3F5F9
+- Text primary: #1E1E1E
+- Text secondary: rgba(30, 30, 30, 0.6)
+- Purple stat icon: #A855F7
+- Green stat icon: #22C55E
+
+### Complete Dashboard Integration:
+
+@tindago-web-admin-design-to-code
+
+Create a complete admin dashboard from this Figma:
+https://www.figma.com/design/8I1Nr3vQZllDDknSevstvH/TindaGo-Admin?node-id=281-115
+
+Include:
+- Pixel-perfect 1440x1024 container with exact positioning
+- 273px sidebar with TindaGo logo at exact coordinates (x:-48, y:-86)
+- Stats cards with 275px spacing and exact icon positioning
+- Header at 80px height with search, notifications, profile
+- AdminService integration for Firebase real-time data
+- Exact Clash Grotesk Variable typography
+- All assets downloaded to admin-dashboard folder
+
+Make it match the existing dashboard components exactly.
+
+## 🚀 Pro Tips for Best Results
+
+### For Pixel-Perfect Conversion:
+
+1. **Always provide exact Figma node URL** with specific node-id
+2. **Specify coordinate precision**: "Use exact x:308px, y:211px positioning"
+3. **Request Clash Grotesk Variable**: Never accept Inter or other fonts
+4. **Demand exact colors**: Provide hex codes, not Tailwind approximations
+5. **Asset path precision**: Specify `/public/images/admin-dashboard/` structure
+6. **Reference existing patterns**: Mention your current dashboard implementation
+
+### What the Agent Will Do:
+
+✅ **Extract exact Figma coordinates** and preserve them precisely
+✅ **Download all assets** to `/public/images/admin-dashboard/`
+✅ **Use absolute positioning** with exact px values from Figma
+✅ **Apply Clash Grotesk Variable** font with exact weights/sizes
+✅ **Use exact hex colors** never Tailwind approximations
+✅ **Create pixel-perfect components** matching your dashboard style
+✅ **Integrate AdminService** for Firebase real-time data
+✅ **Follow 1440x1024 baseline** with 273px sidebar system
+
+### Common Issues and Solutions:
+
+**Issue**: Agent uses responsive classes instead of absolute positioning
+**Solution**: Say "Use exact absolute positioning with pixel coordinates from Figma"
+
+**Issue**: Agent uses wrong font family
+**Solution**: Say "Must use Clash Grotesk Variable font family, not Inter"
+
+**Issue**: Agent uses Tailwind color classes
+**Solution**: Say "Use exact hex colors in style objects, not Tailwind classes"
+
+**Issue**: Assets don't load
+**Solution**: Say "Download to /public/images/admin-dashboard/ with exact naming"
+
+**Issue**: Layout doesn't match dashboard
+**Solution**: Say "Follow existing dashboard component patterns with 273px sidebar"
+
+## Key Success Patterns
+
+### ✅ Perfect Agent Usage:
+```
+@tindago-web-admin-design-to-code
+
+Convert this admin dashboard:
+[Figma URL with node-id]
+
+Use pixel-perfect positioning from Figma coordinates, Clash Grotesk Variable font, exact hex colors, and download assets to admin-dashboard folder. Match existing dashboard implementation with 273px sidebar and 1440x1024 baseline.
+```
+
+### ❌ Avoid Generic Requests:
+```
+@tindago-web-admin-design-to-code
+
+Make a dashboard from this Figma link.
+```
+
+The agent specializes in **PIXEL-PERFECT FIGMA-TO-CODE CONVERSION** using your exact coordinate positioning system, not generic admin dashboard creation. Always specify precision requirements for best results.
+
+**Focus**: This agent converts admin dashboard Figma designs to exact Next.js implementations that match your established pixel-perfect positioning system.

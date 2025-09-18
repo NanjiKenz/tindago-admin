@@ -2,11 +2,152 @@
   "mcpServers": {
     "Framelink Figma MCP": {
       "command": "cmd",
-      "args": ["/c", "npx", "-y", "figma-developer-mcp", "--figma-api-key=figd_Qow2KUHJ6s6vuXbduOs9Wj001_5mg7m8XNFCTnmN", "--stdio"]
+      "args": ["/c", "npx", "-y", "figma-developer-mcp", "--figma-api-key=figd_Qow2KUHJ6s6vuXbduOs9Wj001_5mg7m8XNFCTnmN", "--stdio"],
+      "env": {
+        "FIGMA_PIXEL_PERFECT": "true",
+        "FIGMA_COORDINATE_PRESERVATION": "true",
+        "FIGMA_EXACT_POSITIONING": "true",
+        "FIGMA_FILE_ID": "8I1Nr3vQZllDDknSevstvH",
+        "FIGMA_ACCESS_TOKEN": "figd_Qow2KUHJ6s6vuXbduOs9Wj001_5mg7m8XNFCTnmN",
+        "FIGMA_COMPONENT_GENERATION": "true",
+        "FIGMA_TAILWIND_CSS": "true",
+        "FIGMA_REACT_GENERATION": "true"
+      }
     },
     "Figma Context MCP": {
       "command": "cmd",
-      "args": ["/c", "npx", "-y", "figma-context-mcp", "--figma-api-key=figd_Qow2KUHJ6s6vuXbduOs9Wj001_5mg7m8XNFCTnmN", "--stdio"]
+      "args": ["/c", "npx", "-y", "figma-context-mcp", "--figma-api-key=figd_Qow2KUHJ6s6vuXbduOs9Wj001_5mg7m8XNFCTnmN", "--stdio"],
+      "env": {
+        "FIGMA_ADMIN_MODE": "true",
+        "FIGMA_ASSET_PATH": "public/images/admin-dashboard/",
+        "FIGMA_BASELINE_WIDTH": "1440",
+        "FIGMA_BASELINE_HEIGHT": "1024",
+        "FIGMA_SIDEBAR_WIDTH": "273",
+        "FIGMA_FILE_ID": "8I1Nr3vQZllDDknSevstvH",
+        "FIGMA_ACCESS_TOKEN": "figd_Qow2KUHJ6s6vuXbduOs9Wj001_5mg7m8XNFCTnmN",
+        "FIGMA_SCRIPT_INTEGRATION": "true"
+      }
+    },
+    "TindaGo Admin Figma": {
+      "command": "cmd",
+      "args": ["/c", "npx", "-y", "figma-developer-mcp", "--figma-api-key=figd_Qow2KUHJ6s6vuXbduOs9Wj001_5mg7m8XNFCTnmN", "--stdio"],
+      "env": {
+        "FIGMA_FILE_ID": "8I1Nr3vQZllDDknSevstvH",
+        "FIGMA_ADMIN_DASHBOARD": "true",
+        "FIGMA_PIXEL_PERFECT_MODE": "true",
+        "FIGMA_FONT_FAMILY": "Clash Grotesk Variable",
+        "FIGMA_COLOR_PRECISION": "true",
+        "FIGMA_ABSOLUTE_POSITIONING": "true",
+        "FIGMA_EXACT_COORDINATES": "true",
+        "FIGMA_DOWNLOAD_PATH": "public/images/admin-dashboard/",
+        "FIGMA_ACCESS_TOKEN": "figd_Qow2KUHJ6s6vuXbduOs9Wj001_5mg7m8XNFCTnmN",
+        "FIGMA_DESIGN_EXTRACTOR": "true",
+        "FIGMA_TOKEN_SYNC": "true",
+        "FIGMA_COMPONENT_CREATION": "true",
+        "FIGMA_NEXT_JS_INTEGRATION": "true"
+      }
+    },
+    "TindaGo Design Scripts": {
+      "command": "cmd",
+      "args": ["/c", "node", "scripts/figma-design-extractor.js"],
+      "env": {
+        "FIGMA_ACCESS_TOKEN": "figd_Qow2KUHJ6s6vuXbduOs9Wj001_5mg7m8XNFCTnmN",
+        "FIGMA_FILE_ID": "8I1Nr3vQZllDDknSevstvH",
+        "FIGMA_SCRIPT_MODE": "true",
+        "FIGMA_OUTPUT_PATH": "figma-extracted-design",
+        "FIGMA_ASSETS_PATH": "public/images/admin-dashboard/"
+      }
+    },
+    "TindaGo Token Sync": {
+      "command": "cmd",
+      "args": ["/c", "node", "scripts/figma-sync.js"],
+      "env": {
+        "FIGMA_ACCESS_TOKEN": "figd_Qow2KUHJ6s6vuXbduOs9Wj001_5mg7m8XNFCTnmN",
+        "FIGMA_FILE_ID": "8I1Nr3vQZllDDknSevstvH",
+        "FIGMA_SYNC_MODE": "true",
+        "FIGMA_OUTPUT_CSS": "src/styles/design-tokens.css"
+      }
+    }
+  },
+  "figmaConfiguration": {
+    "pixelPerfectMode": true,
+    "preserveCoordinates": true,
+    "exactPositioning": true,
+    "scriptIntegration": {
+      "enableDesignExtractor": true,
+      "enableTokenSync": true,
+      "autoExecuteScripts": true,
+      "scriptTimeout": 300000
+    },
+    "assetNaming": {
+      "prefix": "",
+      "suffix": "",
+      "format": "kebab-case"
+    },
+    "codeGeneration": {
+      "framework": "Next.js",
+      "styleFramework": "Tailwind CSS",
+      "componentType": "React",
+      "typescript": true,
+      "exactPositioning": true,
+      "absoluteCoordinates": true
+    },
+    "dashboard": {
+      "baseline": {
+        "width": 1440,
+        "height": 1024
+      },
+      "sidebar": {
+        "width": 273,
+        "exactPosition": true
+      },
+      "typography": {
+        "fontFamily": "Clash Grotesk Variable",
+        "exactSizing": true,
+        "preserveFontWeights": true,
+        "exactLineHeight": true
+      },
+      "colors": {
+        "exactHex": true,
+        "noApproximation": true,
+        "preserveAlpha": true
+      },
+      "spacing": {
+        "exactPixelValues": true,
+        "preservePadding": true,
+        "preserveMargins": true
+      }
+    },
+    "assetHandling": {
+      "downloadImages": true,
+      "optimizeImages": false,
+      "preserveImageDimensions": true,
+      "downloadPath": "public/images/admin-dashboard/",
+      "imageFormats": ["png", "svg", "jpg"]
+    }
+  },
+  "scriptExecutionConfig": {
+    "enableNodeScripts": true,
+    "figmaDesignExtractor": {
+      "enabled": true,
+      "script": "scripts/figma-design-extractor.js",
+      "defaultNodeId": "281-115",
+      "outputDirectory": "figma-extracted-design",
+      "generateComponents": true,
+      "generateSpecs": true
+    },
+    "figmaTokenSync": {
+      "enabled": true,
+      "script": "scripts/figma-sync.js",
+      "outputFile": "src/styles/design-tokens.css",
+      "autoSync": true
+    },
+    "environment": {
+      "loadDotEnv": true,
+      "requiredVars": [
+        "FIGMA_ACCESS_TOKEN",
+        "FIGMA_FILE_ID"
+      ]
     }
   }
-} 
+}
