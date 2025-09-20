@@ -20,3 +20,8 @@ export { SalesChart } from './SalesChart';
 export { RevenueChart } from './RevenueChart';
 export { TopProducts } from './TopProducts';
 export { UserActivity } from './UserActivity';
+
+// User and customer management components
+export { UserManagement } from './UserManagement';
+export { UserCreateModal } from './UserCreateModal';
+export { CustomerManagement } from './CustomerManagement';

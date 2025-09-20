@@ -2,166 +2,441 @@ import React from 'react';
 
 const TindaGoShare = () => {
   return (
-    <div className="w-[1440px] h-[2631px] bg-[#f3f5f9]">
-      <div className="w-[1440px] h-[600px]">
-        <div className="w-[1360px] h-[500px] rounded-[30px]">
-        </div>
-        <div className="w-[945px] h-[613px]">
-        </div>
-        <div className="w-[403px] h-[237px] bg-[#ffffff] text-[64px] font-[500] text-[#ffffff] text-left">
-          Download our
-app and enjoy 
-using it
-        </div>
-        <div className="w-[170px] h-[50px]">
-          <div className="w-[170px] h-[50px] rounded-[20px]">
+    <div className="w-[1440px] h-[1024px] bg-[#f3f5f9]">
+      <div className="w-[273px] h-[1024px]">
+        <div className="w-[273px] h-[1024px] bg-[#ffffff]">
+          <div className="w-[273px] h-[1024px] bg-[#ffffff]">
           </div>
-          <div className="w-[114px] h-[32px]">
-            <div className="w-[30px] h-[30px]">
+        </div>
+        <div className="w-[321px] h-[321px]">
+        </div>
+        <div className="w-[220px] h-[290px] rounded-[16px]">
+          <div className="w-[220px] h-[40px] rounded-[16px]">
+            <div className="w-[25px] h-[25px]">
             </div>
-            <div className="w-[74px] h-[12px] bg-[#ffffff] text-[10px] font-[500] text-[#ffffff] text-center">
-              Download on the
-            </div>
-            <div className="w-[73px] h-[20px] bg-[#ffffff] text-[16px] font-[500] text-[#ffffff] text-center">
-              App Store
-            </div>
-            <div className="w-[30px] h-[30px]">
+            <div className="w-[157px] h-[37px]">
+              <div className="w-[137px] h-[17px] bg-[#1e1e1e] text-[14px] font-[500] text-[#1e1e1e] text-left">
+                Content Management
+              </div>
             </div>
           </div>
-        </div>
-        <div className="w-[170px] h-[50px]">
-          <div className="w-[170px] h-[50px] rounded-[20px]">
-          </div>
-          <div className="w-[123px] h-[32px]">
-            <div className="w-[44px] h-[12px] bg-[#f3f5f9] text-[10px] font-[500] text-[#f3f5f9] text-left">
-              GET IT ON
+          <div className="w-[220px] h-[40px] rounded-[16px]">
+            <div className="w-[25px] h-[25px]">
             </div>
-            <div className="w-[83px] h-[20px] bg-[#f3f5f9] text-[16px] font-[500] text-[#f3f5f9] text-left">
-              Google Play
-            </div>
-            <div className="w-[30px] h-[30px]">
+            <div className="w-[141px] h-[37px]">
+              <div className="w-[121px] h-[17px] bg-[#1e1e1e] text-[14px] font-[500] text-[#1e1e1e] text-left">
+                Store Management
+              </div>
             </div>
           </div>
-        </div>
-        <div className="w-[47px] h-[19px] bg-[#ffffff] text-[14px] font-[500] text-[#ffffff] text-center">
-          Privacy
-        </div>
-        <div className="w-[47px] h-[19px] bg-[#ffffff] text-[14px] font-[500] text-[#ffffff] text-center">
-          Terms
-        </div>
-      </div>
-      <div className="w-[1440px] h-[600px]">
-        <div className="w-[1440px] h-[600px] bg-[#f3f5f9]">
-        </div>
-        <div className="w-[150px] h-[50px] bg-[#0077be] rounded-[30px]">
-          <div className="w-[105px] h-[25px] bg-[#ffffff] text-[20px] font-[500] text-[#ffffff] text-center">
-            Learn more
+          <div className="w-[220px] h-[40px] rounded-[16px]">
+            <div className="w-[25px] h-[25px]">
+            </div>
+            <div className="w-[147px] h-[37px]">
+              <div className="w-[127px] h-[17px] bg-[#1e1e1e] text-[14px] font-[500] text-[#1e1e1e] text-left">
+                Admin Management
+              </div>
+            </div>
+          </div>
+          <div className="w-[220px] h-[40px] rounded-[16px]">
+            <div className="w-[25px] h-[25px]">
+            </div>
+            <div className="w-[170px] h-[37px]">
+              <div className="w-[150px] h-[17px] bg-[#1e1e1e] text-[14px] font-[500] text-[#1e1e1e] text-left">
+                Customer Management
+              </div>
+            </div>
+          </div>
+          <div className="w-[220px] h-[40px] bg-[#0077be] rounded-[16px]">
+            <div className="w-[25px] h-[25px]">
+            </div>
+            <div className="w-[136px] h-[37px]">
+              <div className="w-[116px] h-[17px] bg-[#ffffff] text-[14px] font-[500] text-[#ffffff] text-left">
+                User Management
+              </div>
+            </div>
+          </div>
+          <div className="w-[220px] h-[40px] rounded-[16px]">
+            <div className="w-[25px] h-[25px]">
+            </div>
+            <div className="w-[155px] h-[37px]">
+              <div className="w-[70px] h-[37px]">
+                <div className="w-[50px] h-[17px] bg-[#1e1e1e] text-[14px] font-[500] text-[#1e1e1e] text-left">
+                  Manage
+                </div>
+              </div>
+              <div className="w-[25px] h-[25px]">
+              </div>
+            </div>
           </div>
         </div>
-        <div className="w-[594px] h-[75px] bg-[#1e1e1e] text-[20px] font-[500] text-[#1e1e1e] text-left">
-          Take control of your daily essentials with a convenient platform that
- lets you browse, order, track, manage, and receive all 
-your sari-sari needs in one app, effortlessly.
-        </div>
-        <div className="w-[423px] h-[118px] bg-[#1e1e1e] text-[48px] font-[500] text-[#1e1e1e] text-left">
-          Shopping & delivery
- made simple.
-        </div>
-        <div className="w-[955px] h-[716px]">
-        </div>
-      </div>
-      <div className="w-[1440px] h-[100px]">
-        <div className="w-[500px] h-[500px]">
-        </div>
-        <div className="w-[150px] h-[50px] bg-[#0077be] rounded-[30px]">
-          <div className="w-[66px] h-[25px] bg-[#ffffff] text-[20px] font-[500] text-[#ffffff] text-center">
-            Sign up
+        <div className="w-[220px] h-[40px] rounded-[16px]">
+          <div className="w-[25px] h-[25px]">
+          </div>
+          <div className="w-[129px] h-[37px]">
+            <div className="w-[109px] h-[17px] bg-[#1e1e1e] text-[14px] font-[500] text-[#1e1e1e] text-left">
+              Report & Analytic
+            </div>
           </div>
         </div>
-        <div className="w-[150px] h-[50px] rounded-[30px]">
-          <div className="w-[52px] h-[25px] bg-[#1e1e1e] text-[20px] font-[500] text-[#1e1e1e] text-center">
-            Log in
-          </div>
-        </div>
-      </div>
-      <div className="w-[1298px] h-[649px]">
-        <div className="w-[531px] h-[469px]">
-        </div>
-        <div className="w-[590px] h-[423px]">
-        </div>
-        <div className="w-[760px] h-[236px] bg-[#000000] text-[96px] font-[600] text-[#000000] text-center">
-          Bili kahit saan, 
-kuha kahit kailan!
-        </div>
-        <div className="w-[422px] h-[50px] bg-[#1e1e1e] text-[20px] font-[500] text-[#1e1e1e] text-center">
-          Delve into your neighborhood's shopping needs 
-with comprehensive insights in one app
-        </div>
-      </div>
-      <div className="w-[170px] h-[50px]">
-        <div className="w-[170px] h-[50px] rounded-[20px]">
-        </div>
-        <div className="w-[114px] h-[32px]">
-          <div className="w-[30px] h-[30px]">
-          </div>
-          <div className="w-[74px] h-[12px] bg-[#000000] text-[10px] font-[500] text-[#000000] text-center">
-            Download on the
-          </div>
-          <div className="w-[73px] h-[20px] bg-[#000000] text-[16px] font-[500] text-[#000000] text-center">
-            App Store
+        <div className="w-[220px] h-[40px] rounded-[16px]">
+          <div className="w-[125px] h-[45px]">
+            <div className="w-[25px] h-[25px]">
+            </div>
+            <div className="w-[70px] h-[17px] bg-[#1e1e1e] text-[14px] font-[500] text-[#1e1e1e] text-left">
+              Dashboard
+            </div>
           </div>
         </div>
       </div>
-      <div className="w-[170px] h-[50px]">
-        <div className="w-[170px] h-[50px] rounded-[20px]">
-        </div>
-        <div className="w-[123px] h-[32px]">
-          <div className="w-[44px] h-[12px] bg-[#000000] text-[10px] font-[500] text-[#000000] text-left">
-            GET IT ON
-          </div>
-          <div className="w-[83px] h-[20px] bg-[#000000] text-[16px] font-[500] text-[#000000] text-left">
-            Google Play
-          </div>
-          <div className="w-[30px] h-[30px]">
-          </div>
+      <div className="w-[1167px] h-[80px] bg-[#ffffff]">
+        <div className="w-[1167px] h-[80px] bg-[#ffffff]">
         </div>
       </div>
-      <div className="w-[1457px] h-[380px] bg-[#ffffff] rounded-[20px]">
+      <div className="w-[300px] h-[40px] bg-[#f1f1f1] rounded-[16px]">
+        <div className="w-[98px] h-[12px] bg-[#1e1e1e] text-[10px] font-[500] text-[#1e1e1e] text-left">
+          Find something here...
+        </div>
+        <div className="w-[15px] h-[15px]">
+        </div>
       </div>
-      <div className="w-[500px] h-[500px]">
+      <div className="w-[158px] h-[40px]">
+        <div className="w-[40px] h-[40px] bg-[#d9d9d9]">
+        </div>
+        <div className="w-[108px] h-[32px]">
+          <div className="w-[108px] h-[17px] bg-[#1e1e1e] text-[14px] font-[500] text-[#1e1e1e] text-left">
+            Maynard Dotarot
+          </div>
+          <div className="w-[34px] h-[15px] bg-[#1e1e1e] text-[12px] font-[400] text-[#1e1e1e] text-left">
+            Admin
+          </div>
+        </div>
       </div>
-      <div className="w-[218px] h-[17px] bg-[#1e1e1e] text-[14px] font-[500] text-[#1e1e1e] text-center">
-        TindaGo. All Rights Reserved 2025.
+      <div className="w-[40px] h-[41px]">
+        <div className="w-[40px] h-[40px] bg-[#ffffff]">
+        </div>
+        <div className="w-[20px] h-[20px]">
+        </div>
+        <div className="w-[15px] h-[15px]">
+          <div className="w-[15px] h-[15px] bg-[#ffba02]">
+          </div>
+          <div className="w-[5px] h-[10px] bg-[#1e1e1e] text-[8px] font-[500] text-[#1e1e1e] text-left">
+            3
+          </div>
+        </div>
       </div>
-      <div className="w-[112px] h-[17px] bg-[#1e1e1e] text-[14px] font-[500] text-[#1e1e1e] text-left">
-        Terms of services
+      <div className="w-[398px] h-[59px]">
+        <div className="w-[398px] h-[59px] bg-[#1e1e1e] text-[48px] font-[500] text-[#1e1e1e] text-left">
+          User Management
+        </div>
       </div>
-      <div className="w-[74px] h-[17px] bg-[#1e1e1e] text-[14px] font-[500] text-[#1e1e1e] text-left">
-        Learn more
+      <div className="w-[1087px] h-[60px]">
+        <div className="w-[141px] h-[40px]">
+          <div className="w-[15px] h-[15px]">
+          </div>
+          <div className="w-[96px] h-[20px] bg-[#1e1e1e] text-[16px] font-[500] text-[#1e1e1e] text-left">
+            Search user...
+          </div>
+        </div>
+        <div className="w-[88px] h-[42px]">
+          <div className="w-[20px] h-[20px]">
+          </div>
+          <div className="w-[38px] h-[22px] bg-[#000000] text-[16px] font-[500] text-[#000000] text-center">
+            Filter
+          </div>
+        </div>
+        <div className="w-[77px] h-[42px]">
+          <div className="w-[57px] h-[22px] bg-[#000000] text-[12px] font-[500] text-[#000000] text-center">
+            View More
+          </div>
+        </div>
+        <div className="w-[1087px] h-[60px] bg-[#ffffff]">
+          <div className="w-[1087px] h-[60px] bg-[#ffffff] rounded-[16px]">
+          </div>
+          <div className="w-[820px] h-[40px] bg-[#ffffff] rounded-[12px]">
+          </div>
+          <div className="w-[100px] h-[40px] bg-[#ffffff] rounded-[12px]">
+          </div>
+          <div className="w-[100px] h-[40px] bg-[#ffffff] rounded-[12px]">
+          </div>
+        </div>
       </div>
-      <div className="w-[10px] h-[17px] bg-[#1e1e1e] text-[14px] font-[500] text-[#1e1e1e] text-left">
-        X
-      </div>
-      <div className="w-[68px] h-[17px] bg-[#1e1e1e] text-[14px] font-[500] text-[#1e1e1e] text-left">
-        Contact us
-      </div>
-      <div className="w-[61px] h-[17px] bg-[#1e1e1e] text-[14px] font-[500] text-[#1e1e1e] text-left">
-        Facebook
-      </div>
-      <div className="w-[65px] h-[17px] bg-[#1e1e1e] text-[14px] font-[500] text-[#1e1e1e] text-left">
-        instagram
-      </div>
-      <div className="w-[94px] h-[25px] bg-[#1e1e1e] text-[20px] font-[500] text-[#1e1e1e] text-left">
-        Navigation
-      </div>
-      <div className="w-[82px] h-[25px] bg-[#1e1e1e] text-[20px] font-[500] text-[#1e1e1e] text-left">
-        Contacts
-      </div>
-      <div className="w-[76px] h-[25px] bg-[#1e1e1e] text-[20px] font-[500] text-[#1e1e1e] text-left">
-        Connect
-      </div>
-      <div className="w-[86px] h-[17px] bg-[#1e1e1e] text-[14px] font-[500] text-[#1e1e1e] text-left">
-        Privacy Policy
+      <div className="w-[1087px] h-[690px]">
+        <div className="w-[1087px] h-[690px]">
+          <div className="w-[1087px] h-[638.888916015625px] bg-[#ffffff]">
+          </div>
+          <div className="w-[1087px] h-[51.11111068725586px]">
+            <div className="w-[1087px] h-[51.11111068725586px] bg-[#f3f5f9]">
+            </div>
+            <div className="w-[986px] h-[22.488889694213867px]">
+              <div className="w-[40px] h-[22.488889694213867px] bg-[#1e1e1e] text-[16px] font-[500] text-[#1e1e1e] text-center">
+                USER
+              </div>
+              <div className="w-[39px] h-[22.488889694213867px] bg-[#1e1e1e] text-[16px] font-[500] text-[#1e1e1e] text-center">
+                ROLE
+              </div>
+              <div className="w-[56px] h-[22.488889694213867px] bg-[#1e1e1e] text-[16px] font-[500] text-[#1e1e1e] text-center">
+                STATUS
+              </div>
+              <div className="w-[55px] h-[22.488889694213867px] bg-[#1e1e1e] text-[16px] font-[500] text-[#1e1e1e] text-center">
+                JOINED
+              </div>
+              <div className="w-[65px] h-[22.488889694213867px] bg-[#1e1e1e] text-[16px] font-[500] text-[#1e1e1e] text-center">
+                ACTIONS
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="w-[1087px] h-[640px]">
+          <div className="w-[1087px] h-[80px]">
+            <div className="w-[1087px] h-[80px] bg-[#ffffff]">
+            </div>
+            <div className="w-[112px] h-[44px]">
+              <div className="w-[112px] h-[22px] bg-[#1e1e1e] text-[16px] font-[500] text-[#1e1e1e] text-left">
+                John Doe
+              </div>
+              <div className="w-[112px] h-[22px] bg-[#1e1e1e] text-[12px] font-[500] text-[#1e1e1e] text-center">
+                dodo123@gmail.com
+              </div>
+            </div>
+            <div className="w-[112px] h-[22px] bg-[#dbeafe] rounded-[8px]">
+              <div className="w-[92px] h-[22px] bg-[#0077be] text-[16px] font-[500] text-[#0077be] text-center">
+                Store Owner
+              </div>
+            </div>
+            <div className="w-[66px] h-[22px] bg-[#dcfce7] rounded-[8px]">
+              <div className="w-[46px] h-[22px] bg-[#4db95b] text-[16px] font-[500] text-[#4db95b] text-center">
+                Active
+              </div>
+            </div>
+            <div className="w-[93px] h-[22px] bg-[#1e1e1e] text-[16px] font-[500] text-[#1e1e1e] text-center">
+              2025-08-32
+            </div>
+            <div className="w-[50px] h-[20px]">
+              <div className="w-[20px] h-[20px]">
+              </div>
+              <div className="w-[20px] h-[20px]">
+              </div>
+            </div>
+          </div>
+          <div className="w-[1087px] h-[80px]">
+            <div className="w-[1087px] h-[80px] bg-[#ffffff]">
+            </div>
+            <div className="w-[112px] h-[44px]">
+              <div className="w-[112px] h-[22px] bg-[#1e1e1e] text-[16px] font-[500] text-[#1e1e1e] text-left">
+                John Doe
+              </div>
+              <div className="w-[112px] h-[22px] bg-[#1e1e1e] text-[12px] font-[500] text-[#1e1e1e] text-center">
+                dodo123@gmail.com
+              </div>
+            </div>
+            <div className="w-[78px] h-[22px] bg-[#fef9c3] rounded-[8px]">
+              <div className="w-[58px] h-[22px] bg-[#b86b0e] text-[16px] font-[500] text-[#b86b0e] text-center">
+                Pending
+              </div>
+            </div>
+            <div className="w-[93px] h-[22px] bg-[#1e1e1e] text-[16px] font-[500] text-[#1e1e1e] text-center">
+              2025-08-32
+            </div>
+            <div className="w-[50px] h-[20px]">
+              <div className="w-[20px] h-[20px]">
+              </div>
+              <div className="w-[20px] h-[20px]">
+              </div>
+            </div>
+            <div className="w-[112px] h-[22px] bg-[#dbeafe] rounded-[8px]">
+              <div className="w-[92px] h-[22px] bg-[#0077be] text-[16px] font-[500] text-[#0077be] text-center">
+                Store Owner
+              </div>
+            </div>
+          </div>
+          <div className="w-[1087px] h-[80px]">
+            <div className="w-[1087px] h-[80px] bg-[#ffffff]">
+            </div>
+            <div className="w-[112px] h-[44px]">
+              <div className="w-[112px] h-[22px] bg-[#1e1e1e] text-[16px] font-[500] text-[#1e1e1e] text-left">
+                John Doe
+              </div>
+              <div className="w-[112px] h-[22px] bg-[#1e1e1e] text-[12px] font-[500] text-[#1e1e1e] text-center">
+                dodo123@gmail.com
+              </div>
+            </div>
+            <div className="w-[66px] h-[22px] bg-[#dcfce7] rounded-[8px]">
+              <div className="w-[46px] h-[22px] bg-[#4db95b] text-[16px] font-[500] text-[#4db95b] text-center">
+                Active
+              </div>
+            </div>
+            <div className="w-[93px] h-[22px] bg-[#1e1e1e] text-[16px] font-[500] text-[#1e1e1e] text-center">
+              2025-08-32
+            </div>
+            <div className="w-[50px] h-[20px]">
+              <div className="w-[20px] h-[20px]">
+              </div>
+              <div className="w-[20px] h-[20px]">
+              </div>
+            </div>
+            <div className="w-[93px] h-[22px] bg-[#dbeafe] rounded-[8px]">
+              <div className="w-[73px] h-[22px] bg-[#0077be] text-[16px] font-[500] text-[#0077be] text-center">
+                Customer
+              </div>
+            </div>
+          </div>
+          <div className="w-[1087px] h-[80px]">
+            <div className="w-[1087px] h-[80px] bg-[#ffffff]">
+            </div>
+            <div className="w-[112px] h-[44px]">
+              <div className="w-[112px] h-[22px] bg-[#1e1e1e] text-[16px] font-[500] text-[#1e1e1e] text-left">
+                John Doe
+              </div>
+              <div className="w-[112px] h-[22px] bg-[#1e1e1e] text-[12px] font-[500] text-[#1e1e1e] text-center">
+                dodo123@gmail.com
+              </div>
+            </div>
+            <div className="w-[112px] h-[22px] bg-[#dbeafe] rounded-[8px]">
+              <div className="w-[92px] h-[22px] bg-[#0077be] text-[16px] font-[500] text-[#0077be] text-center">
+                Store Owner
+              </div>
+            </div>
+            <div className="w-[66px] h-[22px] bg-[#dcfce7] rounded-[8px]">
+              <div className="w-[46px] h-[22px] bg-[#4db95b] text-[16px] font-[500] text-[#4db95b] text-center">
+                Active
+              </div>
+            </div>
+            <div className="w-[93px] h-[22px] bg-[#1e1e1e] text-[16px] font-[500] text-[#1e1e1e] text-center">
+              2025-08-32
+            </div>
+            <div className="w-[50px] h-[20px]">
+              <div className="w-[20px] h-[20px]">
+              </div>
+              <div className="w-[20px] h-[20px]">
+              </div>
+            </div>
+          </div>
+          <div className="w-[1087px] h-[80px]">
+            <div className="w-[1087px] h-[80px] bg-[#ffffff]">
+            </div>
+            <div className="w-[112px] h-[44px]">
+              <div className="w-[112px] h-[22px] bg-[#1e1e1e] text-[16px] font-[500] text-[#1e1e1e] text-left">
+                John Doe
+              </div>
+              <div className="w-[112px] h-[22px] bg-[#1e1e1e] text-[12px] font-[500] text-[#1e1e1e] text-center">
+                dodo123@gmail.com
+              </div>
+            </div>
+            <div className="w-[112px] h-[22px] bg-[#dbeafe] rounded-[8px]">
+              <div className="w-[92px] h-[22px] bg-[#0077be] text-[16px] font-[500] text-[#0077be] text-center">
+                Store Owner
+              </div>
+            </div>
+            <div className="w-[66px] h-[22px] bg-[#dcfce7] rounded-[8px]">
+              <div className="w-[46px] h-[22px] bg-[#4db95b] text-[16px] font-[500] text-[#4db95b] text-center">
+                Active
+              </div>
+            </div>
+            <div className="w-[93px] h-[22px] bg-[#1e1e1e] text-[16px] font-[500] text-[#1e1e1e] text-center">
+              2025-08-32
+            </div>
+            <div className="w-[50px] h-[20px]">
+              <div className="w-[20px] h-[20px]">
+              </div>
+              <div className="w-[20px] h-[20px]">
+              </div>
+            </div>
+          </div>
+          <div className="w-[1087px] h-[80px]">
+            <div className="w-[1087px] h-[80px] bg-[#ffffff]">
+            </div>
+            <div className="w-[112px] h-[44px]">
+              <div className="w-[112px] h-[22px] bg-[#1e1e1e] text-[16px] font-[500] text-[#1e1e1e] text-left">
+                John Doe
+              </div>
+              <div className="w-[112px] h-[22px] bg-[#1e1e1e] text-[12px] font-[500] text-[#1e1e1e] text-center">
+                dodo123@gmail.com
+              </div>
+            </div>
+            <div className="w-[112px] h-[22px] bg-[#dbeafe] rounded-[8px]">
+              <div className="w-[92px] h-[22px] bg-[#0077be] text-[16px] font-[500] text-[#0077be] text-center">
+                Store Owner
+              </div>
+            </div>
+            <div className="w-[66px] h-[22px] bg-[#dcfce7] rounded-[8px]">
+              <div className="w-[46px] h-[22px] bg-[#4db95b] text-[16px] font-[500] text-[#4db95b] text-center">
+                Active
+              </div>
+            </div>
+            <div className="w-[93px] h-[22px] bg-[#1e1e1e] text-[16px] font-[500] text-[#1e1e1e] text-center">
+              2025-08-32
+            </div>
+            <div className="w-[50px] h-[20px]">
+              <div className="w-[20px] h-[20px]">
+              </div>
+              <div className="w-[20px] h-[20px]">
+              </div>
+            </div>
+          </div>
+          <div className="w-[1087px] h-[80px]">
+            <div className="w-[1087px] h-[80px] bg-[#ffffff]">
+            </div>
+            <div className="w-[112px] h-[44px]">
+              <div className="w-[112px] h-[22px] bg-[#1e1e1e] text-[16px] font-[500] text-[#1e1e1e] text-left">
+                John Doe
+              </div>
+              <div className="w-[112px] h-[22px] bg-[#1e1e1e] text-[12px] font-[500] text-[#1e1e1e] text-center">
+                dodo123@gmail.com
+              </div>
+            </div>
+            <div className="w-[112px] h-[22px] bg-[#dbeafe] rounded-[8px]">
+              <div className="w-[92px] h-[22px] bg-[#0077be] text-[16px] font-[500] text-[#0077be] text-center">
+                Store Owner
+              </div>
+            </div>
+            <div className="w-[66px] h-[22px] bg-[#dcfce7] rounded-[8px]">
+              <div className="w-[46px] h-[22px] bg-[#4db95b] text-[16px] font-[500] text-[#4db95b] text-center">
+                Active
+              </div>
+            </div>
+            <div className="w-[93px] h-[22px] bg-[#1e1e1e] text-[16px] font-[500] text-[#1e1e1e] text-center">
+              2025-08-32
+            </div>
+            <div className="w-[50px] h-[20px]">
+              <div className="w-[20px] h-[20px]">
+              </div>
+              <div className="w-[20px] h-[20px]">
+              </div>
+            </div>
+          </div>
+          <div className="w-[1087px] h-[80px]">
+            <div className="w-[1087px] h-[80px] bg-[#ffffff]">
+            </div>
+            <div className="w-[112px] h-[44px]">
+              <div className="w-[112px] h-[22px] bg-[#1e1e1e] text-[16px] font-[500] text-[#1e1e1e] text-left">
+                John Doe
+              </div>
+              <div className="w-[112px] h-[22px] bg-[#1e1e1e] text-[12px] font-[500] text-[#1e1e1e] text-center">
+                dodo123@gmail.com
+              </div>
+            </div>
+            <div className="w-[112px] h-[22px] bg-[#dbeafe] rounded-[8px]">
+              <div className="w-[92px] h-[22px] bg-[#0077be] text-[16px] font-[500] text-[#0077be] text-center">
+                Store Owner
+              </div>
+            </div>
+            <div className="w-[66px] h-[22px] bg-[#dcfce7] rounded-[8px]">
+              <div className="w-[46px] h-[22px] bg-[#4db95b] text-[16px] font-[500] text-[#4db95b] text-center">
+                Active
+              </div>
+            </div>
+            <div className="w-[93px] h-[22px] bg-[#1e1e1e] text-[16px] font-[500] text-[#1e1e1e] text-center">
+              2025-08-32
+            </div>
+            <div className="w-[50px] h-[20px]">
+              <div className="w-[20px] h-[20px]">
+              </div>
+              <div className="w-[20px] h-[20px]">
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

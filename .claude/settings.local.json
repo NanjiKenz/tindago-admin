@@ -37,7 +37,9 @@
       "Bash(dotenv:*)",
       "Bash(axios:*)",
       "Bash(node:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Read(//c/**)",
+      "Bash(jq:*)"
     ],
     "deny": [],
     "ask": []

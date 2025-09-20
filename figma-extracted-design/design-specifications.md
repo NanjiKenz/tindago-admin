@@ -1,326 +1,659 @@
-  # TindaGo Share Design Specifications
+# TindaGo Share Design Specifications
 
-Generated on: 9/18/2025, 8:11:20 AM
+Generated on: 9/19/2025, 12:39:42 PM
 
-## Admin (FRAME)
+## User Management (FRAME)
 
 ### Layout
-- Dimensions: 1440px × 2631px
-- Position: (0, 0)
+- Dimensions: 1440px × 1024px
+- Position: (5920, 0)
 
 ### Styling
 - Background 1: #f3f5f9
 
-### Children (19)
+### Children (8)
 
-  ## Third sec (FRAME)
+  ## Sidebar (FRAME)
 
   ### Layout
-  - Dimensions: 1440px × 600px
-  - Position: (0, 1570)
-
-  ### Children (7)
-
-    ## Rectangle 51 (RECTANGLE)
-
-    ### Layout
-    - Dimensions: 1360px × 500px
-    - Position: (40, 1620)
-    - Border Radius: 30px
-
-    ### Styling
-    - Gradient 1: #071939 0.0%, #14469f 100.0%
-
-    ### Effects
-    - DROP_SHADOW 1: color rgba(0, 0, 0, 0.25), blur 5px, offset (0, 0), spread 2px
-
-    ## 166shots_so 1 (RECTANGLE)
-
-    ### Layout
-    - Dimensions: 945px × 613px
-    - Position: (-52, 1507)
-
-    ### Styling
-
-    ## Download our app and enjoy using it (TEXT)
-
-    ### Layout
-    - Dimensions: 403px × 237px
-    - Position: (874, 1652)
-
-    ### Text
-    - Content: "Download our
-app and enjoy 
-using it"
-    - Font Family: Clash Grotesk Variable
-    - Font Size: 64px
-    - Font Weight: 500
-    - Line Height: 78.72000122070312px
-    - Color: #ffffff
-    - Text Align: LEFT
-
-    ### Styling
-    - Background 1: #ffffff
-
-    ## Apple (GROUP)
-
-    ### Layout
-    - Dimensions: 170px × 50px
-    - Position: (874, 1931)
-
-    ### Children (2)
-
-      ## Rectangle 50 (RECTANGLE)
-
-      ### Layout
-      - Dimensions: 170px × 50px
-      - Position: (874, 1931)
-      - Border Radius: 20px
-
-      ## Group (GROUP)
-
-      ### Layout
-      - Dimensions: 114px × 32px
-      - Position: (902, 1940)
-
-      ### Children (4)
-
-        ## Apple Inc (RECTANGLE)
-
-        ### Layout
-        - Dimensions: 30px × 30px
-        - Position: (902, 1940)
-
-        ### Styling
-
-        ## Download on the (TEXT)
-
-        ### Layout
-        - Dimensions: 74px × 12px
-        - Position: (942, 1940)
-
-        ### Text
-        - Content: "Download on the"
-        - Font Family: Clash Grotesk Variable
-        - Font Size: 10px
-        - Font Weight: 500
-        - Line Height: 12.300000190734863px
-        - Color: #ffffff
-        - Text Align: CENTER
-
-        ### Styling
-        - Background 1: #ffffff
-
-        ## App Store (TEXT)
-
-        ### Layout
-        - Dimensions: 73px × 20px
-        - Position: (942, 1952)
-
-        ### Text
-        - Content: "App Store"
-        - Font Family: Clash Grotesk Variable
-        - Font Size: 16px
-        - Font Weight: 500
-        - Line Height: 19.68000030517578px
-        - Color: #ffffff
-        - Text Align: CENTER
-
-        ### Styling
-        - Background 1: #ffffff
-
-        ## Apple Inc (RECTANGLE)
-
-        ### Layout
-        - Dimensions: 30px × 30px
-        - Position: (902, 1940)
-
-        ### Styling
-
-    ## Google play (GROUP)
-
-    ### Layout
-    - Dimensions: 170px × 50px
-    - Position: (1064, 1931)
-
-    ### Children (2)
-
-      ## Rectangle 50 (RECTANGLE)
-
-      ### Layout
-      - Dimensions: 170px × 50px
-      - Position: (1064, 1931)
-      - Border Radius: 20px
-
-      ## Group (GROUP)
-
-      ### Layout
-      - Dimensions: 123px × 32px
-      - Position: (1088, 1940)
-
-      ### Children (3)
-
-        ## GET IT ON (TEXT)
-
-        ### Layout
-        - Dimensions: 44px × 12px
-        - Position: (1128, 1940)
-
-        ### Text
-        - Content: "GET IT ON"
-        - Font Family: Clash Grotesk Variable
-        - Font Size: 10px
-        - Font Weight: 500
-        - Line Height: 12.300000190734863px
-        - Color: #f3f5f9
-        - Text Align: LEFT
-
-        ### Styling
-        - Background 1: #f3f5f9
-
-        ## Google Play (TEXT)
-
-        ### Layout
-        - Dimensions: 83px × 20px
-        - Position: (1128, 1952)
-
-        ### Text
-        - Content: "Google Play"
-        - Font Family: Clash Grotesk Variable
-        - Font Size: 16px
-        - Font Weight: 500
-        - Line Height: 19.68000030517578px
-        - Color: #f3f5f9
-        - Text Align: LEFT
-
-        ### Styling
-        - Background 1: #f3f5f9
-
-        ## Google Play (RECTANGLE)
-
-        ### Layout
-        - Dimensions: 30px × 30px
-        - Position: (1088, 1940)
-
-        ### Styling
-
-    ## Privacy (TEXT)
-
-    ### Layout
-    - Dimensions: 47px × 19px
-    - Position: (874, 2087)
-
-    ### Text
-    - Content: "Privacy"
-    - Font Family: Clash Grotesk Variable
-    - Font Size: 14px
-    - Font Weight: 500
-    - Line Height: 17.220001220703125px
-    - Color: #ffffff
-    - Text Align: CENTER
-
-    ### Styling
-    - Background 1: #ffffff
-
-    ## Terms (TEXT)
-
-    ### Layout
-    - Dimensions: 47px × 19px
-    - Position: (961, 2087)
-
-    ### Text
-    - Content: "Terms"
-    - Font Family: Clash Grotesk Variable
-    - Font Size: 14px
-    - Font Weight: 500
-    - Line Height: 17.220001220703125px
-    - Color: #ffffff
-    - Text Align: CENTER
-
-    ### Styling
-    - Background 1: #ffffff
-
-  ## Second sec (FRAME)
-
-  ### Layout
-  - Dimensions: 1440px × 600px
-  - Position: (0, 870)
+  - Dimensions: 273px × 1024px
+  - Position: (5920, 0)
 
   ### Children (5)
 
-    ## Rectangle 51 (RECTANGLE)
+    ## Union (BOOLEAN_OPERATION)
 
     ### Layout
-    - Dimensions: 1440px × 600px
-    - Position: (0, 870)
+    - Dimensions: 273px × 1024px
+    - Position: (5920, 0)
 
     ### Styling
-    - Background 1: #f3f5f9
-
-    ## Learn more (FRAME)
-
-    ### Layout
-    - Dimensions: 150px × 50px
-    - Position: (40, 1188)
-    - Padding: 10px 10px 10px 10px
-    - Item Spacing: 10px
-    - Border Radius: 30px
-
-    ### Styling
-    - Background 1: #0077be
-
-    ### Effects
-    - DROP_SHADOW 1: color rgba(0, 0, 0, 0.25), blur 5px, offset (0, 0), 
+    - Background 1: #ffffff
 
     ### Children (1)
 
-      ## Learn more (TEXT)
+      ## Rectangle 58 (RECTANGLE)
 
       ### Layout
-      - Dimensions: 105px × 25px
-      - Position: (62.5, 1200.5)
-
-      ### Text
-      - Content: "Learn more"
-      - Font Family: Clash Grotesk Variable
-      - Font Size: 20px
-      - Font Weight: 500
-      - Line Height: 24.600000381469727px
-      - Color: #ffffff
-      - Text Align: CENTER
+      - Dimensions: 273px × 1024px
+      - Position: (5920, 0)
 
       ### Styling
       - Background 1: #ffffff
 
-    ## Take control of your daily essentials with a convenient platform that lets you browse, order, track, manage, and receive all your sari-sari needs in one app, effortlessly. (TEXT)
+    ## 2-removebg-preview 2 (RECTANGLE)
 
     ### Layout
-    - Dimensions: 594px × 75px
-    - Position: (40, 1078)
+    - Dimensions: 321px × 321px
+    - Position: (5872, -86)
+
+    ### Styling
+
+    ## Manage (GROUP)
+
+    ### Layout
+    - Dimensions: 220px × 290px
+    - Position: (5947, 259)
+    - Border Radius: 16px
+
+    ### Children (6)
+
+      ## Content Management (FRAME)
+
+      ### Layout
+      - Dimensions: 220px × 40px
+      - Position: (5947, 509)
+      - Padding: 0px 20px 0px 10px
+      - Item Spacing: 10px
+      - Border Radius: 16px
+
+      ### Children (2)
+
+        ## Content (RECTANGLE)
+
+        ### Layout
+        - Dimensions: 25px × 25px
+        - Position: (5957, 516.5)
+
+        ### Styling
+
+        ## Frame 5 (FRAME)
+
+        ### Layout
+        - Dimensions: 157px × 37px
+        - Position: (5992, 510.5)
+        - Padding: 10px 10px 10px 10px
+        - Item Spacing: 10px
+
+        ### Children (1)
+
+          ## Content Management (TEXT)
+
+          ### Layout
+          - Dimensions: 137px × 17px
+          - Position: (6002, 520.5)
+
+          ### Text
+          - Content: "Content Management"
+          - Font Family: Clash Grotesk Variable
+          - Font Size: 14px
+          - Font Weight: 500
+          - Line Height: 17.220001220703125px
+          - Color: #1e1e1e
+          - Text Align: LEFT
+
+          ### Styling
+          - Background 1: #1e1e1e
+
+      ## Store Management (FRAME)
+
+      ### Layout
+      - Dimensions: 220px × 40px
+      - Position: (5947, 459)
+      - Padding: 0px 20px 0px 10px
+      - Item Spacing: 10px
+      - Border Radius: 16px
+
+      ### Children (2)
+
+        ## Online Store (RECTANGLE)
+
+        ### Layout
+        - Dimensions: 25px × 25px
+        - Position: (5957, 466.5)
+
+        ### Styling
+
+        ## Frame 5 (FRAME)
+
+        ### Layout
+        - Dimensions: 141px × 37px
+        - Position: (5992, 460.5)
+        - Padding: 10px 10px 10px 10px
+        - Item Spacing: 10px
+
+        ### Children (1)
+
+          ## Store Management (TEXT)
+
+          ### Layout
+          - Dimensions: 121px × 17px
+          - Position: (6002, 470.5)
+
+          ### Text
+          - Content: "Store Management"
+          - Font Family: Clash Grotesk Variable
+          - Font Size: 14px
+          - Font Weight: 500
+          - Line Height: 17.220001220703125px
+          - Color: #1e1e1e
+          - Text Align: LEFT
+
+          ### Styling
+          - Background 1: #1e1e1e
+
+      ## Admin Management (FRAME)
+
+      ### Layout
+      - Dimensions: 220px × 40px
+      - Position: (5947, 409)
+      - Padding: 0px 20px 0px 10px
+      - Item Spacing: 10px
+      - Border Radius: 16px
+
+      ### Children (2)
+
+        ## Administrator Male (RECTANGLE)
+
+        ### Layout
+        - Dimensions: 25px × 25px
+        - Position: (5957, 416.5)
+
+        ### Styling
+
+        ## Frame 5 (FRAME)
+
+        ### Layout
+        - Dimensions: 147px × 37px
+        - Position: (5992, 410.5)
+        - Padding: 10px 10px 10px 10px
+        - Item Spacing: 10px
+
+        ### Children (1)
+
+          ## Admin Management (TEXT)
+
+          ### Layout
+          - Dimensions: 127px × 17px
+          - Position: (6002, 420.5)
+
+          ### Text
+          - Content: "Admin Management"
+          - Font Family: Clash Grotesk Variable
+          - Font Size: 14px
+          - Font Weight: 500
+          - Line Height: 17.220001220703125px
+          - Color: #1e1e1e
+          - Text Align: LEFT
+
+          ### Styling
+          - Background 1: #1e1e1e
+
+      ## Customer Management (FRAME)
+
+      ### Layout
+      - Dimensions: 220px × 40px
+      - Position: (5947, 359)
+      - Padding: 0px 20px 0px 10px
+      - Item Spacing: 10px
+      - Border Radius: 16px
+
+      ### Children (2)
+
+        ## Customer (RECTANGLE)
+
+        ### Layout
+        - Dimensions: 25px × 25px
+        - Position: (5957, 366.5)
+
+        ### Styling
+
+        ## Frame 5 (FRAME)
+
+        ### Layout
+        - Dimensions: 170px × 37px
+        - Position: (5992, 360.5)
+        - Padding: 10px 10px 10px 10px
+        - Item Spacing: 10px
+
+        ### Children (1)
+
+          ## Customer Management (TEXT)
+
+          ### Layout
+          - Dimensions: 150px × 17px
+          - Position: (6002, 370.5)
+
+          ### Text
+          - Content: "Customer Management"
+          - Font Family: Clash Grotesk Variable
+          - Font Size: 14px
+          - Font Weight: 500
+          - Line Height: 17.220001220703125px
+          - Color: #1e1e1e
+          - Text Align: LEFT
+
+          ### Styling
+          - Background 1: #1e1e1e
+
+      ## User Management (FRAME)
+
+      ### Layout
+      - Dimensions: 220px × 40px
+      - Position: (5947, 309)
+      - Padding: 0px 20px 0px 10px
+      - Item Spacing: 10px
+      - Border Radius: 16px
+
+      ### Styling
+      - Background 1: #0077be
+
+      ### Children (2)
+
+        ## User (RECTANGLE)
+
+        ### Layout
+        - Dimensions: 25px × 25px
+        - Position: (5957, 316.5)
+
+        ### Styling
+
+        ## Frame 5 (FRAME)
+
+        ### Layout
+        - Dimensions: 136px × 37px
+        - Position: (5992, 310.5)
+        - Padding: 10px 10px 10px 10px
+        - Item Spacing: 10px
+
+        ### Children (1)
+
+          ## User Management (TEXT)
+
+          ### Layout
+          - Dimensions: 116px × 17px
+          - Position: (6002, 320.5)
+
+          ### Text
+          - Content: "User Management"
+          - Font Family: Clash Grotesk Variable
+          - Font Size: 14px
+          - Font Weight: 500
+          - Line Height: 17.220001220703125px
+          - Color: #ffffff
+          - Text Align: LEFT
+
+          ### Styling
+          - Background 1: #ffffff
+
+      ## Manage dropdown (FRAME)
+
+      ### Layout
+      - Dimensions: 220px × 40px
+      - Position: (5947, 259)
+      - Padding: 0px 20px 0px 10px
+      - Item Spacing: 10px
+      - Border Radius: 16px
+
+      ### Children (2)
+
+        ## Management (RECTANGLE)
+
+        ### Layout
+        - Dimensions: 25px × 25px
+        - Position: (5957, 266.5)
+
+        ### Styling
+
+        ## Frame 7 (FRAME)
+
+        ### Layout
+        - Dimensions: 155px × 37px
+        - Position: (5992, 260.5)
+        - Item Spacing: 60px
+
+        ### Children (2)
+
+          ## Frame 5 (FRAME)
+
+          ### Layout
+          - Dimensions: 70px × 37px
+          - Position: (5992, 260.5)
+          - Padding: 10px 10px 10px 10px
+          - Item Spacing: 10px
+
+          ### Children (1)
+
+            ## Manage (TEXT)
+
+            ### Layout
+            - Dimensions: 50px × 17px
+            - Position: (6002, 270.5)
+
+            ### Text
+            - Content: "Manage"
+            - Font Family: Clash Grotesk Variable
+            - Font Size: 14px
+            - Font Weight: 500
+            - Line Height: 17.220001220703125px
+            - Color: #1e1e1e
+            - Text Align: LEFT
+
+            ### Styling
+            - Background 1: #1e1e1e
+
+          ## Expand Arrow (RECTANGLE)
+
+          ### Layout
+          - Dimensions: 25px × 25px
+          - Position: (6122, 266.5)
+
+          ### Styling
+
+    ## Content Management (FRAME)
+
+    ### Layout
+    - Dimensions: 220px × 40px
+    - Position: (5947, 199)
+    - Padding: 0px 20px 0px 10px
+    - Item Spacing: 10px
+    - Border Radius: 16px
+
+    ### Children (2)
+
+      ## Graph Report (RECTANGLE)
+
+      ### Layout
+      - Dimensions: 25px × 25px
+      - Position: (5957, 206.5)
+
+      ### Styling
+
+      ## Frame 5 (FRAME)
+
+      ### Layout
+      - Dimensions: 129px × 37px
+      - Position: (5992, 200.5)
+      - Padding: 10px 10px 10px 10px
+      - Item Spacing: 10px
+
+      ### Children (1)
+
+        ## Report & Analytic (TEXT)
+
+        ### Layout
+        - Dimensions: 109px × 17px
+        - Position: (6002, 210.5)
+
+        ### Text
+        - Content: "Report & Analytic"
+        - Font Family: Clash Grotesk Variable
+        - Font Size: 14px
+        - Font Weight: 500
+        - Line Height: 17.220001220703125px
+        - Color: #1e1e1e
+        - Text Align: LEFT
+
+        ### Styling
+        - Background 1: #1e1e1e
+
+    ## Dashboard (FRAME)
+
+    ### Layout
+    - Dimensions: 220px × 40px
+    - Position: (5947, 139)
+    - Padding: 0px 20px 0px 10px
+    - Item Spacing: 10px
+    - Border Radius: 16px
+
+    ### Children (1)
+
+      ## Frame 4 (FRAME)
+
+      ### Layout
+      - Dimensions: 125px × 45px
+      - Position: (5957, 136.5)
+      - Padding: 10px 10px 10px 10px
+      - Item Spacing: 10px
+
+      ### Children (2)
+
+        ## Dashboard Layout (RECTANGLE)
+
+        ### Layout
+        - Dimensions: 25px × 25px
+        - Position: (5967, 146.5)
+
+        ### Styling
+
+        ## Dashboard (TEXT)
+
+        ### Layout
+        - Dimensions: 70px × 17px
+        - Position: (6002, 150.5)
+
+        ### Text
+        - Content: "Dashboard"
+        - Font Family: Clash Grotesk Variable
+        - Font Size: 14px
+        - Font Weight: 500
+        - Line Height: 17.220001220703125px
+        - Color: #1e1e1e
+        - Text Align: LEFT
+
+        ### Styling
+        - Background 1: #1e1e1e
+
+  ## Union (BOOLEAN_OPERATION)
+
+  ### Layout
+  - Dimensions: 1167px × 80px
+  - Position: (6193, 0)
+
+  ### Styling
+  - Background 1: #ffffff
+
+  ### Children (1)
+
+    ## Rectangle 59 (RECTANGLE)
+
+    ### Layout
+    - Dimensions: 1167px × 80px
+    - Position: (6193, 0)
+
+    ### Styling
+    - Background 1: #ffffff
+
+  ## Frame 8 (FRAME)
+
+  ### Layout
+  - Dimensions: 300px × 40px
+  - Position: (6213, 21)
+  - Padding: 10px 10px 10px 10px
+  - Item Spacing: 160px
+  - Border Radius: 16px
+
+  ### Styling
+  - Background 1: #f1f1f1
+
+  ### Children (2)
+
+    ## Find something here... (TEXT)
+
+    ### Layout
+    - Dimensions: 98px × 12px
+    - Position: (6223, 35)
 
     ### Text
-    - Content: "Take control of your daily essentials with a convenient platform that
- lets you browse, order, track, manage, and receive all 
-your sari-sari needs in one app, effortlessly."
+    - Content: "Find something here..."
     - Font Family: Clash Grotesk Variable
-    - Font Size: 20px
+    - Font Size: 10px
     - Font Weight: 500
-    - Line Height: 24.600000381469727px
+    - Line Height: 12.300000190734863px
     - Color: #1e1e1e
     - Text Align: LEFT
 
     ### Styling
     - Background 1: #1e1e1e
 
-    ## Shopping & delivery made simple. (TEXT)
+    ## Search (RECTANGLE)
 
     ### Layout
-    - Dimensions: 423px × 118px
-    - Position: (40, 950)
+    - Dimensions: 15px × 15px
+    - Position: (6481, 33.5)
+
+    ### Styling
+
+  ## Profile (GROUP)
+
+  ### Layout
+  - Dimensions: 158px × 40px
+  - Position: (7142, 20)
+
+  ### Children (2)
+
+    ## Ellipse 1 (ELLIPSE)
+
+    ### Layout
+    - Dimensions: 40px × 40px
+    - Position: (7260, 20)
+
+    ### Styling
+    - Background 1: #d9d9d9
+
+    ## Label (GROUP)
+
+    ### Layout
+    - Dimensions: 108px × 32px
+    - Position: (7142, 25)
+
+    ### Children (2)
+
+      ## Maynard Dotarot (TEXT)
+
+      ### Layout
+      - Dimensions: 108px × 17px
+      - Position: (7142, 25)
+
+      ### Text
+      - Content: "Maynard Dotarot"
+      - Font Family: Clash Grotesk Variable
+      - Font Size: 14px
+      - Font Weight: 500
+      - Line Height: 17.220001220703125px
+      - Color: #1e1e1e
+      - Text Align: LEFT
+
+      ### Styling
+      - Background 1: #1e1e1e
+
+      ## Admin (TEXT)
+
+      ### Layout
+      - Dimensions: 34px × 15px
+      - Position: (7214, 42)
+
+      ### Text
+      - Content: "Admin"
+      - Font Family: Clash Grotesk Variable
+      - Font Size: 12px
+      - Font Weight: 400
+      - Line Height: 14.760000228881836px
+      - Color: #1e1e1e
+      - Text Align: LEFT
+
+      ### Styling
+      - Background 1: #1e1e1e
+
+  ## Notification (GROUP)
+
+  ### Layout
+  - Dimensions: 40px × 41px
+  - Position: (7082, 19)
+
+  ### Children (3)
+
+    ## Ellipse 2 (ELLIPSE)
+
+    ### Layout
+    - Dimensions: 40px × 40px
+    - Position: (7082, 20)
+
+    ### Styling
+    - Background 1: #ffffff
+
+    ### Effects
+    - DROP_SHADOW 1: color rgba(0, 0, 0, 0.25), blur 5px, offset (0, 0), 
+
+    ## Notification (RECTANGLE)
+
+    ### Layout
+    - Dimensions: 20px × 20px
+    - Position: (7092, 30)
+
+    ### Styling
+
+    ## Notif Num (GROUP)
+
+    ### Layout
+    - Dimensions: 15px × 15px
+    - Position: (7107, 19)
+
+    ### Children (2)
+
+      ## Ellipse 3 (ELLIPSE)
+
+      ### Layout
+      - Dimensions: 15px × 15px
+      - Position: (7107, 19)
+
+      ### Styling
+      - Background 1: #ffba02
+
+      ## 3 (TEXT)
+
+      ### Layout
+      - Dimensions: 5px × 10px
+      - Position: (7112, 22)
+
+      ### Text
+      - Content: "3"
+      - Font Family: Clash Grotesk Variable
+      - Font Size: 8px
+      - Font Weight: 500
+      - Line Height: 9.84000015258789px
+      - Color: #1e1e1e
+      - Text Align: LEFT
+
+      ### Styling
+      - Background 1: #1e1e1e
+
+  ## Label (GROUP)
+
+  ### Layout
+  - Dimensions: 398px × 59px
+  - Position: (6213, 120)
+
+  ### Children (1)
+
+    ## User Management (TEXT)
+
+    ### Layout
+    - Dimensions: 398px × 59px
+    - Position: (6213, 120)
 
     ### Text
-    - Content: "Shopping & delivery
- made simple."
+    - Content: "User Management"
     - Font Family: Clash Grotesk Variable
     - Font Size: 48px
     - Font Weight: 500
@@ -331,506 +664,1666 @@ your sari-sari needs in one app, effortlessly."
     ### Styling
     - Background 1: #1e1e1e
 
-    ## image 1 (RECTANGLE)
-
-    ### Layout
-    - Dimensions: 955px × 716px
-    - Position: (598, 813)
-
-    ### Styling
-
-  ## nav bar (FRAME)
+  ## Search and filter (GROUP)
 
   ### Layout
-  - Dimensions: 1440px × 100px
-  - Position: (0, 0)
+  - Dimensions: 1087px × 60px
+  - Position: (6233, 214)
 
-  ### Children (3)
+  ### Children (4)
 
-    ## 2-removebg-preview 3 (RECTANGLE)
-
-    ### Layout
-    - Dimensions: 500px × 500px
-    - Position: (-91, -165)
-
-    ### Styling
-
-    ## Singup (FRAME)
+    ## Search (FRAME)
 
     ### Layout
-    - Dimensions: 150px × 50px
-    - Position: (1250, 27)
+    - Dimensions: 141px × 40px
+    - Position: (6243, 224)
     - Padding: 10px 10px 10px 10px
     - Item Spacing: 10px
-    - Border Radius: 30px
 
-    ### Styling
-    - Background 1: #0077be
+    ### Children (2)
 
-    ### Effects
-    - DROP_SHADOW 1: color rgba(0, 0, 0, 0.25), blur 5px, offset (0, 0), 
-
-    ### Children (1)
-
-      ## Sign up (TEXT)
+      ## Search (RECTANGLE)
 
       ### Layout
-      - Dimensions: 66px × 25px
-      - Position: (1292, 39.5)
-
-      ### Text
-      - Content: "Sign up"
-      - Font Family: Clash Grotesk Variable
-      - Font Size: 20px
-      - Font Weight: 500
-      - Line Height: 24.600000381469727px
-      - Color: #ffffff
-      - Text Align: CENTER
+      - Dimensions: 15px × 15px
+      - Position: (6253, 236.5)
 
       ### Styling
-      - Background 1: #ffffff
 
-    ## Log in (FRAME)
-
-    ### Layout
-    - Dimensions: 150px × 50px
-    - Position: (1090, 27)
-    - Padding: 10px 10px 10px 10px
-    - Item Spacing: 10px
-    - Border Radius: 30px
-
-    ### Children (1)
-
-      ## Log in (TEXT)
+      ## Search user... (TEXT)
 
       ### Layout
-      - Dimensions: 52px × 25px
-      - Position: (1139, 39.5)
+      - Dimensions: 96px × 20px
+      - Position: (6278, 234)
 
       ### Text
-      - Content: "Log in"
+      - Content: "Search user..."
       - Font Family: Clash Grotesk Variable
-      - Font Size: 20px
+      - Font Size: 16px
       - Font Weight: 500
-      - Line Height: 24.600000381469727px
+      - Line Height: 19.68000030517578px
       - Color: #1e1e1e
-      - Text Align: CENTER
+      - Text Align: LEFT
 
       ### Styling
       - Background 1: #1e1e1e
 
-  ## Label (GROUP)
-
-  ### Layout
-  - Dimensions: 1298px × 649px
-  - Position: (25, 85)
-
-  ### Children (4)
-
-    ## ef13b18d-e7d7-46b1-bc1e-d503cdb1716e-removebg-preview (RECTANGLE)
+    ## Filter (FRAME)
 
     ### Layout
-    - Dimensions: 531px × 469px
-    - Position: (25, 265)
+    - Dimensions: 88px × 42px
+    - Position: (7086, 223)
+    - Padding: 10px 10px 10px 10px
+    - Item Spacing: 10px
 
-    ### Styling
+    ### Children (2)
 
-    ## pink-empty-shopping-basket-online-shopping-concept-pink-background-3d-rendering-removebg-preview (RECTANGLE)
-
-    ### Layout
-    - Dimensions: 590px × 423px
-    - Position: (733, 85)
-
-    ### Styling
-
-    ## Bili kahit saan, kuha kahit kailan! (TEXT)
-
-    ### Layout
-    - Dimensions: 760px × 236px
-    - Position: (340, 302)
-
-    ### Text
-    - Content: "Bili kahit saan, 
-kuha kahit kailan!"
-    - Font Family: Clash Grotesk Variable
-    - Font Size: 96px
-    - Font Weight: 600
-    - Line Height: 118.08000183105469px
-    - Color: #000000
-    - Text Align: CENTER
-
-    ### Styling
-    - Background 1: #000000
-
-    ## Delve into your neighborhood's shopping needs with comprehensive insights in one app (TEXT)
-
-    ### Layout
-    - Dimensions: 422px × 50px
-    - Position: (509, 640)
-
-    ### Text
-    - Content: "Delve into your neighborhood's shopping needs 
-with comprehensive insights in one app"
-    - Font Family: Clash Grotesk Variable
-    - Font Size: 20px
-    - Font Weight: 500
-    - Line Height: 24.600000381469727px
-    - Color: #1e1e1e
-    - Text Align: CENTER
-
-    ### Styling
-    - Background 1: #1e1e1e
-
-  ## Apple (GROUP)
-
-  ### Layout
-  - Dimensions: 170px × 50px
-  - Position: (540, 720)
-
-  ### Children (2)
-
-    ## Rectangle 50 (RECTANGLE)
-
-    ### Layout
-    - Dimensions: 170px × 50px
-    - Position: (540, 720)
-    - Border Radius: 20px
-
-    ## Group (GROUP)
-
-    ### Layout
-    - Dimensions: 114px × 32px
-    - Position: (568, 729)
-
-    ### Children (3)
-
-      ## Apple Inc (RECTANGLE)
+      ## Filter (RECTANGLE)
 
       ### Layout
-      - Dimensions: 30px × 30px
-      - Position: (568, 729)
+      - Dimensions: 20px × 20px
+      - Position: (7096, 234)
 
       ### Styling
 
-      ## Download on the (TEXT)
+      ## Filter (TEXT)
 
       ### Layout
-      - Dimensions: 74px × 12px
-      - Position: (608, 729)
+      - Dimensions: 38px × 22px
+      - Position: (7126, 233)
 
       ### Text
-      - Content: "Download on the"
+      - Content: "Filter"
       - Font Family: Clash Grotesk Variable
-      - Font Size: 10px
+      - Font Size: 16px
       - Font Weight: 500
-      - Line Height: 12.300000190734863px
+      - Line Height: 22px
       - Color: #000000
       - Text Align: CENTER
 
       ### Styling
       - Background 1: #000000
 
-      ## App Store (TEXT)
+    ## View all (FRAME)
+
+    ### Layout
+    - Dimensions: 77px × 42px
+    - Position: (7215, 223)
+    - Padding: 10px 10px 10px 10px
+    - Item Spacing: 10px
+
+    ### Children (1)
+
+      ## View More (TEXT)
 
       ### Layout
-      - Dimensions: 73px × 20px
-      - Position: (608, 741)
+      - Dimensions: 57px × 22px
+      - Position: (7225, 233)
 
       ### Text
-      - Content: "App Store"
+      - Content: "View More"
       - Font Family: Clash Grotesk Variable
-      - Font Size: 16px
+      - Font Size: 12px
       - Font Weight: 500
-      - Line Height: 19.68000030517578px
+      - Line Height: 22px
       - Color: #000000
       - Text Align: CENTER
 
       ### Styling
       - Background 1: #000000
 
-  ## Google play (GROUP)
+    ## Subtract (BOOLEAN_OPERATION)
+
+    ### Layout
+    - Dimensions: 1087px × 60px
+    - Position: (6233, 214)
+
+    ### Styling
+    - Background 1: #ffffff
+
+    ### Effects
+    - DROP_SHADOW 1: color rgba(0, 0, 0, 0.25), blur 5px, offset (0, 0), 
+
+    ### Children (4)
+
+      ## Rectangle 97 (RECTANGLE)
+
+      ### Layout
+      - Dimensions: 1087px × 60px
+      - Position: (6233, 214)
+      - Border Radius: 16px
+
+      ### Styling
+      - Background 1: #ffffff
+
+      ### Effects
+      - DROP_SHADOW 1: color rgba(0, 0, 0, 0.25), blur 5px, offset (0, 0), 
+
+      ## Rectangle 99 (RECTANGLE)
+
+      ### Layout
+      - Dimensions: 820px × 40px
+      - Position: (6243, 224)
+      - Border Radius: 12px
+
+      ### Styling
+      - Background 1: #ffffff
+
+      ## Rectangle 100 (RECTANGLE)
+
+      ### Layout
+      - Dimensions: 100px × 40px
+      - Position: (7203, 224)
+      - Border Radius: 12px
+
+      ### Styling
+      - Background 1: #ffffff
+
+      ## Rectangle 100 (RECTANGLE)
+
+      ### Layout
+      - Dimensions: 100px × 40px
+      - Position: (7083, 224)
+      - Border Radius: 12px
+
+      ### Styling
+      - Background 1: #ffffff
+
+  ## List (GROUP)
 
   ### Layout
-  - Dimensions: 170px × 50px
-  - Position: (730, 720)
+  - Dimensions: 1087px × 690px
+  - Position: (6233, 309)
 
   ### Children (2)
 
-    ## Rectangle 50 (RECTANGLE)
+    ## Chart (GROUP)
 
     ### Layout
-    - Dimensions: 170px × 50px
-    - Position: (730, 720)
-    - Border Radius: 20px
+    - Dimensions: 1087px × 690px
+    - Position: (6233, 309)
 
-    ## Group (GROUP)
+    ### Children (2)
+
+      ## Rectangle 102 (RECTANGLE)
+
+      ### Layout
+      - Dimensions: 1087px × 638.888916015625px
+      - Position: (6233, 360.1111145019531)
+
+      ### Styling
+      - Background 1: #ffffff
+
+      ### Effects
+      - DROP_SHADOW 1: color rgba(0, 0, 0, 0.25), blur 5px, offset (0, 0), 
+
+      ## Labels (GROUP)
+
+      ### Layout
+      - Dimensions: 1087px × 51.11111068725586px
+      - Position: (6233, 309)
+
+      ### Children (2)
+
+        ## Rectangle 101 (RECTANGLE)
+
+        ### Layout
+        - Dimensions: 1087px × 51.11111068725586px
+        - Position: (6233, 309)
+
+        ### Styling
+        - Background 1: #f3f5f9
+
+        ### Effects
+        - DROP_SHADOW 1: color rgba(0, 0, 0, 0.25), blur 5px, offset (0, 0), 
+
+        ## Label (GROUP)
+
+        ### Layout
+        - Dimensions: 986px × 22.488889694213867px
+        - Position: (6270, 323.31109619140625)
+
+        ### Children (5)
+
+          ## USER (TEXT)
+
+          ### Layout
+          - Dimensions: 40px × 22.488889694213867px
+          - Position: (6270, 323.31109619140625)
+
+          ### Text
+          - Content: "USER"
+          - Font Family: Clash Grotesk Variable
+          - Font Size: 16px
+          - Font Weight: 500
+          - Line Height: 22px
+          - Color: #1e1e1e
+          - Text Align: CENTER
+
+          ### Styling
+          - Background 1: #1e1e1e
+
+          ## ROLE (TEXT)
+
+          ### Layout
+          - Dimensions: 39px × 22.488889694213867px
+          - Position: (6504, 323.31109619140625)
+
+          ### Text
+          - Content: "ROLE"
+          - Font Family: Clash Grotesk Variable
+          - Font Size: 16px
+          - Font Weight: 500
+          - Line Height: 22px
+          - Color: #1e1e1e
+          - Text Align: CENTER
+
+          ### Styling
+          - Background 1: #1e1e1e
+
+          ## STATUS (TEXT)
+
+          ### Layout
+          - Dimensions: 56px × 22.488889694213867px
+          - Position: (6729, 323.31109619140625)
+
+          ### Text
+          - Content: "STATUS"
+          - Font Family: Clash Grotesk Variable
+          - Font Size: 16px
+          - Font Weight: 500
+          - Line Height: 22px
+          - Color: #1e1e1e
+          - Text Align: CENTER
+
+          ### Styling
+          - Background 1: #1e1e1e
+
+          ## JOINED (TEXT)
+
+          ### Layout
+          - Dimensions: 55px × 22.488889694213867px
+          - Position: (6963, 323.31109619140625)
+
+          ### Text
+          - Content: "JOINED"
+          - Font Family: Clash Grotesk Variable
+          - Font Size: 16px
+          - Font Weight: 500
+          - Line Height: 22px
+          - Color: #1e1e1e
+          - Text Align: CENTER
+
+          ### Styling
+          - Background 1: #1e1e1e
+
+          ## ACTIONS (TEXT)
+
+          ### Layout
+          - Dimensions: 65px × 22.488889694213867px
+          - Position: (7191, 323.31109619140625)
+
+          ### Text
+          - Content: "ACTIONS"
+          - Font Family: Clash Grotesk Variable
+          - Font Size: 16px
+          - Font Weight: 500
+          - Line Height: 22px
+          - Color: #1e1e1e
+          - Text Align: CENTER
+
+          ### Styling
+          - Background 1: #1e1e1e
+
+    ## User's (GROUP)
 
     ### Layout
-    - Dimensions: 123px × 32px
-    - Position: (754, 729)
+    - Dimensions: 1087px × 640px
+    - Position: (6233, 359)
 
-    ### Children (3)
+    ### Children (8)
 
-      ## GET IT ON (TEXT)
-
-      ### Layout
-      - Dimensions: 44px × 12px
-      - Position: (794, 729)
-
-      ### Text
-      - Content: "GET IT ON"
-      - Font Family: Clash Grotesk Variable
-      - Font Size: 10px
-      - Font Weight: 500
-      - Line Height: 12.300000190734863px
-      - Color: #000000
-      - Text Align: LEFT
-
-      ### Styling
-      - Background 1: #000000
-
-      ## Google Play (TEXT)
+      ## User 1 (GROUP)
 
       ### Layout
-      - Dimensions: 83px × 20px
-      - Position: (794, 741)
+      - Dimensions: 1087px × 80px
+      - Position: (6233, 359)
 
-      ### Text
-      - Content: "Google Play"
-      - Font Family: Clash Grotesk Variable
-      - Font Size: 16px
-      - Font Weight: 500
-      - Line Height: 19.68000030517578px
-      - Color: #000000
-      - Text Align: LEFT
+      ### Children (6)
 
-      ### Styling
-      - Background 1: #000000
+        ## Rectangle 103 (RECTANGLE)
 
-      ## Google Play (RECTANGLE)
+        ### Layout
+        - Dimensions: 1087px × 80px
+        - Position: (6233, 359)
+
+        ### Styling
+        - Background 1: #ffffff
+
+        ## name 1 (FRAME)
+
+        ### Layout
+        - Dimensions: 112px × 44px
+        - Position: (6268, 377)
+
+        ### Children (2)
+
+          ## John Doe (TEXT)
+
+          ### Layout
+          - Dimensions: 112px × 22px
+          - Position: (6268, 377)
+
+          ### Text
+          - Content: "John Doe"
+          - Font Family: Clash Grotesk Variable
+          - Font Size: 16px
+          - Font Weight: 500
+          - Line Height: 22px
+          - Color: #1e1e1e
+          - Text Align: LEFT
+
+          ### Styling
+          - Background 1: #1e1e1e
+
+          ## dodo123@gmail.com (TEXT)
+
+          ### Layout
+          - Dimensions: 112px × 22px
+          - Position: (6268, 399)
+
+          ### Text
+          - Content: "dodo123@gmail.com"
+          - Font Family: Clash Grotesk Variable
+          - Font Size: 12px
+          - Font Weight: 500
+          - Line Height: 22px
+          - Color: #1e1e1e
+          - Text Align: CENTER
+
+          ### Styling
+          - Background 1: #1e1e1e
+
+        ## Role based (FRAME)
+
+        ### Layout
+        - Dimensions: 112px × 22px
+        - Position: (6468, 388)
+        - Padding: 0px 10px 0px 10px
+        - Item Spacing: 10px
+        - Border Radius: 8px
+
+        ### Styling
+        - Background 1: #dbeafe
+
+        ### Children (1)
+
+          ## Store Owner (TEXT)
+
+          ### Layout
+          - Dimensions: 92px × 22px
+          - Position: (6478, 388)
+
+          ### Text
+          - Content: "Store Owner"
+          - Font Family: Clash Grotesk Variable
+          - Font Size: 16px
+          - Font Weight: 500
+          - Line Height: 22px
+          - Color: #0077be
+          - Text Align: CENTER
+
+          ### Styling
+          - Background 1: #0077be
+
+        ## Role based (FRAME)
+
+        ### Layout
+        - Dimensions: 66px × 22px
+        - Position: (6724, 388)
+        - Padding: 0px 10px 0px 10px
+        - Item Spacing: 10px
+        - Border Radius: 8px
+
+        ### Styling
+        - Background 1: #dcfce7
+
+        ### Children (1)
+
+          ## Active (TEXT)
+
+          ### Layout
+          - Dimensions: 46px × 22px
+          - Position: (6734, 388)
+
+          ### Text
+          - Content: "Active"
+          - Font Family: Clash Grotesk Variable
+          - Font Size: 16px
+          - Font Weight: 500
+          - Line Height: 22px
+          - Color: #4db95b
+          - Text Align: CENTER
+
+          ### Styling
+          - Background 1: #4db95b
+
+        ## 2025-08-32 (TEXT)
+
+        ### Layout
+        - Dimensions: 93px × 22px
+        - Position: (6944, 388)
+
+        ### Text
+        - Content: "2025-08-32"
+        - Font Family: Clash Grotesk Variable
+        - Font Size: 16px
+        - Font Weight: 500
+        - Line Height: 22px
+        - Color: #1e1e1e
+        - Text Align: CENTER
+
+        ### Styling
+        - Background 1: #1e1e1e
+
+        ## Edit and Delete (FRAME)
+
+        ### Layout
+        - Dimensions: 50px × 20px
+        - Position: (7199, 389)
+        - Item Spacing: 10px
+
+        ### Children (2)
+
+          ## Edit (RECTANGLE)
+
+          ### Layout
+          - Dimensions: 20px × 20px
+          - Position: (7199, 389)
+
+          ### Styling
+
+          ## Trash (RECTANGLE)
+
+          ### Layout
+          - Dimensions: 20px × 20px
+          - Position: (7229, 389)
+
+          ### Styling
+
+      ## User 2 (GROUP)
 
       ### Layout
-      - Dimensions: 30px × 30px
-      - Position: (754, 729)
+      - Dimensions: 1087px × 80px
+      - Position: (6233, 439)
 
-      ### Styling
+      ### Children (6)
 
-  ## Rectangle 52 (RECTANGLE)
+        ## Rectangle 103 (RECTANGLE)
 
-  ### Layout
-  - Dimensions: 1457px × 380px
-  - Position: (-9, 2251)
-  - Border Radius: 20px
+        ### Layout
+        - Dimensions: 1087px × 80px
+        - Position: (6233, 439)
 
-  ### Styling
-  - Background 1: #ffffff
+        ### Styling
+        - Background 1: #ffffff
 
-  ### Effects
-  - DROP_SHADOW 1: color rgba(0, 0, 0, 0.25), blur 5px, offset (0, 0), spread 2px
+        ## name 1 (FRAME)
 
-  ## 2-removebg-preview 2 (RECTANGLE)
+        ### Layout
+        - Dimensions: 112px × 44px
+        - Position: (6268, 457)
 
-  ### Layout
-  - Dimensions: 500px × 500px
-  - Position: (-79, 2131)
+        ### Children (2)
 
-  ### Styling
+          ## John Doe (TEXT)
 
-  ## TindaGo. All Rights Reserved 2025. (TEXT)
+          ### Layout
+          - Dimensions: 112px × 22px
+          - Position: (6268, 457)
 
-  ### Layout
-  - Dimensions: 218px × 17px
-  - Position: (40, 2584)
+          ### Text
+          - Content: "John Doe"
+          - Font Family: Clash Grotesk Variable
+          - Font Size: 16px
+          - Font Weight: 500
+          - Line Height: 22px
+          - Color: #1e1e1e
+          - Text Align: LEFT
 
-  ### Text
-  - Content: "TindaGo. All Rights Reserved 2025."
-  - Font Family: Clash Grotesk Variable
-  - Font Size: 14px
-  - Font Weight: 500
-  - Line Height: 17.220001220703125px
-  - Color: #1e1e1e
-  - Text Align: CENTER
+          ### Styling
+          - Background 1: #1e1e1e
 
-  ### Styling
-  - Background 1: #1e1e1e
+          ## dodo123@gmail.com (TEXT)
 
-  ## Terms of services (TEXT)
+          ### Layout
+          - Dimensions: 112px × 22px
+          - Position: (6268, 479)
 
-  ### Layout
-  - Dimensions: 112px × 17px
-  - Position: (860, 2584)
+          ### Text
+          - Content: "dodo123@gmail.com"
+          - Font Family: Clash Grotesk Variable
+          - Font Size: 12px
+          - Font Weight: 500
+          - Line Height: 22px
+          - Color: #1e1e1e
+          - Text Align: CENTER
 
-  ### Text
-  - Content: "Terms of services"
-  - Font Family: Clash Grotesk Variable
-  - Font Size: 14px
-  - Font Weight: 500
-  - Line Height: 17.220001220703125px
-  - Color: #1e1e1e
-  - Text Align: LEFT
+          ### Styling
+          - Background 1: #1e1e1e
 
-  ### Styling
-  - Background 1: #1e1e1e
+        ## Role based (FRAME)
 
-  ## Learn more (TEXT)
+        ### Layout
+        - Dimensions: 78px × 22px
+        - Position: (6724, 468)
+        - Padding: 0px 10px 0px 10px
+        - Item Spacing: 10px
+        - Border Radius: 8px
 
-  ### Layout
-  - Dimensions: 74px × 17px
-  - Position: (857, 2371)
+        ### Styling
+        - Background 1: #fef9c3
 
-  ### Text
-  - Content: "Learn more"
-  - Font Family: Clash Grotesk Variable
-  - Font Size: 14px
-  - Font Weight: 500
-  - Line Height: 17.220001220703125px
-  - Color: #1e1e1e
-  - Text Align: LEFT
+        ### Children (1)
 
-  ### Styling
-  - Background 1: #1e1e1e
+          ## Pending (TEXT)
 
-  ## X (TEXT)
+          ### Layout
+          - Dimensions: 58px × 22px
+          - Position: (6734, 468)
 
-  ### Layout
-  - Dimensions: 10px × 17px
-  - Position: (1024, 2371)
+          ### Text
+          - Content: "Pending"
+          - Font Family: Clash Grotesk Variable
+          - Font Size: 16px
+          - Font Weight: 500
+          - Line Height: 22px
+          - Color: #b86b0e
+          - Text Align: CENTER
 
-  ### Text
-  - Content: "X"
-  - Font Family: Clash Grotesk Variable
-  - Font Size: 14px
-  - Font Weight: 500
-  - Line Height: 17.220001220703125px
-  - Color: #1e1e1e
-  - Text Align: LEFT
+          ### Styling
+          - Background 1: #b86b0e
 
-  ### Styling
-  - Background 1: #1e1e1e
+        ## 2025-08-32 (TEXT)
 
-  ## Contact us (TEXT)
+        ### Layout
+        - Dimensions: 93px × 22px
+        - Position: (6944, 468)
 
-  ### Layout
-  - Dimensions: 68px × 17px
-  - Position: (1188, 2371)
+        ### Text
+        - Content: "2025-08-32"
+        - Font Family: Clash Grotesk Variable
+        - Font Size: 16px
+        - Font Weight: 500
+        - Line Height: 22px
+        - Color: #1e1e1e
+        - Text Align: CENTER
 
-  ### Text
-  - Content: "Contact us"
-  - Font Family: Clash Grotesk Variable
-  - Font Size: 14px
-  - Font Weight: 500
-  - Line Height: 17.220001220703125px
-  - Color: #1e1e1e
-  - Text Align: LEFT
+        ### Styling
+        - Background 1: #1e1e1e
 
-  ### Styling
-  - Background 1: #1e1e1e
+        ## Edit and Delete (FRAME)
 
-  ## Facebook (TEXT)
+        ### Layout
+        - Dimensions: 50px × 20px
+        - Position: (7199, 469)
+        - Item Spacing: 10px
 
-  ### Layout
-  - Dimensions: 61px × 17px
-  - Position: (1024, 2445)
+        ### Children (2)
 
-  ### Text
-  - Content: "Facebook"
-  - Font Family: Clash Grotesk Variable
-  - Font Size: 14px
-  - Font Weight: 500
-  - Line Height: 17.220001220703125px
-  - Color: #1e1e1e
-  - Text Align: LEFT
+          ## Edit (RECTANGLE)
 
-  ### Styling
-  - Background 1: #1e1e1e
+          ### Layout
+          - Dimensions: 20px × 20px
+          - Position: (7199, 469)
 
-  ## instagram (TEXT)
+          ### Styling
 
-  ### Layout
-  - Dimensions: 65px × 17px
-  - Position: (1024, 2408)
+          ## Trash (RECTANGLE)
 
-  ### Text
-  - Content: "instagram"
-  - Font Family: Clash Grotesk Variable
-  - Font Size: 14px
-  - Font Weight: 500
-  - Line Height: 17.220001220703125px
-  - Color: #1e1e1e
-  - Text Align: LEFT
+          ### Layout
+          - Dimensions: 20px × 20px
+          - Position: (7229, 469)
 
-  ### Styling
-  - Background 1: #1e1e1e
+          ### Styling
 
-  ## Navigation (TEXT)
+        ## Role based (FRAME)
 
-  ### Layout
-  - Dimensions: 94px × 25px
-  - Position: (860, 2316)
+        ### Layout
+        - Dimensions: 112px × 22px
+        - Position: (6468, 468)
+        - Padding: 0px 10px 0px 10px
+        - Item Spacing: 10px
+        - Border Radius: 8px
 
-  ### Text
-  - Content: "Navigation"
-  - Font Family: Clash Grotesk Variable
-  - Font Size: 20px
-  - Font Weight: 500
-  - Line Height: 24.600000381469727px
-  - Color: #1e1e1e
-  - Text Align: LEFT
+        ### Styling
+        - Background 1: #dbeafe
 
-  ### Styling
-  - Background 1: #1e1e1e
+        ### Children (1)
 
-  ## Contacts (TEXT)
+          ## Store Owner (TEXT)
 
-  ### Layout
-  - Dimensions: 82px × 25px
-  - Position: (1188, 2316)
+          ### Layout
+          - Dimensions: 92px × 22px
+          - Position: (6478, 468)
 
-  ### Text
-  - Content: "Contacts"
-  - Font Family: Clash Grotesk Variable
-  - Font Size: 20px
-  - Font Weight: 500
-  - Line Height: 24.600000381469727px
-  - Color: #1e1e1e
-  - Text Align: LEFT
+          ### Text
+          - Content: "Store Owner"
+          - Font Family: Clash Grotesk Variable
+          - Font Size: 16px
+          - Font Weight: 500
+          - Line Height: 22px
+          - Color: #0077be
+          - Text Align: CENTER
 
-  ### Styling
-  - Background 1: #1e1e1e
+          ### Styling
+          - Background 1: #0077be
 
-  ## Connect (TEXT)
+      ## User 3 (GROUP)
 
-  ### Layout
-  - Dimensions: 76px × 25px
-  - Position: (1024, 2316)
+      ### Layout
+      - Dimensions: 1087px × 80px
+      - Position: (6233, 519)
 
-  ### Text
-  - Content: "Connect"
-  - Font Family: Clash Grotesk Variable
-  - Font Size: 20px
-  - Font Weight: 500
-  - Line Height: 24.600000381469727px
-  - Color: #1e1e1e
-  - Text Align: LEFT
+      ### Children (6)
 
-  ### Styling
-  - Background 1: #1e1e1e
+        ## Rectangle 103 (RECTANGLE)
 
-  ## Privacy Policy (TEXT)
+        ### Layout
+        - Dimensions: 1087px × 80px
+        - Position: (6233, 519)
 
-  ### Layout
-  - Dimensions: 86px × 17px
-  - Position: (1012, 2584)
+        ### Styling
+        - Background 1: #ffffff
 
-  ### Text
-  - Content: "Privacy Policy"
-  - Font Family: Clash Grotesk Variable
-  - Font Size: 14px
-  - Font Weight: 500
-  - Line Height: 17.220001220703125px
-  - Color: #1e1e1e
-  - Text Align: LEFT
+        ## name 1 (FRAME)
 
-  ### Styling
-  - Background 1: #1e1e1e
+        ### Layout
+        - Dimensions: 112px × 44px
+        - Position: (6268, 537)
+
+        ### Children (2)
+
+          ## John Doe (TEXT)
+
+          ### Layout
+          - Dimensions: 112px × 22px
+          - Position: (6268, 537)
+
+          ### Text
+          - Content: "John Doe"
+          - Font Family: Clash Grotesk Variable
+          - Font Size: 16px
+          - Font Weight: 500
+          - Line Height: 22px
+          - Color: #1e1e1e
+          - Text Align: LEFT
+
+          ### Styling
+          - Background 1: #1e1e1e
+
+          ## dodo123@gmail.com (TEXT)
+
+          ### Layout
+          - Dimensions: 112px × 22px
+          - Position: (6268, 559)
+
+          ### Text
+          - Content: "dodo123@gmail.com"
+          - Font Family: Clash Grotesk Variable
+          - Font Size: 12px
+          - Font Weight: 500
+          - Line Height: 22px
+          - Color: #1e1e1e
+          - Text Align: CENTER
+
+          ### Styling
+          - Background 1: #1e1e1e
+
+        ## Role based (FRAME)
+
+        ### Layout
+        - Dimensions: 66px × 22px
+        - Position: (6724, 548)
+        - Padding: 0px 10px 0px 10px
+        - Item Spacing: 10px
+        - Border Radius: 8px
+
+        ### Styling
+        - Background 1: #dcfce7
+
+        ### Children (1)
+
+          ## Active (TEXT)
+
+          ### Layout
+          - Dimensions: 46px × 22px
+          - Position: (6734, 548)
+
+          ### Text
+          - Content: "Active"
+          - Font Family: Clash Grotesk Variable
+          - Font Size: 16px
+          - Font Weight: 500
+          - Line Height: 22px
+          - Color: #4db95b
+          - Text Align: CENTER
+
+          ### Styling
+          - Background 1: #4db95b
+
+        ## 2025-08-32 (TEXT)
+
+        ### Layout
+        - Dimensions: 93px × 22px
+        - Position: (6944, 548)
+
+        ### Text
+        - Content: "2025-08-32"
+        - Font Family: Clash Grotesk Variable
+        - Font Size: 16px
+        - Font Weight: 500
+        - Line Height: 22px
+        - Color: #1e1e1e
+        - Text Align: CENTER
+
+        ### Styling
+        - Background 1: #1e1e1e
+
+        ## Edit and Delete (FRAME)
+
+        ### Layout
+        - Dimensions: 50px × 20px
+        - Position: (7199, 549)
+        - Item Spacing: 10px
+
+        ### Children (2)
+
+          ## Edit (RECTANGLE)
+
+          ### Layout
+          - Dimensions: 20px × 20px
+          - Position: (7199, 549)
+
+          ### Styling
+
+          ## Trash (RECTANGLE)
+
+          ### Layout
+          - Dimensions: 20px × 20px
+          - Position: (7229, 549)
+
+          ### Styling
+
+        ## Role based (FRAME)
+
+        ### Layout
+        - Dimensions: 93px × 22px
+        - Position: (6477, 548)
+        - Padding: 0px 10px 0px 10px
+        - Item Spacing: 10px
+        - Border Radius: 8px
+
+        ### Styling
+        - Background 1: #dbeafe
+
+        ### Children (1)
+
+          ## Customer (TEXT)
+
+          ### Layout
+          - Dimensions: 73px × 22px
+          - Position: (6487, 548)
+
+          ### Text
+          - Content: "Customer"
+          - Font Family: Clash Grotesk Variable
+          - Font Size: 16px
+          - Font Weight: 500
+          - Line Height: 22px
+          - Color: #0077be
+          - Text Align: CENTER
+
+          ### Styling
+          - Background 1: #0077be
+
+      ## User 4 (GROUP)
+
+      ### Layout
+      - Dimensions: 1087px × 80px
+      - Position: (6233, 599)
+
+      ### Children (6)
+
+        ## Rectangle 103 (RECTANGLE)
+
+        ### Layout
+        - Dimensions: 1087px × 80px
+        - Position: (6233, 599)
+
+        ### Styling
+        - Background 1: #ffffff
+
+        ## name 1 (FRAME)
+
+        ### Layout
+        - Dimensions: 112px × 44px
+        - Position: (6268, 617)
+
+        ### Children (2)
+
+          ## John Doe (TEXT)
+
+          ### Layout
+          - Dimensions: 112px × 22px
+          - Position: (6268, 617)
+
+          ### Text
+          - Content: "John Doe"
+          - Font Family: Clash Grotesk Variable
+          - Font Size: 16px
+          - Font Weight: 500
+          - Line Height: 22px
+          - Color: #1e1e1e
+          - Text Align: LEFT
+
+          ### Styling
+          - Background 1: #1e1e1e
+
+          ## dodo123@gmail.com (TEXT)
+
+          ### Layout
+          - Dimensions: 112px × 22px
+          - Position: (6268, 639)
+
+          ### Text
+          - Content: "dodo123@gmail.com"
+          - Font Family: Clash Grotesk Variable
+          - Font Size: 12px
+          - Font Weight: 500
+          - Line Height: 22px
+          - Color: #1e1e1e
+          - Text Align: CENTER
+
+          ### Styling
+          - Background 1: #1e1e1e
+
+        ## Role based (FRAME)
+
+        ### Layout
+        - Dimensions: 112px × 22px
+        - Position: (6468, 628)
+        - Padding: 0px 10px 0px 10px
+        - Item Spacing: 10px
+        - Border Radius: 8px
+
+        ### Styling
+        - Background 1: #dbeafe
+
+        ### Children (1)
+
+          ## Store Owner (TEXT)
+
+          ### Layout
+          - Dimensions: 92px × 22px
+          - Position: (6478, 628)
+
+          ### Text
+          - Content: "Store Owner"
+          - Font Family: Clash Grotesk Variable
+          - Font Size: 16px
+          - Font Weight: 500
+          - Line Height: 22px
+          - Color: #0077be
+          - Text Align: CENTER
+
+          ### Styling
+          - Background 1: #0077be
+
+        ## Role based (FRAME)
+
+        ### Layout
+        - Dimensions: 66px × 22px
+        - Position: (6724, 628)
+        - Padding: 0px 10px 0px 10px
+        - Item Spacing: 10px
+        - Border Radius: 8px
+
+        ### Styling
+        - Background 1: #dcfce7
+
+        ### Children (1)
+
+          ## Active (TEXT)
+
+          ### Layout
+          - Dimensions: 46px × 22px
+          - Position: (6734, 628)
+
+          ### Text
+          - Content: "Active"
+          - Font Family: Clash Grotesk Variable
+          - Font Size: 16px
+          - Font Weight: 500
+          - Line Height: 22px
+          - Color: #4db95b
+          - Text Align: CENTER
+
+          ### Styling
+          - Background 1: #4db95b
+
+        ## 2025-08-32 (TEXT)
+
+        ### Layout
+        - Dimensions: 93px × 22px
+        - Position: (6944, 628)
+
+        ### Text
+        - Content: "2025-08-32"
+        - Font Family: Clash Grotesk Variable
+        - Font Size: 16px
+        - Font Weight: 500
+        - Line Height: 22px
+        - Color: #1e1e1e
+        - Text Align: CENTER
+
+        ### Styling
+        - Background 1: #1e1e1e
+
+        ## Edit and Delete (FRAME)
+
+        ### Layout
+        - Dimensions: 50px × 20px
+        - Position: (7199, 629)
+        - Item Spacing: 10px
+
+        ### Children (2)
+
+          ## Edit (RECTANGLE)
+
+          ### Layout
+          - Dimensions: 20px × 20px
+          - Position: (7199, 629)
+
+          ### Styling
+
+          ## Trash (RECTANGLE)
+
+          ### Layout
+          - Dimensions: 20px × 20px
+          - Position: (7229, 629)
+
+          ### Styling
+
+      ## User 5 (GROUP)
+
+      ### Layout
+      - Dimensions: 1087px × 80px
+      - Position: (6233, 679)
+
+      ### Children (6)
+
+        ## Rectangle 103 (RECTANGLE)
+
+        ### Layout
+        - Dimensions: 1087px × 80px
+        - Position: (6233, 679)
+
+        ### Styling
+        - Background 1: #ffffff
+
+        ## name 1 (FRAME)
+
+        ### Layout
+        - Dimensions: 112px × 44px
+        - Position: (6268, 697)
+
+        ### Children (2)
+
+          ## John Doe (TEXT)
+
+          ### Layout
+          - Dimensions: 112px × 22px
+          - Position: (6268, 697)
+
+          ### Text
+          - Content: "John Doe"
+          - Font Family: Clash Grotesk Variable
+          - Font Size: 16px
+          - Font Weight: 500
+          - Line Height: 22px
+          - Color: #1e1e1e
+          - Text Align: LEFT
+
+          ### Styling
+          - Background 1: #1e1e1e
+
+          ## dodo123@gmail.com (TEXT)
+
+          ### Layout
+          - Dimensions: 112px × 22px
+          - Position: (6268, 719)
+
+          ### Text
+          - Content: "dodo123@gmail.com"
+          - Font Family: Clash Grotesk Variable
+          - Font Size: 12px
+          - Font Weight: 500
+          - Line Height: 22px
+          - Color: #1e1e1e
+          - Text Align: CENTER
+
+          ### Styling
+          - Background 1: #1e1e1e
+
+        ## Role based (FRAME)
+
+        ### Layout
+        - Dimensions: 112px × 22px
+        - Position: (6468, 708)
+        - Padding: 0px 10px 0px 10px
+        - Item Spacing: 10px
+        - Border Radius: 8px
+
+        ### Styling
+        - Background 1: #dbeafe
+
+        ### Children (1)
+
+          ## Store Owner (TEXT)
+
+          ### Layout
+          - Dimensions: 92px × 22px
+          - Position: (6478, 708)
+
+          ### Text
+          - Content: "Store Owner"
+          - Font Family: Clash Grotesk Variable
+          - Font Size: 16px
+          - Font Weight: 500
+          - Line Height: 22px
+          - Color: #0077be
+          - Text Align: CENTER
+
+          ### Styling
+          - Background 1: #0077be
+
+        ## Role based (FRAME)
+
+        ### Layout
+        - Dimensions: 66px × 22px
+        - Position: (6724, 708)
+        - Padding: 0px 10px 0px 10px
+        - Item Spacing: 10px
+        - Border Radius: 8px
+
+        ### Styling
+        - Background 1: #dcfce7
+
+        ### Children (1)
+
+          ## Active (TEXT)
+
+          ### Layout
+          - Dimensions: 46px × 22px
+          - Position: (6734, 708)
+
+          ### Text
+          - Content: "Active"
+          - Font Family: Clash Grotesk Variable
+          - Font Size: 16px
+          - Font Weight: 500
+          - Line Height: 22px
+          - Color: #4db95b
+          - Text Align: CENTER
+
+          ### Styling
+          - Background 1: #4db95b
+
+        ## 2025-08-32 (TEXT)
+
+        ### Layout
+        - Dimensions: 93px × 22px
+        - Position: (6944, 708)
+
+        ### Text
+        - Content: "2025-08-32"
+        - Font Family: Clash Grotesk Variable
+        - Font Size: 16px
+        - Font Weight: 500
+        - Line Height: 22px
+        - Color: #1e1e1e
+        - Text Align: CENTER
+
+        ### Styling
+        - Background 1: #1e1e1e
+
+        ## Edit and Delete (FRAME)
+
+        ### Layout
+        - Dimensions: 50px × 20px
+        - Position: (7199, 709)
+        - Item Spacing: 10px
+
+        ### Children (2)
+
+          ## Edit (RECTANGLE)
+
+          ### Layout
+          - Dimensions: 20px × 20px
+          - Position: (7199, 709)
+
+          ### Styling
+
+          ## Trash (RECTANGLE)
+
+          ### Layout
+          - Dimensions: 20px × 20px
+          - Position: (7229, 709)
+
+          ### Styling
+
+      ## User 6 (GROUP)
+
+      ### Layout
+      - Dimensions: 1087px × 80px
+      - Position: (6233, 759)
+
+      ### Children (6)
+
+        ## Rectangle 103 (RECTANGLE)
+
+        ### Layout
+        - Dimensions: 1087px × 80px
+        - Position: (6233, 759)
+
+        ### Styling
+        - Background 1: #ffffff
+
+        ## name 1 (FRAME)
+
+        ### Layout
+        - Dimensions: 112px × 44px
+        - Position: (6268, 777)
+
+        ### Children (2)
+
+          ## John Doe (TEXT)
+
+          ### Layout
+          - Dimensions: 112px × 22px
+          - Position: (6268, 777)
+
+          ### Text
+          - Content: "John Doe"
+          - Font Family: Clash Grotesk Variable
+          - Font Size: 16px
+          - Font Weight: 500
+          - Line Height: 22px
+          - Color: #1e1e1e
+          - Text Align: LEFT
+
+          ### Styling
+          - Background 1: #1e1e1e
+
+          ## dodo123@gmail.com (TEXT)
+
+          ### Layout
+          - Dimensions: 112px × 22px
+          - Position: (6268, 799)
+
+          ### Text
+          - Content: "dodo123@gmail.com"
+          - Font Family: Clash Grotesk Variable
+          - Font Size: 12px
+          - Font Weight: 500
+          - Line Height: 22px
+          - Color: #1e1e1e
+          - Text Align: CENTER
+
+          ### Styling
+          - Background 1: #1e1e1e
+
+        ## Role based (FRAME)
+
+        ### Layout
+        - Dimensions: 112px × 22px
+        - Position: (6468, 788)
+        - Padding: 0px 10px 0px 10px
+        - Item Spacing: 10px
+        - Border Radius: 8px
+
+        ### Styling
+        - Background 1: #dbeafe
+
+        ### Children (1)
+
+          ## Store Owner (TEXT)
+
+          ### Layout
+          - Dimensions: 92px × 22px
+          - Position: (6478, 788)
+
+          ### Text
+          - Content: "Store Owner"
+          - Font Family: Clash Grotesk Variable
+          - Font Size: 16px
+          - Font Weight: 500
+          - Line Height: 22px
+          - Color: #0077be
+          - Text Align: CENTER
+
+          ### Styling
+          - Background 1: #0077be
+
+        ## Role based (FRAME)
+
+        ### Layout
+        - Dimensions: 66px × 22px
+        - Position: (6724, 788)
+        - Padding: 0px 10px 0px 10px
+        - Item Spacing: 10px
+        - Border Radius: 8px
+
+        ### Styling
+        - Background 1: #dcfce7
+
+        ### Children (1)
+
+          ## Active (TEXT)
+
+          ### Layout
+          - Dimensions: 46px × 22px
+          - Position: (6734, 788)
+
+          ### Text
+          - Content: "Active"
+          - Font Family: Clash Grotesk Variable
+          - Font Size: 16px
+          - Font Weight: 500
+          - Line Height: 22px
+          - Color: #4db95b
+          - Text Align: CENTER
+
+          ### Styling
+          - Background 1: #4db95b
+
+        ## 2025-08-32 (TEXT)
+
+        ### Layout
+        - Dimensions: 93px × 22px
+        - Position: (6944, 788)
+
+        ### Text
+        - Content: "2025-08-32"
+        - Font Family: Clash Grotesk Variable
+        - Font Size: 16px
+        - Font Weight: 500
+        - Line Height: 22px
+        - Color: #1e1e1e
+        - Text Align: CENTER
+
+        ### Styling
+        - Background 1: #1e1e1e
+
+        ## Edit and Delete (FRAME)
+
+        ### Layout
+        - Dimensions: 50px × 20px
+        - Position: (7199, 789)
+        - Item Spacing: 10px
+
+        ### Children (2)
+
+          ## Edit (RECTANGLE)
+
+          ### Layout
+          - Dimensions: 20px × 20px
+          - Position: (7199, 789)
+
+          ### Styling
+
+          ## Trash (RECTANGLE)
+
+          ### Layout
+          - Dimensions: 20px × 20px
+          - Position: (7229, 789)
+
+          ### Styling
+
+      ## User 7 (GROUP)
+
+      ### Layout
+      - Dimensions: 1087px × 80px
+      - Position: (6233, 839)
+
+      ### Children (6)
+
+        ## Rectangle 103 (RECTANGLE)
+
+        ### Layout
+        - Dimensions: 1087px × 80px
+        - Position: (6233, 839)
+
+        ### Styling
+        - Background 1: #ffffff
+
+        ## name 1 (FRAME)
+
+        ### Layout
+        - Dimensions: 112px × 44px
+        - Position: (6268, 857)
+
+        ### Children (2)
+
+          ## John Doe (TEXT)
+
+          ### Layout
+          - Dimensions: 112px × 22px
+          - Position: (6268, 857)
+
+          ### Text
+          - Content: "John Doe"
+          - Font Family: Clash Grotesk Variable
+          - Font Size: 16px
+          - Font Weight: 500
+          - Line Height: 22px
+          - Color: #1e1e1e
+          - Text Align: LEFT
+
+          ### Styling
+          - Background 1: #1e1e1e
+
+          ## dodo123@gmail.com (TEXT)
+
+          ### Layout
+          - Dimensions: 112px × 22px
+          - Position: (6268, 879)
+
+          ### Text
+          - Content: "dodo123@gmail.com"
+          - Font Family: Clash Grotesk Variable
+          - Font Size: 12px
+          - Font Weight: 500
+          - Line Height: 22px
+          - Color: #1e1e1e
+          - Text Align: CENTER
+
+          ### Styling
+          - Background 1: #1e1e1e
+
+        ## Role based (FRAME)
+
+        ### Layout
+        - Dimensions: 112px × 22px
+        - Position: (6468, 868)
+        - Padding: 0px 10px 0px 10px
+        - Item Spacing: 10px
+        - Border Radius: 8px
+
+        ### Styling
+        - Background 1: #dbeafe
+
+        ### Children (1)
+
+          ## Store Owner (TEXT)
+
+          ### Layout
+          - Dimensions: 92px × 22px
+          - Position: (6478, 868)
+
+          ### Text
+          - Content: "Store Owner"
+          - Font Family: Clash Grotesk Variable
+          - Font Size: 16px
+          - Font Weight: 500
+          - Line Height: 22px
+          - Color: #0077be
+          - Text Align: CENTER
+
+          ### Styling
+          - Background 1: #0077be
+
+        ## Role based (FRAME)
+
+        ### Layout
+        - Dimensions: 66px × 22px
+        - Position: (6724, 868)
+        - Padding: 0px 10px 0px 10px
+        - Item Spacing: 10px
+        - Border Radius: 8px
+
+        ### Styling
+        - Background 1: #dcfce7
+
+        ### Children (1)
+
+          ## Active (TEXT)
+
+          ### Layout
+          - Dimensions: 46px × 22px
+          - Position: (6734, 868)
+
+          ### Text
+          - Content: "Active"
+          - Font Family: Clash Grotesk Variable
+          - Font Size: 16px
+          - Font Weight: 500
+          - Line Height: 22px
+          - Color: #4db95b
+          - Text Align: CENTER
+
+          ### Styling
+          - Background 1: #4db95b
+
+        ## 2025-08-32 (TEXT)
+
+        ### Layout
+        - Dimensions: 93px × 22px
+        - Position: (6944, 868)
+
+        ### Text
+        - Content: "2025-08-32"
+        - Font Family: Clash Grotesk Variable
+        - Font Size: 16px
+        - Font Weight: 500
+        - Line Height: 22px
+        - Color: #1e1e1e
+        - Text Align: CENTER
+
+        ### Styling
+        - Background 1: #1e1e1e
+
+        ## Edit and Delete (FRAME)
+
+        ### Layout
+        - Dimensions: 50px × 20px
+        - Position: (7199, 869)
+        - Item Spacing: 10px
+
+        ### Children (2)
+
+          ## Edit (RECTANGLE)
+
+          ### Layout
+          - Dimensions: 20px × 20px
+          - Position: (7199, 869)
+
+          ### Styling
+
+          ## Trash (RECTANGLE)
+
+          ### Layout
+          - Dimensions: 20px × 20px
+          - Position: (7229, 869)
+
+          ### Styling
+
+      ## User 8 (GROUP)
+
+      ### Layout
+      - Dimensions: 1087px × 80px
+      - Position: (6233, 919)
+
+      ### Children (6)
+
+        ## Rectangle 103 (RECTANGLE)
+
+        ### Layout
+        - Dimensions: 1087px × 80px
+        - Position: (6233, 919)
+
+        ### Styling
+        - Background 1: #ffffff
+
+        ## name 1 (FRAME)
+
+        ### Layout
+        - Dimensions: 112px × 44px
+        - Position: (6268, 937)
+
+        ### Children (2)
+
+          ## John Doe (TEXT)
+
+          ### Layout
+          - Dimensions: 112px × 22px
+          - Position: (6268, 937)
+
+          ### Text
+          - Content: "John Doe"
+          - Font Family: Clash Grotesk Variable
+          - Font Size: 16px
+          - Font Weight: 500
+          - Line Height: 22px
+          - Color: #1e1e1e
+          - Text Align: LEFT
+
+          ### Styling
+          - Background 1: #1e1e1e
+
+          ## dodo123@gmail.com (TEXT)
+
+          ### Layout
+          - Dimensions: 112px × 22px
+          - Position: (6268, 959)
+
+          ### Text
+          - Content: "dodo123@gmail.com"
+          - Font Family: Clash Grotesk Variable
+          - Font Size: 12px
+          - Font Weight: 500
+          - Line Height: 22px
+          - Color: #1e1e1e
+          - Text Align: CENTER
+
+          ### Styling
+          - Background 1: #1e1e1e
+
+        ## Role based (FRAME)
+
+        ### Layout
+        - Dimensions: 112px × 22px
+        - Position: (6468, 948)
+        - Padding: 0px 10px 0px 10px
+        - Item Spacing: 10px
+        - Border Radius: 8px
+
+        ### Styling
+        - Background 1: #dbeafe
+
+        ### Children (1)
+
+          ## Store Owner (TEXT)
+
+          ### Layout
+          - Dimensions: 92px × 22px
+          - Position: (6478, 948)
+
+          ### Text
+          - Content: "Store Owner"
+          - Font Family: Clash Grotesk Variable
+          - Font Size: 16px
+          - Font Weight: 500
+          - Line Height: 22px
+          - Color: #0077be
+          - Text Align: CENTER
+
+          ### Styling
+          - Background 1: #0077be
+
+        ## Role based (FRAME)
+
+        ### Layout
+        - Dimensions: 66px × 22px
+        - Position: (6724, 948)
+        - Padding: 0px 10px 0px 10px
+        - Item Spacing: 10px
+        - Border Radius: 8px
+
+        ### Styling
+        - Background 1: #dcfce7
+
+        ### Children (1)
+
+          ## Active (TEXT)
+
+          ### Layout
+          - Dimensions: 46px × 22px
+          - Position: (6734, 948)
+
+          ### Text
+          - Content: "Active"
+          - Font Family: Clash Grotesk Variable
+          - Font Size: 16px
+          - Font Weight: 500
+          - Line Height: 22px
+          - Color: #4db95b
+          - Text Align: CENTER
+
+          ### Styling
+          - Background 1: #4db95b
+
+        ## 2025-08-32 (TEXT)
+
+        ### Layout
+        - Dimensions: 93px × 22px
+        - Position: (6944, 948)
+
+        ### Text
+        - Content: "2025-08-32"
+        - Font Family: Clash Grotesk Variable
+        - Font Size: 16px
+        - Font Weight: 500
+        - Line Height: 22px
+        - Color: #1e1e1e
+        - Text Align: CENTER
+
+        ### Styling
+        - Background 1: #1e1e1e
+
+        ## Edit and Delete (FRAME)
+
+        ### Layout
+        - Dimensions: 50px × 20px
+        - Position: (7199, 949)
+        - Item Spacing: 10px
+
+        ### Children (2)
+
+          ## Edit (RECTANGLE)
+
+          ### Layout
+          - Dimensions: 20px × 20px
+          - Position: (7199, 949)
+
+          ### Styling
+
+          ## Trash (RECTANGLE)
+
+          ### Layout
+          - Dimensions: 20px × 20px
+          - Position: (7229, 949)
+
+          ### Styling
 

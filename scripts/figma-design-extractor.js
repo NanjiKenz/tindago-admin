@@ -23,10 +23,52 @@ require('dotenv').config();
 const FIGMA_ACCESS_TOKEN = process.env.FIGMA_ACCESS_TOKEN;
 const FIGMA_FILE_ID = process.env.FIGMA_FILE_ID;
 const NODE_ID = process.argv[2] || '281-115'; // Default to the TindaGo Share node
-const OUTPUT_DIR = path.join(__dirname, '../figma-extracted-design');
+const BASE_OUTPUT_DIR = path.join(__dirname, '../figma-extracted-design');
 
 // Figma API endpoints
 const FIGMA_API_BASE = 'https://api.figma.com/v1';
+
+// Helper functions for dynamic naming
+function sanitizeFileName(name) {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
+function generateComponentName(nodeName) {
+  return nodeName
+    .split(/[\s-_]+/)
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join('')
+    .replace(/[^a-zA-Z0-9]/g, '');
+}
+
+function createExtractionFolder(nodeName, nodeId) {
+  const sanitizedName = sanitizeFileName(nodeName);
+  const folderName = `${sanitizedName}-${nodeId.replace(':', '-')}`;
+  return path.join(BASE_OUTPUT_DIR, folderName);
+}
+
+function loadExtractionIndex() {
+  const indexPath = path.join(BASE_OUTPUT_DIR, 'extraction-index.json');
+  try {
+    if (fs.existsSync(indexPath)) {
+      return JSON.parse(fs.readFileSync(indexPath, 'utf8'));
+    }
+  } catch (error) {
+    console.warn('Could not load extraction index, creating new one');
+  }
+  return { extractions: [], lastUpdated: null };
+}
+
+function saveExtractionIndex(index) {
+  const indexPath = path.join(BASE_OUTPUT_DIR, 'extraction-index.json');
+  fs.mkdirSync(BASE_OUTPUT_DIR, { recursive: true });
+  fs.writeFileSync(indexPath, JSON.stringify(index, null, 2), 'utf8');
+}
 
 class FigmaDesignExtractor {
   constructor(token, fileId) {
@@ -163,10 +205,10 @@ class FigmaDesignExtractor {
     }));
   }
 
-  async downloadImage(url, filename) {
+  async downloadImage(url, filename, outputDir) {
     try {
       const response = await axios.get(url, { responseType: 'stream' });
-      const imagePath = path.join(OUTPUT_DIR, 'assets', filename);
+      const imagePath = path.join(outputDir, 'assets', filename);
 
       // Ensure directory exists
       fs.mkdirSync(path.dirname(imagePath), { recursive: true });
@@ -324,11 +366,7 @@ class FigmaDesignExtractor {
     try {
       console.log(`🎨 Starting design extraction for node: ${nodeId}\n`);
 
-      // Create output directory
-      fs.mkdirSync(OUTPUT_DIR, { recursive: true });
-      fs.mkdirSync(path.join(OUTPUT_DIR, 'assets'), { recursive: true });
-
-      // Fetch the specific node data
+      // Fetch the specific node data first to get the node name
       const nodeResponse = await this.fetchSpecificNode(nodeId);
       const targetNode = nodeResponse.nodes[nodeId]?.document;
 
@@ -337,6 +375,17 @@ class FigmaDesignExtractor {
       }
 
       console.log(`Found node: ${targetNode.name} (${targetNode.type})`);
+
+      // Create dynamic output directory based on node name and ID
+      const outputDir = createExtractionFolder(targetNode.name, nodeId);
+      const componentName = generateComponentName(targetNode.name);
+
+      console.log(`📁 Output directory: ${outputDir}`);
+      console.log(`🏗️  Component name: ${componentName}`);
+
+      // Create output directory structure
+      fs.mkdirSync(outputDir, { recursive: true });
+      fs.mkdirSync(path.join(outputDir, 'assets'), { recursive: true });
 
       // Process the node and extract all design data
       const processedNode = await this.processNode(targetNode);
@@ -353,7 +402,7 @@ class FigmaDesignExtractor {
           for (const [nodeId, imageUrl] of Object.entries(imageResponse.images)) {
             if (imageUrl) {
               const filename = `${nodeId}.png`;
-              const localPath = await this.downloadImage(imageUrl, filename);
+              const localPath = await this.downloadImage(imageUrl, filename, outputDir);
               if (localPath) {
                 downloadedImages[nodeId] = filename;
                 console.log(`Downloaded: ${filename}`);
@@ -363,8 +412,8 @@ class FigmaDesignExtractor {
         }
       }
 
-      // Generate React component
-      const reactComponent = this.generateReactComponent(processedNode);
+      // Generate React component with dynamic name
+      const reactComponent = this.generateReactComponent(processedNode, componentName);
 
       // Save all extracted data
       const designData = {
@@ -373,7 +422,9 @@ class FigmaDesignExtractor {
           nodeId: nodeId,
           nodeName: targetNode.name,
           nodeType: targetNode.type,
-          figmaFileId: this.fileId
+          componentName: componentName,
+          figmaFileId: this.fileId,
+          outputPath: path.relative(BASE_OUTPUT_DIR, outputDir)
         },
         design: processedNode,
         assets: downloadedImages,
@@ -385,14 +436,14 @@ class FigmaDesignExtractor {
 
       // Write design data to JSON
       fs.writeFileSync(
-        path.join(OUTPUT_DIR, 'design-data.json'),
+        path.join(outputDir, 'design-data.json'),
         JSON.stringify(designData, null, 2),
         'utf8'
       );
 
-      // Write React component to file
+      // Write React component to file with dynamic name
       fs.writeFileSync(
-        path.join(OUTPUT_DIR, 'TindaGoShare.tsx'),
+        path.join(outputDir, `${componentName}.tsx`),
         reactComponent,
         'utf8'
       );
@@ -400,15 +451,44 @@ class FigmaDesignExtractor {
       // Write detailed specifications
       const specs = this.generateSpecifications(processedNode);
       fs.writeFileSync(
-        path.join(OUTPUT_DIR, 'design-specifications.md'),
+        path.join(outputDir, 'design-specifications.md'),
         specs,
         'utf8'
       );
 
+      // Update extraction index
+      const index = loadExtractionIndex();
+      const existingIndex = index.extractions.findIndex(ext => ext.nodeId === nodeId);
+
+      const extractionEntry = {
+        nodeId: nodeId,
+        nodeName: targetNode.name,
+        componentName: componentName,
+        extractedAt: new Date().toISOString(),
+        outputPath: path.relative(BASE_OUTPUT_DIR, outputDir),
+        folderName: path.basename(outputDir),
+        assetCount: Object.keys(downloadedImages).length
+      };
+
+      if (existingIndex >= 0) {
+        index.extractions[existingIndex] = extractionEntry;
+        console.log(`📝 Updated existing extraction in index`);
+      } else {
+        index.extractions.push(extractionEntry);
+        console.log(`📝 Added new extraction to index`);
+      }
+
+      index.lastUpdated = new Date().toISOString();
+      saveExtractionIndex(index);
+
+      // Generate overview README
+      this.generateOverviewReadme(index);
+
       console.log(`\n✅ Design extraction completed successfully!`);
-      console.log(`📁 Output directory: ${OUTPUT_DIR}`);
+      console.log(`📁 Output directory: ${outputDir}`);
       console.log(`📊 Extracted ${Object.keys(downloadedImages).length} images`);
-      console.log(`🎯 Generated React component and Tailwind classes`);
+      console.log(`🎯 Generated ${componentName} component and Tailwind classes`);
+      console.log(`📋 Total extractions: ${index.extractions.length}`);
 
       return designData;
 
@@ -494,6 +574,90 @@ class FigmaDesignExtractor {
 
     return specs;
   }
+
+  generateOverviewReadme(index) {
+    const readmePath = path.join(BASE_OUTPUT_DIR, 'README.md');
+
+    let readme = `# TindaGo Figma Design Extractions\n\n`;
+    readme += `Generated on: ${new Date().toLocaleString()}\n`;
+    readme += `Total Extractions: ${index.extractions.length}\n\n`;
+
+    if (index.extractions.length === 0) {
+      readme += `No extractions yet. Run the figma-design-extractor script to extract your first design!\n\n`;
+      readme += `Example: \`node scripts/figma-design-extractor.js 281-980\`\n`;
+    } else {
+      readme += `## Available Extractions\n\n`;
+      readme += `| Component | Node ID | Extracted | Assets | Folder |\n`;
+      readme += `|-----------|---------|-----------|--------|---------|\n`;
+
+      index.extractions
+        .sort((a, b) => new Date(b.extractedAt) - new Date(a.extractedAt))
+        .forEach(extraction => {
+          const date = new Date(extraction.extractedAt).toLocaleDateString();
+          readme += `| ${extraction.componentName} | \`${extraction.nodeId}\` | ${date} | ${extraction.assetCount} | [\`${extraction.folderName}\`](./${extraction.folderName}/) |\n`;
+        });
+
+      readme += `\n## How to Use\n\n`;
+      readme += `Each extraction folder contains:\n`;
+      readme += `- \`{ComponentName}.tsx\` - Ready-to-use React component\n`;
+      readme += `- \`design-data.json\` - Complete design specifications\n`;
+      readme += `- \`design-specifications.md\` - Human-readable documentation\n`;
+      readme += `- \`assets/\` - All exported images and assets\n\n`;
+
+      readme += `## Extraction Commands\n\n`;
+      readme += `To extract a new design:\n`;
+      readme += `\`\`\`bash\n`;
+      readme += `node scripts/figma-design-extractor.js [node-id]\n`;
+      readme += `\`\`\`\n\n`;
+
+      readme += `Example node IDs:\n`;
+      index.extractions.forEach(extraction => {
+        readme += `- \`${extraction.nodeId}\` - ${extraction.nodeName}\n`;
+      });
+    }
+
+    fs.writeFileSync(readmePath, readme, 'utf8');
+  }
+}
+
+// Token validation function
+async function validateFigmaToken(token) {
+  try {
+    console.log('🔍 Validating Figma access token...');
+    const response = await axios.get(
+      `${FIGMA_API_BASE}/me`,
+      {
+        headers: {
+          'X-Figma-Token': token,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    if (response.data && response.data.email) {
+      console.log(`✅ Token valid! Authenticated as: ${response.data.email}`);
+      return true;
+    }
+
+    return false;
+  } catch (error) {
+    console.error('❌ Token validation failed:');
+
+    if (error.response?.status === 403) {
+      console.error('🚫 Status 403: Invalid or expired Figma access token');
+      console.error('💡 Solutions:');
+      console.error('   1. Generate a new token: https://www.figma.com/developers/api#access-tokens');
+      console.error('   2. Make sure token has access to the file');
+      console.error('   3. Check if token was copied correctly to .env file');
+    } else if (error.response?.status === 401) {
+      console.error('🚫 Status 401: Unauthorized - check your token format');
+    } else {
+      console.error(`🚫 Status ${error.response?.status}: ${error.response?.statusText}`);
+      console.error('Full error:', error.response?.data || error.message);
+    }
+
+    return false;
+  }
 }
 
 // Main execution
@@ -514,6 +678,13 @@ async function main() {
 
   if (!FIGMA_FILE_ID) {
     console.error('❌ FIGMA_FILE_ID is required. Please set it in your .env file.');
+    process.exit(1);
+  }
+
+  // Validate token before proceeding
+  const isValidToken = await validateFigmaToken(FIGMA_ACCESS_TOKEN);
+  if (!isValidToken) {
+    console.error('\n❌ Cannot proceed with invalid token. Please fix the token issue first.');
     process.exit(1);
   }
 
