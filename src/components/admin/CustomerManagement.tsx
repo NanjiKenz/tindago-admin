@@ -25,16 +25,16 @@ interface CustomerManagementProps {
   className?: string;
 }
 
-export const CustomerManagement: React.FC<CustomerManagementProps> = ({ className }) => {
+export const CustomerManagement: React.FC<CustomerManagementProps> = () => {
   const [customers, setCustomers] = useState<CustomerUser[]>([]);
   const [stats, setStats] = useState<CustomerStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<'all' | 'resolved' | 'pending' | 'open'>('all');
-  const [filterVerification, setFilterVerification] = useState<'all' | 'verified' | 'pending' | 'unverified'>('all');
+  const [filterVerification] = useState<'all' | 'verified' | 'pending' | 'unverified'>('all');
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(8);
+  const [pageSize] = useState(8);
 
   // Load customers and stats on component mount
   useEffect(() => {
@@ -55,7 +55,8 @@ export const CustomerManagement: React.FC<CustomerManagementProps> = ({ classNam
       unsubscribeCustomers();
       unsubscribeStats();
     };
-  }, [loadCustomers, loadStats]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const loadCustomers = useCallback(async () => {
     try {
@@ -293,20 +294,7 @@ export const CustomerManagement: React.FC<CustomerManagementProps> = ({ classNam
   const startIndex = (currentPage - 1) * pageSize;
   const currentData = filteredCustomers.slice(startIndex, startIndex + pageSize);
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  };
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-PH', {
-      style: 'currency',
-      currency: 'PHP'
-    }).format(amount);
-  };
 
   const getStatusBadge = (status: string) => {
     // Support ticket status colors
@@ -400,15 +388,6 @@ export const CustomerManagement: React.FC<CustomerManagementProps> = ({ classNam
     }
   };
 
-  const handleUpdateVerification = async (customerId: string, verificationStatus: 'verified' | 'pending' | 'unverified') => {
-    try {
-      await CustomerService.updateCustomerVerification(customerId, verificationStatus);
-      console.log(`Customer ${customerId} verification updated to ${verificationStatus}`);
-    } catch (error) {
-      console.error('Error updating customer verification:', error);
-      setError('Failed to update customer verification. Please try again.');
-    }
-  };
 
   const handleBan = async (customerId: string) => {
     const confirmed = window.confirm('Are you sure you want to ban this customer? This action will prevent them from accessing the platform.');

@@ -38,14 +38,14 @@ interface UserManagementProps {
   className?: string;
 }
 
-export const UserManagement: React.FC<UserManagementProps> = ({ className }) => {
+export const UserManagement: React.FC<UserManagementProps> = () => {
   const [users, setUsers] = useState<UserDisplay[]>([]);
   const [stats, setStats] = useState<UserStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'inactive' | 'pending' | 'suspended' | 'banned'>('all');
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(8);
+  const [pageSize] = useState(8);
   const [error, setError] = useState<string | null>(null);
 
   // Load real user data from Firebase

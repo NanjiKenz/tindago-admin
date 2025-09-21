@@ -25,7 +25,7 @@ interface StoreManagementProps {
   className?: string;
 }
 
-export const StoreManagement: React.FC<StoreManagementProps> = ({ className }) => {
+export const StoreManagement: React.FC<StoreManagementProps> = () => {
   const [stores, setStores] = useState<Store[]>([]);
   const [stats, setStats] = useState<StoreStats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -33,7 +33,7 @@ export const StoreManagement: React.FC<StoreManagementProps> = ({ className }) =
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'pending' | 'suspended'>('all');
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(8);
+  const [pageSize] = useState(8);
 
   // Load stores and stats on component mount
   useEffect(() => {
@@ -57,7 +57,8 @@ export const StoreManagement: React.FC<StoreManagementProps> = ({ className }) =
       unsubscribeStores();
       unsubscribeStats();
     };
-  }, [loadStats]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const loadStores = async () => {
     try {
@@ -136,12 +137,6 @@ export const StoreManagement: React.FC<StoreManagementProps> = ({ className }) =
     });
   };
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-PH', {
-      style: 'currency',
-      currency: 'PHP'
-    }).format(amount);
-  };
 
   const getStatusBadge = (status: string) => {
     const statusStyles = {

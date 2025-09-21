@@ -22,7 +22,6 @@ require('dotenv').config();
 // Configuration
 const FIGMA_ACCESS_TOKEN = process.env.FIGMA_ACCESS_TOKEN;
 const FIGMA_FILE_ID = process.env.FIGMA_FILE_ID;
-const NODE_ID = process.argv[2] || '281-115'; // Default to the TindaGo Share node
 const BASE_OUTPUT_DIR = path.join(__dirname, '../figma-extracted-design');
 
 // Figma API endpoints
@@ -58,7 +57,7 @@ function loadExtractionIndex() {
     if (fs.existsSync(indexPath)) {
       return JSON.parse(fs.readFileSync(indexPath, 'utf8'));
     }
-  } catch (error) {
+  } catch (_) {
     console.warn('Could not load extraction index, creating new one');
   }
   return { extractions: [], lastUpdated: null };
@@ -226,7 +225,7 @@ class FigmaDesignExtractor {
     }
   }
 
-  async processNode(node, parentContext = {}) {
+  async processNode(node, _ = {}) {
     const nodeData = {
       id: node.id,
       name: node.name,

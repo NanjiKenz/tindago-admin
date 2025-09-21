@@ -98,7 +98,6 @@ class FigmaTokenExtractor {
     }
 
     const variables = variablesData.meta.variables;
-    const collections = variablesData.meta.variableCollections;
 
     Object.values(variables).forEach(variable => {
       if (!variable.name || !variable.valuesByMode) return;
@@ -196,7 +195,7 @@ class FigmaTokenExtractor {
         const variablesData = await this.fetchFileVariables();
         tokens = this.processVariables(variablesData);
         console.log('Successfully extracted tokens from Figma variables');
-      } catch (error) {
+      } catch (_) {
         console.warn('Could not fetch variables, falling back to styles extraction');
         // Could implement styles-based extraction here as fallback
       }
