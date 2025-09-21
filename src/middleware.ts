@@ -7,18 +7,18 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+export function middleware(_: NextRequest) {
+  // const { pathname } = request.nextUrl; // TODO: Use for server-side auth
 
   // Public routes that don't require authentication
-  const publicRoutes = [
-    '/auth/login',
-    '/auth/signup',
-    '/auth/forgot-password'
-  ];
+  // const publicRoutes = [ // TODO: Use for server-side auth
+  //   '/auth/login',
+  //   '/auth/signup',
+  //   '/auth/forgot-password'
+  // ];
 
   // Check if the current path is a public route
-  const isPublicRoute = publicRoutes.includes(pathname);
+  // const isPublicRoute = publicRoutes.includes(pathname); // TODO: Use for server-side auth
 
   // For now, let the client-side handle authentication
   // This middleware can be extended to handle server-side auth checks

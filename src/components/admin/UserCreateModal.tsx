@@ -8,7 +8,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import Image from 'next/image';
 import { Button } from '@/components/ui/Button';
 import { UserFormData, UserPermission } from '@/types/userManagement';
 import { UserManagementService } from '@/lib/userManagementService';

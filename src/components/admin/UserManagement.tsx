@@ -20,9 +20,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import { UserManagementService } from '@/lib/userManagementService';
 import { UserStats } from '@/types/userManagement';
-import { AdminUser, CustomerUser, StoreOwnerUser } from '@/types/userManagement';
 
-type User = AdminUser | CustomerUser | StoreOwnerUser;
 
 interface UserDisplay {
   userId: string;

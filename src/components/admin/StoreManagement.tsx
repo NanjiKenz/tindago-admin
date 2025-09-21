@@ -16,7 +16,7 @@
 
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Image from 'next/image';
 import { Store, StoreStats } from '@/types/storeManagement';
 import { StoreService } from '@/lib/storeService';
@@ -57,7 +57,7 @@ export const StoreManagement: React.FC<StoreManagementProps> = ({ className }) =
       unsubscribeStores();
       unsubscribeStats();
     };
-  }, []);
+  }, [loadStats]);
 
   const loadStores = async () => {
     try {
@@ -73,7 +73,7 @@ export const StoreManagement: React.FC<StoreManagementProps> = ({ className }) =
     }
   };
 
-  const loadStats = async () => {
+  const loadStats = useCallback(async () => {
     try {
       const statsData = await StoreService.getStoreStats();
       setStats(statsData);
@@ -96,7 +96,7 @@ export const StoreManagement: React.FC<StoreManagementProps> = ({ className }) =
         setStats(fallbackStats);
       }
     }
-  };
+  }, [stores]);
 
 
   // Filter and search logic

@@ -16,44 +16,10 @@ interface AdminSidebarProps {
   currentPage?: string;
 }
 
-interface NavItem {
-  name: string;
-  href: string;
-  iconSrc: string;
-  active?: boolean;
-  hasDropdown?: boolean;
-  children?: NavItem[];
-}
 
 export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen, onClose, currentPage = 'dashboard' }) => {
   const [manageDropdownOpen, setManageDropdownOpen] = useState(true); // Default open as in Figma
 
-  const navigation: NavItem[] = [
-    {
-      name: 'Dashboard',
-      href: '/dashboard',
-      active: true,
-      iconSrc: '/images/admin-dashboard/dashboard-icon.png'
-    },
-    {
-      name: 'Report & Analytic',
-      href: '/analytics',
-      iconSrc: '/images/admin-dashboard/report-icon.png'
-    },
-    {
-      name: 'Manage',
-      href: '#',
-      hasDropdown: true,
-      iconSrc: '/images/admin-dashboard/management-icon.png',
-      children: [
-        { name: 'User Management', href: '/users', iconSrc: '/images/admin-dashboard/user-icon.png' },
-        { name: 'Customer Management', href: '/customers', iconSrc: '/images/admin-dashboard/customer-icon.png' },
-        { name: 'Admin Management', href: '/admins', iconSrc: '/images/admin-dashboard/admin-icon.png' },
-        { name: 'Store Management', href: '/stores', iconSrc: '/images/admin-dashboard/store-icon.png' },
-        { name: 'Content Management', href: '/content', iconSrc: '/images/admin-dashboard/content-icon.png' }
-      ]
-    }
-  ];
 
   return (
     <>

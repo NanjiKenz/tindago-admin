@@ -135,7 +135,6 @@ export class AuthService {
    */
   static async updateLastLogin(uid: string): Promise<void> {
     try {
-      const adminRef = ref(database, `admins/${uid}/lastLogin`);
       const timestamp = new Date().toISOString();
       // Using AdminService pattern for database updates
       const { update } = await import('firebase/database');

@@ -34,7 +34,7 @@ export const LoginForm: React.FC = () => {
       } else {
         setError('Please enter both email and password');
       }
-    } catch (err) {
+    } catch {
       setError('Authentication failed. Please try again.');
     } finally {
       setIsLoading(false);

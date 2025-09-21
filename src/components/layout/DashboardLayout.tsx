@@ -7,6 +7,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -145,10 +146,12 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
               {/* User Menu */}
               <div className="relative">
                 <button className="flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-tindago-500">
-                  <img
+                  <Image
                     className="h-8 w-8 rounded-full bg-gray-300"
                     src="data:image/svg+xml,%3Csvg width='32' height='32' viewBox='0 0 32 32' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='16' cy='16' r='16' fill='%23D1D5DB'/%3E%3Cpath d='M16 16c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z' fill='%236B7280'/%3E%3C/svg%3E"
                     alt="User avatar"
+                    width={32}
+                    height={32}
                   />
                 </button>
               </div>

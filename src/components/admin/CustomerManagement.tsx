@@ -16,7 +16,7 @@
 
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Image from 'next/image';
 import { CustomerUser } from '@/types/userManagement';
 import { CustomerService, CustomerStats } from '@/lib/customerService';
@@ -55,9 +55,9 @@ export const CustomerManagement: React.FC<CustomerManagementProps> = ({ classNam
       unsubscribeCustomers();
       unsubscribeStats();
     };
-  }, []);
+  }, [loadCustomers, loadStats]);
 
-  const loadCustomers = async () => {
+  const loadCustomers = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -71,9 +71,9 @@ export const CustomerManagement: React.FC<CustomerManagementProps> = ({ classNam
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const loadStats = async () => {
+  const loadStats = useCallback(async () => {
     try {
       const statsData = await CustomerService.getCustomerStats();
       setStats(statsData);
@@ -98,7 +98,7 @@ export const CustomerManagement: React.FC<CustomerManagementProps> = ({ classNam
         setStats(fallbackStats);
       }
     }
-  };
+  }, [customers]);
 
   // Generate support ticket type based on customer index
   const getTicketType = (userId: string) => {

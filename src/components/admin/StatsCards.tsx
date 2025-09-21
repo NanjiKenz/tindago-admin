@@ -32,7 +32,7 @@ export const StatsCards: React.FC = () => {
     const loadStats = async () => {
       try {
         // Load user stats
-        const userStats = await UserManagementService.getUserStats();
+        await UserManagementService.getUserStats();
         const customers = await UserManagementService.getAllCustomerUsers();
         const customerCount = customers.filter(u => u.userType === 'customer').length;
         setTotalCustomers(customerCount);
