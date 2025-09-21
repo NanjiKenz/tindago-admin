@@ -83,7 +83,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen, onClose, cur
                       width={25}
                       height={25}
                       className="object-contain"
-                      style={{ filter: currentPage === 'dashboard' ? 'brightness(0) invert(1)' : 'none' }}
+                      style={{ filter: currentPage === 'dashboard' ? 'brightness(0) invert(1)' : 'brightness(0)' }}
                     />
                   </div>
                   <span
@@ -120,7 +120,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen, onClose, cur
                       width={25}
                       height={25}
                       className="object-contain"
-                      style={{ filter: currentPage === 'analytics' ? 'brightness(0) invert(1)' : 'none' }}
+                      style={{ filter: currentPage === 'analytics' ? 'brightness(0) invert(1)' : 'brightness(0)' }}
                     />
                   </div>
                   <span
@@ -190,11 +190,12 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen, onClose, cur
                     {/* User Management */}
                     <a
                       href="/users"
-                      className="w-full group flex items-center rounded-2xl hover:bg-gray-50 transition-colors"
+                      className="w-full group flex items-center rounded-2xl transition-colors"
                       style={{
                         width: '220px',
                         height: '40px',
-                        padding: '0 20px 0 10px'
+                        padding: '0 20px 0 10px',
+                        backgroundColor: currentPage === 'users' ? '#0077BE' : 'transparent'
                       }}
                     >
                       <div className="flex items-center gap-2.5">
@@ -205,6 +206,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen, onClose, cur
                             width={25}
                             height={25}
                             className="object-contain"
+                            style={{ filter: currentPage === 'users' ? 'brightness(0) invert(1)' : 'brightness(0)' }}
                           />
                         </div>
                         <span
@@ -213,7 +215,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen, onClose, cur
                             fontWeight: 500,
                             fontSize: '14px',
                             lineHeight: '1.23em',
-                            color: '#1E1E1E'
+                            color: currentPage === 'users' ? '#FFFFFF' : '#1E1E1E'
                           }}
                         >
                           User Management
@@ -224,11 +226,12 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen, onClose, cur
                     {/* Customer Management */}
                     <a
                       href="/customers"
-                      className="w-full group flex items-center rounded-2xl hover:bg-gray-50 transition-colors"
+                      className="w-full group flex items-center rounded-2xl transition-colors"
                       style={{
                         width: '220px',
                         height: '40px',
-                        padding: '0 20px 0 10px'
+                        padding: '0 20px 0 10px',
+                        backgroundColor: currentPage === 'customers' ? '#0077BE' : 'transparent'
                       }}
                     >
                       <div className="flex items-center gap-2.5">
@@ -239,6 +242,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen, onClose, cur
                             width={25}
                             height={25}
                             className="object-contain"
+                            style={{ filter: currentPage === 'customers' ? 'brightness(0) invert(1)' : 'brightness(0)' }}
                           />
                         </div>
                         <span
@@ -247,7 +251,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen, onClose, cur
                             fontWeight: 500,
                             fontSize: '14px',
                             lineHeight: '1.23em',
-                            color: '#1E1E1E'
+                            color: currentPage === 'customers' ? '#FFFFFF' : '#1E1E1E'
                           }}
                         >
                           Customer Management
@@ -258,11 +262,12 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen, onClose, cur
                     {/* Admin Management */}
                     <a
                       href="/admins"
-                      className="w-full group flex items-center rounded-2xl hover:bg-gray-50 transition-colors"
+                      className="w-full group flex items-center rounded-2xl transition-colors"
                       style={{
                         width: '220px',
                         height: '40px',
-                        padding: '0 20px 0 10px'
+                        padding: '0 20px 0 10px',
+                        backgroundColor: currentPage === 'admins' ? '#0077BE' : 'transparent'
                       }}
                     >
                       <div className="flex items-center gap-2.5">
@@ -273,6 +278,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen, onClose, cur
                             width={25}
                             height={25}
                             className="object-contain"
+                            style={{ filter: currentPage === 'admins' ? 'brightness(0) invert(1)' : 'brightness(0)' }}
                           />
                         </div>
                         <span
@@ -281,7 +287,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen, onClose, cur
                             fontWeight: 500,
                             fontSize: '14px',
                             lineHeight: '1.23em',
-                            color: '#1E1E1E'
+                            color: currentPage === 'admins' ? '#FFFFFF' : '#1E1E1E'
                           }}
                         >
                           Admin Management
@@ -292,11 +298,12 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen, onClose, cur
                     {/* Store Management */}
                     <a
                       href="/stores"
-                      className="w-full group flex items-center rounded-2xl hover:bg-gray-50 transition-colors"
+                      className="w-full group flex items-center rounded-2xl transition-colors"
                       style={{
                         width: '220px',
                         height: '40px',
-                        padding: '0 20px 0 10px'
+                        padding: '0 20px 0 10px',
+                        backgroundColor: currentPage === 'stores' ? '#0077BE' : 'transparent'
                       }}
                     >
                       <div className="flex items-center gap-2.5">
@@ -307,6 +314,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen, onClose, cur
                             width={25}
                             height={25}
                             className="object-contain"
+                            style={{ filter: currentPage === 'stores' ? 'brightness(0) invert(1)' : 'brightness(0)' }}
                           />
                         </div>
                         <span
@@ -315,7 +323,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen, onClose, cur
                             fontWeight: 500,
                             fontSize: '14px',
                             lineHeight: '1.23em',
-                            color: '#1E1E1E'
+                            color: currentPage === 'stores' ? '#FFFFFF' : '#1E1E1E'
                           }}
                         >
                           Store Management
@@ -326,11 +334,12 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen, onClose, cur
                     {/* Content Management */}
                     <a
                       href="/content"
-                      className="w-full group flex items-center rounded-2xl hover:bg-gray-50 transition-colors"
+                      className="w-full group flex items-center rounded-2xl transition-colors"
                       style={{
                         width: '220px',
                         height: '40px',
-                        padding: '0 20px 0 10px'
+                        padding: '0 20px 0 10px',
+                        backgroundColor: currentPage === 'content' ? '#0077BE' : 'transparent'
                       }}
                     >
                       <div className="flex items-center gap-2.5">
@@ -341,6 +350,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen, onClose, cur
                             width={25}
                             height={25}
                             className="object-contain"
+                            style={{ filter: currentPage === 'content' ? 'brightness(0) invert(1)' : 'brightness(0)' }}
                           />
                         </div>
                         <span
@@ -349,7 +359,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen, onClose, cur
                             fontWeight: 500,
                             fontSize: '14px',
                             lineHeight: '1.23em',
-                            color: '#1E1E1E'
+                            color: currentPage === 'content' ? '#FFFFFF' : '#1E1E1E'
                           }}
                         >
                           Content Management

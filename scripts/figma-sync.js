@@ -195,7 +195,8 @@ class FigmaTokenExtractor {
         const variablesData = await this.fetchFileVariables();
         tokens = this.processVariables(variablesData);
         console.log('Successfully extracted tokens from Figma variables');
-      } catch (_) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (_error) {
         console.warn('Could not fetch variables, falling back to styles extraction');
         // Could implement styles-based extraction here as fallback
       }

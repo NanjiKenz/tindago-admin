@@ -27,7 +27,7 @@ const UsersPage: React.FC = () => {
       }}
     >
       {/* Sidebar - 273px wide, positioned at x:0, y:0 */}
-      <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} currentPage="users" />
 
       {/* Main Users Container */}
       <div

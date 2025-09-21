@@ -57,7 +57,8 @@ function loadExtractionIndex() {
     if (fs.existsSync(indexPath)) {
       return JSON.parse(fs.readFileSync(indexPath, 'utf8'));
     }
-  } catch (_) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch (_error) {
     console.warn('Could not load extraction index, creating new one');
   }
   return { extractions: [], lastUpdated: null };
@@ -225,7 +226,8 @@ class FigmaDesignExtractor {
     }
   }
 
-  async processNode(node, _ = {}) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async processNode(node, _context = {}) {
     const nodeData = {
       id: node.id,
       name: node.name,

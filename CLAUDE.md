@@ -19,6 +19,12 @@ TindaGo Admin is a Next.js web application designed for managing store registrat
 - `npm run figma:sync` - Sync design tokens and assets from Figma
 - `npm run figma:watch` - Watch for Figma design changes
 
+### Database Migration Scripts
+- `npm run migrate:usertype` - Migrate user types from old format to customer format
+- `npm run migrate:usertype:dry-run` - Preview migration changes without applying them
+- `npm run migrate:usertype:backup` - Create backup of user data before migration
+- `npm run migrate:usertype:rollback` - Rollback migration if needed
+
 ### TypeScript & Code Quality
 - `npx tsc --noEmit` - Type checking without compilation
 - `npx eslint` - Manual linting (lint script configured)

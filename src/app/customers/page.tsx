@@ -28,7 +28,7 @@ const CustomersPage: React.FC = () => {
       }}
     >
       {/* Sidebar - 273px wide, positioned at x:0, y:0 */}
-      <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} currentPage="customers" />
 
       {/* Main Customer Container */}
       <div

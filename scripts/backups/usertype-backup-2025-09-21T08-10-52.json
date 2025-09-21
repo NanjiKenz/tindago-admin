@@ -1,0 +1,85 @@
+{
+  "timestamp": "2025-09-21T08:10:52.763Z",
+  "originalData": {
+    "JxdUMNIHC0Ty3pIH03O4QKVgWkf1": {
+      "createdAt": 1757581412563,
+      "email": "isugakenji@gmail.com",
+      "emailVerified": false,
+      "name": "Kenji Isuga",
+      "preferences": {
+        "notifications": true,
+        "theme": "light"
+      },
+      "uid": "JxdUMNIHC0Ty3pIH03O4QKVgWkf1",
+      "updatedAt": 1757581412563,
+      "userType": "store_owner"
+    },
+    "OxVuoHp9kmcdwphLRZTLAwkpwjy1": {
+      "createdAt": 1757857651542,
+      "email": "isugakenji123@gmail.com",
+      "emailVerified": false,
+      "name": "Kenz Isuga",
+      "phoneNumber": "09562358890",
+      "phoneVerified": true,
+      "preferences": {
+        "notifications": true,
+        "theme": "light"
+      },
+      "profile": {
+        "phone": "09562358890"
+      },
+      "uid": "OxVuoHp9kmcdwphLRZTLAwkpwjy1",
+      "updatedAt": 1757857651542,
+      "userType": "customer"
+    },
+    "RlNsROPSPJSu92tfdxW1BcuQXiu2": {
+      "createdAt": 1757872532025,
+      "email": "ronankenji123@gmail.com",
+      "emailVerified": false,
+      "name": "Ronan Isuga",
+      "phoneVerified": false,
+      "preferences": {
+        "notifications": true,
+        "theme": "light"
+      },
+      "uid": "RlNsROPSPJSu92tfdxW1BcuQXiu2",
+      "updatedAt": 1757872532025,
+      "userType": "store_owner"
+    },
+    "SHqmYVQFLxOInQfaj4NgIp6lz003": {
+      "createdAt": 1758001704798,
+      "email": "isugakenji576@gmail.com",
+      "emailVerified": false,
+      "name": "Kelly Isuga",
+      "preferences": {
+        "notifications": true,
+        "theme": "light"
+      },
+      "profile": {
+        "bankDetailsComplete": true,
+        "businessComplete": true,
+        "documentsComplete": true,
+        "phone": "09562358890",
+        "storeDetailsComplete": true,
+        "updatedAt": 1758002117945
+      },
+      "uid": "SHqmYVQFLxOInQfaj4NgIp6lz003",
+      "updatedAt": 1758001704798,
+      "userType": "store_owner"
+    },
+    "lqYhqlEthAZnw8fenBcp3IYd2At1": {
+      "createdAt": 1757603052832,
+      "email": "ryouji.furuoya@gmail.com",
+      "emailVerified": false,
+      "name": "Ryouji Furouya",
+      "preferences": {
+        "notifications": true,
+        "theme": "light"
+      },
+      "uid": "lqYhqlEthAZnw8fenBcp3IYd2At1",
+      "updatedAt": 1757603052832,
+      "userType": "customer"
+    }
+  },
+  "recordCount": 5
+}

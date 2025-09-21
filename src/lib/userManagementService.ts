@@ -91,12 +91,12 @@ export class UserManagementService {
   }
 
   /**
-   * Get all store owner users
+   * Get all store owner users (from users collection with userType: 'store_owner')
    */
   static async getAllStoreOwnerUsers(): Promise<StoreOwnerUser[]> {
     try {
-      const ownersRef = ref(database, 'store_owners');
-      const snapshot = await get(ownersRef);
+      const usersRef = ref(database, 'users');
+      const snapshot = await get(usersRef);
 
       if (snapshot.exists()) {
         const data = snapshot.val();
@@ -105,49 +105,52 @@ export class UserManagementService {
         for (const userId of Object.keys(data)) {
           const ownerData = data[userId];
 
-          // Get store information
-          const userStoresRef = ref(database, `user_stores/${userId}`);
-          const storesSnapshot = await get(userStoresRef);
-          const stores = storesSnapshot.exists() ? Object.values(storesSnapshot.val()) : [];
+          // Filter only users with userType: "store_owner"
+          if (ownerData && ownerData.userType === 'store_owner') {
+            // Get store information
+            const userStoresRef = ref(database, `user_stores/${userId}`);
+            const storesSnapshot = await get(userStoresRef);
+            const stores = storesSnapshot.exists() ? Object.values(storesSnapshot.val()) : [];
 
-          // Get business verification
-          const verificationRef = ref(database, `business_verifications/${userId}`);
-          const verificationSnapshot = await get(verificationRef);
-          const verification = verificationSnapshot.exists() ? verificationSnapshot.val() : { status: 'pending' };
+            // Get business verification
+            const verificationRef = ref(database, `business_verifications/${userId}`);
+            const verificationSnapshot = await get(verificationRef);
+            const verification = verificationSnapshot.exists() ? verificationSnapshot.val() : { status: 'pending' };
 
-          // Get performance metrics
-          const metricsRef = ref(database, `store_metrics/${userId}`);
-          const metricsSnapshot = await get(metricsRef);
-          const metrics = metricsSnapshot.exists() ? metricsSnapshot.val() : {
-            totalSales: 0,
-            totalOrders: 0,
-            rating: 0,
-            responseTime: 0
-          };
+            // Get performance metrics
+            const metricsRef = ref(database, `store_metrics/${userId}`);
+            const metricsSnapshot = await get(metricsRef);
+            const metrics = metricsSnapshot.exists() ? metricsSnapshot.val() : {
+              totalSales: 0,
+              totalOrders: 0,
+              rating: 0,
+              responseTime: 0
+            };
 
-          const storeOwner: StoreOwnerUser = {
-            userId,
-            email: ownerData.email,
-            displayName: ownerData.displayName || ownerData.name || 'Unknown Owner',
-            phone: ownerData.phone,
-            address: ownerData.address,
-            status: ownerData.status || 'active',
-            createdAt: ownerData.createdAt,
-            lastLoginAt: ownerData.lastLoginAt,
-            avatar: ownerData.avatar,
-            userType: ownerData.userType, // Include Firebase userType field
-            stores: (stores as Record<string, unknown>[]).map((store: Record<string, unknown>) => ({
-              storeId: store.storeId as string,
-              storeName: store.storeName as string,
-              status: (store.status as 'active' | 'inactive' | 'pending_approval') || 'pending_approval',
-              role: ((store.role as 'owner' | 'manager' | 'staff') || 'owner'),
-              joinedAt: (store.joinedAt as string) || ownerData.createdAt
-            })),
-            businessVerification: verification,
-            performanceMetrics: metrics
-          };
+            const storeOwner: StoreOwnerUser = {
+              userId,
+              email: ownerData.email,
+              displayName: ownerData.displayName || ownerData.name || 'Unknown Owner',
+              phone: ownerData.phone,
+              address: ownerData.address,
+              status: ownerData.status || 'active',
+              createdAt: ownerData.createdAt,
+              lastLoginAt: ownerData.lastLoginAt,
+              avatar: ownerData.avatar,
+              userType: ownerData.userType, // Include Firebase userType field
+              stores: (stores as Record<string, unknown>[]).map((store: Record<string, unknown>) => ({
+                storeId: store.storeId as string,
+                storeName: store.storeName as string,
+                status: (store.status as 'active' | 'inactive' | 'pending_approval') || 'pending_approval',
+                role: ((store.role as 'owner' | 'manager' | 'staff') || 'owner'),
+                joinedAt: (store.joinedAt as string) || ownerData.createdAt
+              })),
+              businessVerification: verification,
+              performanceMetrics: metrics
+            };
 
-          storeOwners.push(storeOwner);
+            storeOwners.push(storeOwner);
+          }
         }
 
         return storeOwners.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
@@ -422,7 +425,6 @@ export class UserManagementService {
   ): () => void {
     const adminsRef = ref(database, 'admins');
     const usersRef = ref(database, 'users');
-    const ownersRef = ref(database, 'store_owners');
 
     const updateUsers = async () => {
       try {
@@ -435,12 +437,10 @@ export class UserManagementService {
 
     const adminUnsubscribe = onValue(adminsRef, updateUsers);
     const usersUnsubscribe = onValue(usersRef, updateUsers);
-    const ownersUnsubscribe = onValue(ownersRef, updateUsers);
 
     return () => {
       off(adminsRef, 'value', adminUnsubscribe);
       off(usersRef, 'value', usersUnsubscribe);
-      off(ownersRef, 'value', ownersUnsubscribe);
     };
   }
 

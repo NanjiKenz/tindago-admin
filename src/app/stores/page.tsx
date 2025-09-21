@@ -27,7 +27,7 @@ export default function StoresPage() {
       }}
     >
       {/* Sidebar - EXACT 273px wide */}
-      <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} currentPage="stores" />
 
       {/* Main Container - EXACT positioning */}
       <div
