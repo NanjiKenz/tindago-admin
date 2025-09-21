@@ -65,7 +65,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
               Access Denied
             </h2>
             <p className="text-secondary-600 mb-6">
-              You don't have permission to access this area.
+              You don&apos;t have permission to access this area.
               {requiredRole === 'super_admin' && ' Super admin privileges required.'}
             </p>
 

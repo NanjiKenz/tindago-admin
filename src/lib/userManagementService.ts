@@ -6,7 +6,7 @@
  */
 
 import { database } from './firebase.js';
-import { ref, get, set, update, remove, onValue, off, query, orderByChild, equalTo } from 'firebase/database';
+import { ref, get, set, update, remove, onValue, off } from 'firebase/database';
 import { AdminUser, CustomerUser, StoreOwnerUser, UserStats, UserFormData, BulkUserAction } from '@/types/userManagement';
 
 export class UserManagementService {
@@ -36,7 +36,7 @@ export class UserManagementService {
   }
 
   /**
-   * Get all customer users (Note: User Management shows ALL types, Customer Management shows only userType: "user")
+   * Get all customer users (Note: Now consistently filters by userType: "customer")
    */
   static async getAllCustomerUsers(): Promise<CustomerUser[]> {
     try {
@@ -50,9 +50,8 @@ export class UserManagementService {
         for (const userId of Object.keys(data)) {
           const userData = data[userId];
 
-          // For User Management: Show all users in the users table (all types)
-          // This is different from Customer Management which filters by userType: "user"
-          if (userData) {
+          // Filter only users with userType: "customer" (consistent with Customer Management)
+          if (userData && userData.userType === 'customer') {
             // Get additional customer data
             const ordersRef = ref(database, `user_orders/${userId}`);
             const ordersSnapshot = await get(ordersRef);
@@ -68,7 +67,7 @@ export class UserManagementService {
               createdAt: userData.createdAt,
               lastLoginAt: userData.lastLoginAt,
               totalOrders: orders.length,
-              totalSpent: orders.reduce((sum: number, order: any) => sum + (order.total || 0), 0),
+              totalSpent: (orders as Record<string, unknown>[]).reduce((sum: number, order: Record<string, unknown>) => sum + ((order.total as number) || 0), 0),
               avatar: userData.avatar,
               verificationStatus: userData.verificationStatus || 'unverified',
               userType: userData.userType, // Include Firebase userType field
@@ -137,12 +136,12 @@ export class UserManagementService {
             lastLoginAt: ownerData.lastLoginAt,
             avatar: ownerData.avatar,
             userType: ownerData.userType, // Include Firebase userType field
-            stores: stores.map((store: any) => ({
-              storeId: store.storeId,
-              storeName: store.storeName,
-              status: store.status,
-              role: store.role || 'owner',
-              joinedAt: store.joinedAt || ownerData.createdAt
+            stores: (stores as Record<string, unknown>[]).map((store: Record<string, unknown>) => ({
+              storeId: store.storeId as string,
+              storeName: store.storeName as string,
+              status: (store.status as 'active' | 'inactive' | 'pending_approval') || 'pending_approval',
+              role: ((store.role as 'owner' | 'manager' | 'staff') || 'owner'),
+              joinedAt: (store.joinedAt as string) || ownerData.createdAt
             })),
             businessVerification: verification,
             performanceMetrics: metrics
@@ -362,7 +361,7 @@ export class UserManagementService {
             return this.deleteUser(userId, 'customer');
           case 'change_role':
             if (action.data?.newRole) {
-              return this.updateAdminUserRole(userId, action.data.newRole as any);
+              return this.updateAdminUserRole(userId, action.data.newRole as 'super_admin' | 'admin' | 'moderator' | 'viewer');
             }
             break;
         }

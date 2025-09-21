@@ -92,7 +92,7 @@ export interface CustomerActivity {
     userAgent?: string;
     location?: string;
     orderId?: string;
-    [key: string]: any;
+    [key: string]: string | number | boolean | undefined;
   };
 }
 
@@ -276,7 +276,7 @@ export interface CustomerNotification {
   metadata?: {
     campaign?: string;
     template?: string;
-    [key: string]: any;
+    [key: string]: string | number | boolean | undefined;
   };
 }
 

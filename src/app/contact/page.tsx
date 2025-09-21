@@ -74,7 +74,7 @@ export default function ContactPage() {
               Get in Touch
             </h1>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Have questions about TindaGo? We'd love to hear from you. Send us a message and we'll respond as soon as possible.
+              Have questions about TindaGo? We&apos;d love to hear from you. Send us a message and we&apos;ll respond as soon as possible.
             </p>
           </div>
 

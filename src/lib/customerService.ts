@@ -6,7 +6,7 @@
  */
 
 import { database } from './firebase.js';
-import { ref, get, set, update, remove, onValue, off, query, orderByChild, equalTo } from 'firebase/database';
+import { ref, get, set, update, onValue, off } from 'firebase/database';
 import { CustomerUser } from '@/types/userManagement';
 
 export interface CustomerStats {
@@ -72,8 +72,8 @@ export class CustomerService {
         for (const userId of Object.keys(data)) {
           const userData = data[userId];
 
-          // Filter only users with userType: "user" (customers from React Native app)
-          if (userData.userType === 'user') {
+          // Filter only users with userType: "customer" (customers from React Native app)
+          if (userData.userType === 'customer') {
             // Get additional customer data
             const [ordersSnapshot, verificationSnapshot] = await Promise.all([
               get(ref(database, `customer_orders/${userId}`)),
@@ -93,7 +93,7 @@ export class CustomerService {
               createdAt: userData.createdAt || new Date().toISOString(),
               lastLoginAt: userData.lastLoginAt,
               totalOrders: orders.length,
-              totalSpent: orders.reduce((sum: number, order: any) => sum + (order.total || 0), 0),
+              totalSpent: (orders as Record<string, unknown>[]).reduce((sum: number, order: Record<string, unknown>) => sum + ((order.total as number) || 0), 0),
               avatar: userData.avatar,
               verificationStatus: verification?.status || 'unverified',
               storeOwnership: {
@@ -126,7 +126,7 @@ export class CustomerService {
       if (snapshot.exists()) {
         const userData = snapshot.val();
 
-        if (userData.userType === 'user') {
+        if (userData.userType === 'customer') {
           // Get additional customer data
           const [ordersSnapshot, verificationSnapshot] = await Promise.all([
             get(ref(database, `customer_orders/${customerId}`)),
@@ -146,7 +146,7 @@ export class CustomerService {
             createdAt: userData.createdAt || new Date().toISOString(),
             lastLoginAt: userData.lastLoginAt,
             totalOrders: orders.length,
-            totalSpent: orders.reduce((sum: number, order: any) => sum + (order.total || 0), 0),
+            totalSpent: (orders as Record<string, unknown>[]).reduce((sum: number, order: Record<string, unknown>) => sum + ((order.total as number) || 0), 0),
             avatar: userData.avatar,
             verificationStatus: verification?.status || 'unverified',
             storeOwnership: {
@@ -174,7 +174,7 @@ export class CustomerService {
     try {
       const customerRef = ref(database, `users/${customerId}`);
 
-      const updateData: any = {
+      const updateData: Record<string, unknown> = {
         status,
         statusUpdatedAt: new Date().toISOString()
       };

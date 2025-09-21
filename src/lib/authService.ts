@@ -46,9 +46,10 @@ export class AuthService {
       await this.updateLastLogin(adminUser.uid);
 
       return adminUser;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Sign in error:', error);
-      throw new Error(this.getAuthErrorMessage(error.code));
+      const authError = error as { code?: string };
+      throw new Error(this.getAuthErrorMessage(authError.code || 'unknown-error'));
     }
   }
 
@@ -70,9 +71,10 @@ export class AuthService {
   static async sendPasswordResetEmail(email: string): Promise<void> {
     try {
       await sendPasswordResetEmail(auth, email);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Password reset error:', error);
-      throw new Error(this.getAuthErrorMessage(error.code));
+      const authError = error as { code?: string };
+      throw new Error(this.getAuthErrorMessage(authError.code || 'unknown-error'));
     }
   }
 
@@ -86,9 +88,10 @@ export class AuthService {
         throw new Error('No authenticated user found');
       }
       await updatePassword(user, newPassword);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Password update error:', error);
-      throw new Error(this.getAuthErrorMessage(error.code));
+      const authError = error as { code?: string };
+      throw new Error(this.getAuthErrorMessage(authError.code || 'unknown-error'));
     }
   }
 

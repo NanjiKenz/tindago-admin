@@ -7,8 +7,10 @@
 
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { UserManagementService } from '@/lib/userManagementService';
+import { StoreService } from '@/lib/storeService';
 
 interface StatCard {
   title: string;
@@ -22,11 +24,38 @@ interface StatCard {
 }
 
 export const StatsCards: React.FC = () => {
+  const [totalCustomers, setTotalCustomers] = useState(0);
+  const [activeStores, setActiveStores] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadStats = async () => {
+      try {
+        // Load user stats
+        const userStats = await UserManagementService.getUserStats();
+        const customers = await UserManagementService.getAllCustomerUsers();
+        const customerCount = customers.filter(u => u.userType === 'customer').length;
+        setTotalCustomers(customerCount);
+
+        // Load store stats
+        const storeStats = await StoreService.getStoreStats();
+        setActiveStores(storeStats.activeStores);
+
+        setLoading(false);
+      } catch (error) {
+        console.error('Error loading dashboard stats:', error);
+        setLoading(false);
+      }
+    };
+
+    loadStats();
+  }, []);
+
   const stats: StatCard[] = [
     {
       title: 'Total Customer',
-      subtitle: 'This month',
-      value: '₱82,670',
+      subtitle: 'Registered users',
+      value: loading ? 'Loading...' : totalCustomers.toLocaleString(),
       change: '11%',
       changeType: 'positive',
       iconSrc: '/images/admin-dashboard/customer-card-icon.png',
@@ -35,8 +64,8 @@ export const StatsCards: React.FC = () => {
     },
     {
       title: 'Active Store',
-      subtitle: 'This month',
-      value: '2,670',
+      subtitle: 'Currently active',
+      value: loading ? 'Loading...' : activeStores.toLocaleString(),
       change: '24%',
       changeType: 'positive',
       iconSrc: '/images/admin-dashboard/shop-card-icon.png',

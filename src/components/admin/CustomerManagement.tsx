@@ -447,22 +447,19 @@ export const CustomerManagement: React.FC<CustomerManagementProps> = ({ classNam
       style={{
         width: '100%',
         minHeight: '1024px',
-        backgroundColor: '#F3F5F9', // Exact admin dashboard background
+        backgroundColor: '#F3F5F9',
         fontFamily: 'Clash Grotesk Variable'
       }}
     >
-      {/* Main Container - Exact admin dashboard positioning */}
       <div
-        className="absolute"
+        className="absolute w-full lg:px-5 px-4"
         style={{
           left: '0px',
-          top: '0px',
-          width: '100%',
-          minHeight: '1024px',
-          padding: '40px 35px'
+          top: '80px',
+          minHeight: '1200px'
         }}
       >
-        {/* Header Section - Exact positioning */}
+      {/* Header Section - Exact positioning */}
         <div
           className="absolute"
           style={{
@@ -472,7 +469,7 @@ export const CustomerManagement: React.FC<CustomerManagementProps> = ({ classNam
             height: '80px',
             borderBottom: '1px solid rgba(0, 0, 0, 0.05)',
             paddingBottom: '20px',
-            paddingTop: '20px'
+            marginBottom: '40px'
           }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -484,8 +481,8 @@ export const CustomerManagement: React.FC<CustomerManagementProps> = ({ classNam
                   fontSize: '48px',
                   lineHeight: '1.2em',
                   color: '#1E1E1E',
-                  margin: 0,
-                  marginBottom: '8px'
+                  marginBottom: '8px',
+                  margin: 0
                 }}
               >
                 Customer Management
@@ -556,12 +553,12 @@ export const CustomerManagement: React.FC<CustomerManagementProps> = ({ classNam
           </div>
         </div>
 
-        {/* Customer Stats Cards - Admin Dashboard Style */}
+        {/* Customer Stats Cards - Proper spacing below header */}
         <div
           className="absolute"
           style={{
             left: '35px',
-            top: '131px',
+            top: '120px',
             width: '1095px',
             height: '150px'
           }}
@@ -889,7 +886,7 @@ export const CustomerManagement: React.FC<CustomerManagementProps> = ({ classNam
           className="absolute"
           style={{
             left: '35px',
-            top: '301px',
+            top: '290px',
             width: '1095px',
             height: '50px',
             display: 'flex',
@@ -1073,13 +1070,13 @@ export const CustomerManagement: React.FC<CustomerManagementProps> = ({ classNam
           </div>
         </div>
 
-        {/* Table Container - Exact positioning */}
+        {/* Table Container - Aligned with cards */}
         <div
           className="absolute"
           style={{
             left: '35px',
-            top: '371px',
-            width: '100%',
+            top: '360px',
+            width: '1095px',
             minHeight: '600px',
             backgroundColor: '#FFFFFF',
             borderRadius: '20px',
@@ -1139,8 +1136,8 @@ export const CustomerManagement: React.FC<CustomerManagementProps> = ({ classNam
           ) : (
             <>
               {/* Table */}
-              <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', minWidth: '1200px' }}>
+              <div>
+                <table style={{ width: '100%' }}>
                   <thead>
                     <tr
                       style={{
@@ -1150,7 +1147,7 @@ export const CustomerManagement: React.FC<CustomerManagementProps> = ({ classNam
                     >
                       <th
                         style={{
-                          padding: '20px 30px',
+                          padding: '20px 20px',
                           textAlign: 'left',
                           fontFamily: 'Clash Grotesk Variable',
                           fontWeight: 500,
@@ -1164,7 +1161,7 @@ export const CustomerManagement: React.FC<CustomerManagementProps> = ({ classNam
                       </th>
                       <th
                         style={{
-                          padding: '20px 30px',
+                          padding: '20px 20px',
                           textAlign: 'left',
                           fontFamily: 'Clash Grotesk Variable',
                           fontWeight: 500,
@@ -1178,7 +1175,7 @@ export const CustomerManagement: React.FC<CustomerManagementProps> = ({ classNam
                       </th>
                       <th
                         style={{
-                          padding: '20px 30px',
+                          padding: '20px 20px',
                           textAlign: 'left',
                           fontFamily: 'Clash Grotesk Variable',
                           fontWeight: 500,
@@ -1192,7 +1189,7 @@ export const CustomerManagement: React.FC<CustomerManagementProps> = ({ classNam
                       </th>
                       <th
                         style={{
-                          padding: '20px 30px',
+                          padding: '20px 20px',
                           textAlign: 'center',
                           fontFamily: 'Clash Grotesk Variable',
                           fontWeight: 500,
@@ -1222,7 +1219,7 @@ export const CustomerManagement: React.FC<CustomerManagementProps> = ({ classNam
                         }}
                       >
                         {/* Customer Column */}
-                        <td style={{ padding: '25px 30px' }}>
+                        <td style={{ padding: '25px 20px' }}>
                           <div>
                             <div
                               style={{
@@ -1261,7 +1258,7 @@ export const CustomerManagement: React.FC<CustomerManagementProps> = ({ classNam
                         </td>
 
                         {/* Issue Type Column */}
-                        <td style={{ padding: '25px 30px' }}>
+                        <td style={{ padding: '25px 20px' }}>
                           <div
                             style={{
                               fontFamily: 'Clash Grotesk Variable',
@@ -1280,7 +1277,7 @@ export const CustomerManagement: React.FC<CustomerManagementProps> = ({ classNam
                         </td>
 
                         {/* Status Column */}
-                        <td style={{ padding: '25px 30px' }}>
+                        <td style={{ padding: '25px 20px' }}>
                           <span style={getStatusBadge(getTicketStatus(customer.userId))}>
                             {getTicketStatus(customer.userId)}
                           </span>
@@ -1288,7 +1285,7 @@ export const CustomerManagement: React.FC<CustomerManagementProps> = ({ classNam
 
 
                         {/* Actions Column */}
-                        <td style={{ padding: '25px 30px' }}>
+                        <td style={{ padding: '25px 20px' }}>
                           <div
                             style={{
                               display: 'flex',
@@ -1416,7 +1413,7 @@ export const CustomerManagement: React.FC<CustomerManagementProps> = ({ classNam
               <div
                 style={{
                   borderTop: '1px solid rgba(0, 0, 0, 0.05)',
-                  padding: '25px 30px',
+                  padding: '25px 20px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
@@ -1510,3 +1507,5 @@ export const CustomerManagement: React.FC<CustomerManagementProps> = ({ classNam
     </div>
   );
 };
+
+export default CustomerManagement;

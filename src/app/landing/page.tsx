@@ -42,7 +42,7 @@ export default function LandingPage() {
           }}
         >
           <Image
-            src="/images/landing/281-30.png"
+            src="/images/landing/features/281-30.png"
             alt="TindaGo Logo"
             width={500}
             height={500}
@@ -126,7 +126,7 @@ export default function LandingPage() {
           }}
         >
           <Image
-            src="/images/landing/281-36.png"
+            src="/images/landing/features/281-36.png"
             alt="Shopping illustration"
             width={531}
             height={469}
@@ -145,7 +145,7 @@ export default function LandingPage() {
           }}
         >
           <Image
-            src="/images/landing/281-37.png"
+            src="/images/landing/features/281-37.png"
             alt="Basket illustration"
             width={590}
             height={423}
@@ -166,7 +166,7 @@ export default function LandingPage() {
           }}
         >
           <Image
-            src="/images/landing/281-36.png"
+            src="/images/landing/features/281-36.png"
             alt="Decorative basket"
             width={100}
             height={100}
@@ -186,7 +186,7 @@ export default function LandingPage() {
           }}
         >
           <Image
-            src="/images/landing/281-37.png"
+            src="/images/landing/features/281-37.png"
             alt="Decorative basket"
             width={120}
             height={120}
@@ -264,7 +264,7 @@ export default function LandingPage() {
             <div className="flex items-center gap-2 w-full">
               <div className="flex-shrink-0">
                 <Image
-                  src="/images/landing/281-43.png"
+                  src="/images/landing/features/281-43.png"
                   alt="Apple icon"
                   width={24}
                   height={24}
@@ -314,7 +314,7 @@ export default function LandingPage() {
             <div className="flex items-center gap-2 w-full">
               <div className="flex-shrink-0">
                 <Image
-                  src="/images/landing/281-51.png"
+                  src="/images/landing/features/281-51.png"
                   alt="Google Play icon"
                   width={24}
                   height={24}
@@ -452,7 +452,7 @@ export default function LandingPage() {
           }}
         >
           <Image
-            src="/images/landing/281-28.png"
+            src="/images/landing/features/281-28.png"
             alt="App preview"
             width={955}
             height={716}
@@ -495,7 +495,7 @@ export default function LandingPage() {
           }}
         >
           <Image
-            src="/images/landing/281-5.png"
+            src="/images/landing/features/281-5.png"
             alt="Download illustration"
             width={945}
             height={613}
@@ -547,7 +547,7 @@ export default function LandingPage() {
             <div className="flex items-center gap-2 w-full">
               <div className="flex-shrink-0">
                 <Image
-                  src="/images/landing/281-43.png"
+                  src="/images/landing/features/281-43.png"
                   alt="Apple icon"
                   width={24}
                   height={24}
@@ -597,7 +597,7 @@ export default function LandingPage() {
             <div className="flex items-center gap-2 w-full">
               <div className="flex-shrink-0">
                 <Image
-                  src="/images/landing/281-51.png"
+                  src="/images/landing/features/281-51.png"
                   alt="Google Play icon"
                   width={24}
                   height={24}
@@ -686,7 +686,7 @@ export default function LandingPage() {
           }}
         >
           <Image
-            src="/images/landing/281-53.png"
+            src="/images/landing/features/281-53.png"
             alt="TindaGo Footer Logo"
             width={500}
             height={500}

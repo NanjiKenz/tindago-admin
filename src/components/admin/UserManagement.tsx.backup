@@ -1,15 +1,15 @@
 /**
- * Store Management Component - Pixel-Perfect Admin Dashboard Implementation
+ * User Management Component - Pixel-Perfect Admin Dashboard Implementation
  *
- * TindaGo Admin Dashboard Store Management Interface
- * Figma Design: https://www.figma.com/design/8I1Nr3vQZllDDknSevstvH/TindaGo-Share?node-id=281-1168
+ * TindaGo Admin Dashboard User Management Interface
+ * Figma Design: https://www.figma.com/design/8I1Nr3vQZllDDknSevstvH/TindaGo-Share?node-id=281-980
  *
  * EXACT SPECIFICATIONS:
  * - 1440x1024 admin dashboard baseline
  * - Clash Grotesk Variable typography
  * - Exact TindaGo color palette
- * - Store-focused interface with sales data and subscription tracking
- * - Table columns: Store, Owner, Status, Joined, Actions
+ * - Clean design without profile avatars
+ * - Table columns: User, Role, Status, Joined, Actions
  * - Pixel-perfect positioning and spacing
  * - Professional pagination footer
  */
@@ -18,115 +18,195 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
-import { Store, StoreStats } from '@/types/storeManagement';
-import { StoreService } from '@/lib/storeService';
+import { UserManagementService } from '@/lib/userManagementService';
+import { UserStats } from '@/types/userManagement';
+import { AdminUser, CustomerUser, StoreOwnerUser } from '@/types/userManagement';
 
-interface StoreManagementProps {
+type User = AdminUser | CustomerUser | StoreOwnerUser;
+
+interface UserDisplay {
+  userId: string;
+  email: string;
+  displayName: string;
+  role: string;
+  status: 'active' | 'inactive' | 'pending' | 'suspended' | 'banned';
+  createdAt: string;
+  lastLoginAt?: string;
+  phone?: string;
+  userType: 'admin' | 'customer' | 'store_owner';
+}
+
+interface UserManagementProps {
   className?: string;
 }
 
-export const StoreManagement: React.FC<StoreManagementProps> = ({ className }) => {
-  const [stores, setStores] = useState<Store[]>([]);
-  const [stats, setStats] = useState<StoreStats | null>(null);
+export const UserManagement: React.FC<UserManagementProps> = ({ className }) => {
+  const [users, setUsers] = useState<UserDisplay[]>([]);
+  const [stats, setStats] = useState<UserStats | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'pending' | 'suspended'>('all');
+  const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'inactive' | 'pending' | 'suspended' | 'banned'>('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(8);
+  const [error, setError] = useState<string | null>(null);
 
-  // Load stores and stats on component mount
+  // Load real user data from Firebase
   useEffect(() => {
-    loadStores();
-    loadStats();
+    const loadUsers = async () => {
+      try {
+        setLoading(true);
+        setError(null);
 
-    // Set up real-time subscriptions
-    const unsubscribeStores = StoreService.subscribeToStores((updatedStores) => {
-      console.log('Stores updated:', updatedStores);
-      console.log('Pending stores:', updatedStores.filter(s => s.status === 'pending'));
-      setStores(updatedStores);
-      setLoading(false);
+        const allUsers = await UserManagementService.getAllUsers();
+
+        // Transform users into display format
+        const displayUsers: UserDisplay[] = allUsers.map(user => {
+          // Determine user type and role based on actual Firebase userType field
+          let userType: 'admin' | 'customer' | 'store_owner';
+          let role: string;
+
+          if ('role' in user) {
+            // Admin user
+            userType = 'admin';
+            role = user.role === 'super_admin' ? 'Super Admin' :
+                   user.role === 'admin' ? 'Admin' :
+                   user.role === 'moderator' ? 'Moderator' : 'Viewer';
+          } else {
+            // For non-admin users, check their actual userType field from Firebase
+            // This should be either 'user' or 'store_owner'
+
+            if (user.userType === 'store_owner') {
+              userType = 'store_owner';
+              role = 'Store Owner';
+            } else if (user.userType === 'user') {
+              userType = 'customer';
+              role = 'Customer (App User)';
+            } else {
+              // Fallback: determine by presence of stores property
+              if ('stores' in user) {
+                userType = 'store_owner';
+                role = 'Store Owner';
+              } else {
+                userType = 'customer';
+                role = 'Customer';
+              }
+            }
+          }
+
+          return {
+            userId: user.userId,
+            email: user.email,
+            displayName: user.displayName,
+            role,
+            status: user.status as 'active' | 'inactive' | 'pending' | 'suspended' | 'banned',
+            createdAt: user.createdAt,
+            lastLoginAt: user.lastLoginAt,
+            phone: user.phone,
+            userType
+          };
+        });
+
+        setUsers(displayUsers);
+
+        // Load user stats
+        const userStats = await UserManagementService.getUserStats();
+        setStats(userStats);
+      } catch (error) {
+        console.error('Error loading users:', error);
+        setError('Failed to load users. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadUsers();
+
+    // Set up real-time subscription
+    const unsubscribe = UserManagementService.subscribeToUsers((updatedUsers) => {
+      const displayUsers: UserDisplay[] = updatedUsers.map(user => {
+        let userType: 'admin' | 'customer' | 'store_owner';
+        let role: string;
+
+        if ('role' in user) {
+          userType = 'admin';
+          role = user.role === 'super_admin' ? 'Super Admin' :
+                 user.role === 'admin' ? 'Admin' :
+                 user.role === 'moderator' ? 'Moderator' : 'Viewer';
+        } else {
+          // For non-admin users, check their actual userType field from Firebase
+
+          if (user.userType === 'store_owner') {
+            userType = 'store_owner';
+            role = 'Store Owner';
+          } else if (user.userType === 'user') {
+            userType = 'customer';
+            role = 'Customer (App User)';
+          } else {
+            // Fallback: determine by presence of stores property
+            if ('stores' in user) {
+              userType = 'store_owner';
+              role = 'Store Owner';
+            } else {
+              userType = 'customer';
+              role = 'Customer';
+            }
+          }
+        }
+
+        return {
+          userId: user.userId,
+          email: user.email,
+          displayName: user.displayName,
+          role,
+          status: user.status as 'active' | 'inactive' | 'pending' | 'suspended' | 'banned',
+          createdAt: user.createdAt,
+          lastLoginAt: user.lastLoginAt,
+          phone: user.phone,
+          userType
+        };
+      });
+
+      setUsers(displayUsers);
     });
 
-    const unsubscribeStats = StoreService.subscribeToStoreStats((updatedStats) => {
-      console.log('Stats updated:', updatedStats);
+    // Set up real-time stats subscription
+    const unsubscribeStats = UserManagementService.subscribeToUserStats((updatedStats) => {
       setStats(updatedStats);
     });
 
     return () => {
-      unsubscribeStores();
+      unsubscribe();
       unsubscribeStats();
     };
   }, []);
 
-  const loadStores = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const storeData = await StoreService.getAllStores();
-      setStores(storeData);
-    } catch (err) {
-      console.error('Error loading stores:', err);
-      setError('Failed to load stores. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const loadStats = async () => {
-    try {
-      const statsData = await StoreService.getStoreStats();
-      setStats(statsData);
-    } catch (err) {
-      console.error('Error loading store stats:', err);
-      // Fallback to calculated stats from store data
-      if (stores.length > 0) {
-        const fallbackStats: StoreStats = {
-          totalStores: stores.length,
-          activeStores: stores.filter(s => s.status === 'active').length,
-          pendingApproval: stores.filter(s => s.status === 'pending').length,
-          suspendedStores: stores.filter(s => s.status === 'suspended').length,
-          subscribedStores: stores.filter(s => s.subscriptionStatus !== 'free').length,
-          totalRevenue: stores.reduce((sum, s) => sum + (s.performanceMetrics?.totalSales || 0), 0),
-          averageStoreRating: 4.8,
-          newStoresThisMonth: 12,
-          verifiedStores: stores.filter(s => s.businessVerification?.status === 'verified').length,
-          totalOrders: stores.reduce((sum, s) => sum + (s.performanceMetrics?.totalOrders || 0), 0)
-        };
-        setStats(fallbackStats);
-      }
-    }
-  };
-
-
   // Filter and search logic
-  const filteredStores = useMemo(() => {
-    let filtered = stores;
+  const filteredUsers = useMemo(() => {
+    let filtered = users;
 
     // Apply status filter
     if (filterStatus !== 'all') {
-      filtered = filtered.filter(store => store.status === filterStatus);
+      filtered = filtered.filter(user => user.status === filterStatus);
     }
 
     // Apply search filter
     if (searchTerm) {
       const searchLower = searchTerm.toLowerCase();
-      filtered = filtered.filter(store =>
-        store.storeName.toLowerCase().includes(searchLower) ||
-        store.ownerName.toLowerCase().includes(searchLower) ||
-        store.ownerEmail.toLowerCase().includes(searchLower) ||
-        (store.address && store.address.toLowerCase().includes(searchLower)) ||
-        (store.storeCategory && store.storeCategory.toLowerCase().includes(searchLower))
+      filtered = filtered.filter(user =>
+        user.displayName.toLowerCase().includes(searchLower) ||
+        user.email.toLowerCase().includes(searchLower) ||
+        user.role.toLowerCase().includes(searchLower) ||
+        (user.phone && user.phone.toLowerCase().includes(searchLower))
       );
     }
 
     return filtered;
-  }, [stores, filterStatus, searchTerm]);
+  }, [users, filterStatus, searchTerm]);
 
   // Pagination logic
-  const totalPages = Math.ceil(filteredStores.length / pageSize);
+  const totalPages = Math.ceil(filteredUsers.length / pageSize);
   const startIndex = (currentPage - 1) * pageSize;
-  const currentData = filteredStores.slice(startIndex, startIndex + pageSize);
+  const currentData = filteredUsers.slice(startIndex, startIndex + pageSize);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -136,34 +216,24 @@ export const StoreManagement: React.FC<StoreManagementProps> = ({ className }) =
     });
   };
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-PH', {
-      style: 'currency',
-      currency: 'PHP'
-    }).format(amount);
-  };
-
   const getStatusBadge = (status: string) => {
+    // Exact TindaGo admin dashboard colors for status badges
     const statusStyles = {
       active: {
-        backgroundColor: '#22C55E', // Green for active
+        backgroundColor: '#22C55E', // Exact green
         color: '#FFFFFF'
       },
       pending: {
-        backgroundColor: '#EAB308', // Yellow for pending
+        backgroundColor: '#EAB308', // Exact yellow
         color: '#FFFFFF'
       },
-      suspended: {
-        backgroundColor: '#EF4444', // Red for suspended
-        color: '#FFFFFF'
-      },
-      rejected: {
-        backgroundColor: '#6B7280', // Gray for rejected
+      inactive: {
+        backgroundColor: 'rgba(30, 30, 30, 0.3)', // Exact gray
         color: '#FFFFFF'
       }
     };
 
-    const style = statusStyles[status.toLowerCase() as keyof typeof statusStyles] || statusStyles.pending;
+    const style = statusStyles[status as keyof typeof statusStyles] || statusStyles.inactive;
 
     return {
       display: 'inline-flex',
@@ -182,90 +252,24 @@ export const StoreManagement: React.FC<StoreManagementProps> = ({ className }) =
     };
   };
 
-  const getSubscriptionBadge = (subscription: string) => {
-    const subscriptionStyles = {
-      free: {
-        backgroundColor: 'rgba(30, 30, 30, 0.3)',
-        color: '#FFFFFF'
-      },
-      premium: {
-        backgroundColor: '#3B82F6',
-        color: '#FFFFFF'
-      },
-      enterprise: {
-        backgroundColor: '#A855F7',
-        color: '#FFFFFF'
-      }
-    };
-
-    const style = subscriptionStyles[subscription as keyof typeof subscriptionStyles] || subscriptionStyles.free;
-
-    return {
-      display: 'inline-flex',
-      alignItems: 'center',
-      paddingLeft: '12px',
-      paddingRight: '12px',
-      paddingTop: '4px',
-      paddingBottom: '4px',
-      borderRadius: '16px',
-      fontSize: '12px',
-      fontWeight: 500,
-      fontFamily: 'Clash Grotesk Variable',
-      border: 'none',
-      backgroundColor: style.backgroundColor,
-      color: style.color
-    };
+  const handleView = (userId: string) => {
+    console.log('View user:', userId);
+    // TODO: Implement view functionality
   };
 
-  const handleView = (storeId: string) => {
-    console.log('View store:', storeId);
-    // TODO: Implement store details modal/page
+  const handleEdit = (userId: string) => {
+    console.log('Edit user:', userId);
+    // TODO: Implement edit functionality
   };
 
-  const handleEdit = async (storeId: string) => {
-    console.log('Edit store:', storeId);
-    // TODO: Implement edit store modal/form
+  const handleProfile = (userId: string) => {
+    console.log('View profile:', userId);
+    // TODO: Implement profile view functionality
   };
 
-  const handleUpdateStatus = async (storeId: string, newStatus: 'active' | 'pending' | 'suspended', reason?: string) => {
-    try {
-      await StoreService.updateStoreStatus(storeId, newStatus, reason);
-      console.log(`Store ${storeId} status updated to ${newStatus}`);
-    } catch (error) {
-      console.error('Error updating store status:', error);
-      setError('Failed to update store status. Please try again.');
-    }
-  };
-
-  const handleSuspend = async (storeId: string) => {
-    const confirmed = window.confirm('Are you sure you want to suspend this store? This action will prevent them from operating on the platform.');
-    if (confirmed) {
-      const reason = prompt('Please provide a reason for suspending this store:');
-      await handleUpdateStatus(storeId, 'suspended', reason || 'Suspended by admin');
-    }
-  };
-
-  const exportStores = async () => {
-    try {
-      setLoading(true);
-      const csvData = await StoreService.exportStoresToCSV();
-
-      // Create and download CSV file
-      const blob = new Blob([csvData], { type: 'text/csv' });
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `stores_export_${new Date().toISOString().split('T')[0]}.csv`;
-      link.click();
-      window.URL.revokeObjectURL(url);
-
-      console.log('Store data exported successfully');
-    } catch (error) {
-      console.error('Error exporting stores:', error);
-      setError('Failed to export store data. Please try again.');
-    } finally {
-      setLoading(false);
-    }
+  const handleDelete = (userId: string) => {
+    console.log('Delete user:', userId);
+    // TODO: Implement delete functionality with confirmation
   };
 
   return (
@@ -282,7 +286,7 @@ export const StoreManagement: React.FC<StoreManagementProps> = ({ className }) =
         className="absolute w-full lg:px-5 px-4"
         style={{
           left: '0px',
-          top: '40px',
+          top: '80px',
           minHeight: '1200px'
         }}
       >
@@ -312,7 +316,7 @@ export const StoreManagement: React.FC<StoreManagementProps> = ({ className }) =
                   margin: 0
                 }}
               >
-                Store Management
+                User Management
               </h1>
               <p
                 style={{
@@ -324,7 +328,7 @@ export const StoreManagement: React.FC<StoreManagementProps> = ({ className }) =
                   marginTop: '8px'
                 }}
               >
-                Manage store registrations, approvals, and monitor store performance across the TindaGo platform
+                Manage users, roles, and permissions across the TindaGo platform
               </p>
             </div>
 
@@ -380,7 +384,7 @@ export const StoreManagement: React.FC<StoreManagementProps> = ({ className }) =
           </div>
         </div>
 
-        {/* Store Stats Cards - Proper spacing below header */}
+        {/* User Stats Cards - Proper spacing below header */}
         <div
           className="absolute"
           style={{
@@ -390,7 +394,7 @@ export const StoreManagement: React.FC<StoreManagementProps> = ({ className }) =
             height: '150px'
           }}
         >
-          {/* Store Stats Cards Container */}
+          {/* User Stats Cards Container */}
           <div
             className="relative"
             style={{
@@ -398,7 +402,7 @@ export const StoreManagement: React.FC<StoreManagementProps> = ({ className }) =
               height: '150px'
             }}
           >
-            {/* Active Store Card */}
+            {/* Total Users Card */}
             <div
               className="absolute bg-white rounded-2xl"
               style={{
@@ -419,7 +423,205 @@ export const StoreManagement: React.FC<StoreManagementProps> = ({ className }) =
                     top: '20px',
                     width: '32px',
                     height: '32px',
+                    backgroundColor: '#64748B'
+                  }}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                  </svg>
+                </div>
+
+                {/* Title */}
+                <div
+                  className="absolute"
+                  style={{
+                    left: '20px',
+                    top: '20px',
+                    width: '150px'
+                  }}
+                >
+                  <p
+                    style={{
+                      fontFamily: 'Clash Grotesk Variable',
+                      fontWeight: 500,
+                      fontSize: '14px',
+                      lineHeight: '1.2em',
+                      color: '#1E1E1E',
+                      marginBottom: '4px'
+                    }}
+                  >
+                    Total Users
+                  </p>
+                </div>
+
+                {/* View All */}
+                <div
+                  className="absolute"
+                  style={{
+                    right: '20px',
+                    top: '60px'
+                  }}
+                >
+                  <p
+                    style={{
+                      fontFamily: 'Clash Grotesk Variable',
+                      fontWeight: 400,
+                      fontSize: '12px',
+                      color: 'rgba(30, 30, 30, 0.6)',
+                      margin: 0
+                    }}
+                  >
+                    view all
+                  </p>
+                </div>
+
+                {/* Value */}
+                <div
+                  className="absolute"
+                  style={{
+                    left: '20px',
+                    bottom: '45px'
+                  }}
+                >
+                  <p
+                    style={{
+                      fontFamily: 'Clash Grotesk Variable',
+                      fontWeight: 700,
+                      fontSize: '28px',
+                      lineHeight: '1.1em',
+                      color: '#1E1E1E',
+                      margin: 0
+                    }}
+                  >
+                    {(stats?.totalUsers || users.length).toLocaleString()}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Customers Card */
+            <div
+              className="absolute bg-white rounded-2xl"
+              style={{
+                left: '275px',
+                top: '0px',
+                width: '270px',
+                height: '150px',
+                boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
+                border: '1px solid rgba(0, 0, 0, 0.05)'
+              }}
+            >
+              <div className="relative w-full h-full">
+                {/* Icon in top right */}
+                <div
+                  className="absolute rounded-xl flex items-center justify-center"
+                  style={{
+                    right: '20px',
+                    top: '20px',
+                    width: '32px',
+                    height: '32px',
                     backgroundColor: '#22C55E'
+                  }}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                  </svg>
+                </div>
+
+                {/* Title */}
+                <div
+                  className="absolute"
+                  style={{
+                    left: '20px',
+                    top: '20px',
+                    width: '150px'
+                  }}
+                >
+                  <p
+                    style={{
+                      fontFamily: 'Clash Grotesk Variable',
+                      fontWeight: 500,
+                      fontSize: '14px',
+                      lineHeight: '1.2em',
+                      color: '#1E1E1E',
+                      marginBottom: '4px'
+                    }}
+                  >
+                    Customers
+                  </p>
+                </div>
+
+                {/* View All */}
+                <div
+                  className="absolute"
+                  style={{
+                    right: '20px',
+                    top: '60px'
+                  }}
+                >
+                  <p
+                    style={{
+                      fontFamily: 'Clash Grotesk Variable',
+                      fontWeight: 400,
+                      fontSize: '12px',
+                      color: 'rgba(30, 30, 30, 0.6)',
+                      margin: 0
+                    }}
+                  >
+                    view all
+                  </p>
+                </div>
+
+                {/* Value */}
+                <div
+                  className="absolute"
+                  style={{
+                    left: '20px',
+                    bottom: '45px'
+                  }}
+                >
+                  <p
+                    style={{
+                      fontFamily: 'Clash Grotesk Variable',
+                      fontWeight: 700,
+                      fontSize: '28px',
+                      lineHeight: '1.1em',
+                      color: '#1E1E1E',
+                      margin: 0
+                    }}
+                  >
+                    {(stats?.totalCustomers || users.filter(u => 'totalOrders' in u).length).toLocaleString()}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Store Owners Card */
+            <div
+              className="absolute bg-white rounded-2xl"
+              style={{
+                left: '550px',
+                top: '0px',
+                width: '270px',
+                height: '150px',
+                boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
+                border: '1px solid rgba(0, 0, 0, 0.05)'
+              }}
+            >
+              <div className="relative w-full h-full">
+                {/* Icon in top right */}
+                <div
+                  className="absolute rounded-xl flex items-center justify-center"
+                  style={{
+                    right: '20px',
+                    top: '20px',
+                    width: '32px',
+                    height: '32px',
+                    backgroundColor: '#3B82F6'
                   }}
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
@@ -448,7 +650,7 @@ export const StoreManagement: React.FC<StoreManagementProps> = ({ className }) =
                       marginBottom: '4px'
                     }}
                   >
-                    Active Store
+                    Store Owners
                   </p>
                 </div>
 
@@ -491,209 +693,13 @@ export const StoreManagement: React.FC<StoreManagementProps> = ({ className }) =
                       margin: 0
                     }}
                   >
-                    {(stats?.activeStores || stores.filter(s => s.status === 'active').length).toLocaleString()}
+                    {(stats?.totalStoreOwners || users.filter(u => 'stores' in u).length).toLocaleString()}
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* Pending Approval Card */}
-            <div
-              className="absolute bg-white rounded-2xl"
-              style={{
-                left: '275px',
-                top: '0px',
-                width: '270px',
-                height: '150px',
-                boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
-                border: '1px solid rgba(0, 0, 0, 0.05)'
-              }}
-            >
-              <div className="relative w-full h-full">
-                {/* Icon in top right */}
-                <div
-                  className="absolute rounded-xl flex items-center justify-center"
-                  style={{
-                    right: '20px',
-                    top: '20px',
-                    width: '32px',
-                    height: '32px',
-                    backgroundColor: '#EAB308'
-                  }}
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                    <circle cx="12" cy="12" r="10"/>
-                    <polyline points="12,6 12,12 16,14"/>
-                  </svg>
-                </div>
-
-                {/* Title */}
-                <div
-                  className="absolute"
-                  style={{
-                    left: '20px',
-                    top: '20px',
-                    width: '150px'
-                  }}
-                >
-                  <p
-                    style={{
-                      fontFamily: 'Clash Grotesk Variable',
-                      fontWeight: 500,
-                      fontSize: '14px',
-                      lineHeight: '1.2em',
-                      color: '#1E1E1E',
-                      marginBottom: '4px'
-                    }}
-                  >
-                    Pending Approval
-                  </p>
-                </div>
-
-                {/* View All */}
-                <div
-                  className="absolute"
-                  style={{
-                    right: '20px',
-                    top: '60px'
-                  }}
-                >
-                  <p
-                    style={{
-                      fontFamily: 'Clash Grotesk Variable',
-                      fontWeight: 400,
-                      fontSize: '12px',
-                      color: 'rgba(30, 30, 30, 0.6)',
-                      margin: 0
-                    }}
-                  >
-                    view all
-                  </p>
-                </div>
-
-                {/* Value */}
-                <div
-                  className="absolute"
-                  style={{
-                    left: '20px',
-                    bottom: '45px'
-                  }}
-                >
-                  <p
-                    style={{
-                      fontFamily: 'Clash Grotesk Variable',
-                      fontWeight: 700,
-                      fontSize: '28px',
-                      lineHeight: '1.1em',
-                      color: '#1E1E1E',
-                      margin: 0
-                    }}
-                  >
-                    {(stats?.pendingApproval || stores.filter(s => s.status === 'pending').length).toLocaleString()}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Suspended Store Card */}
-            <div
-              className="absolute bg-white rounded-2xl"
-              style={{
-                left: '550px',
-                top: '0px',
-                width: '270px',
-                height: '150px',
-                boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
-                border: '1px solid rgba(0, 0, 0, 0.05)'
-              }}
-            >
-              <div className="relative w-full h-full">
-                {/* Icon in top right */}
-                <div
-                  className="absolute rounded-xl flex items-center justify-center"
-                  style={{
-                    right: '20px',
-                    top: '20px',
-                    width: '32px',
-                    height: '32px',
-                    backgroundColor: '#EF4444'
-                  }}
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                    <circle cx="12" cy="12" r="10"/>
-                    <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>
-                  </svg>
-                </div>
-
-                {/* Title */}
-                <div
-                  className="absolute"
-                  style={{
-                    left: '20px',
-                    top: '20px',
-                    width: '150px'
-                  }}
-                >
-                  <p
-                    style={{
-                      fontFamily: 'Clash Grotesk Variable',
-                      fontWeight: 500,
-                      fontSize: '14px',
-                      lineHeight: '1.2em',
-                      color: '#1E1E1E',
-                      marginBottom: '4px'
-                    }}
-                  >
-                    Suspended Store
-                  </p>
-                </div>
-
-                {/* View All */}
-                <div
-                  className="absolute"
-                  style={{
-                    right: '20px',
-                    top: '60px'
-                  }}
-                >
-                  <p
-                    style={{
-                      fontFamily: 'Clash Grotesk Variable',
-                      fontWeight: 400,
-                      fontSize: '12px',
-                      color: 'rgba(30, 30, 30, 0.6)',
-                      margin: 0
-                    }}
-                  >
-                    view all
-                  </p>
-                </div>
-
-                {/* Value */}
-                <div
-                  className="absolute"
-                  style={{
-                    left: '20px',
-                    bottom: '45px'
-                  }}
-                >
-                  <p
-                    style={{
-                      fontFamily: 'Clash Grotesk Variable',
-                      fontWeight: 700,
-                      fontSize: '28px',
-                      lineHeight: '1.1em',
-                      color: '#1E1E1E',
-                      margin: 0
-                    }}
-                  >
-                    {(stats?.suspendedStores || stores.filter(s => s.status === 'suspended').length).toLocaleString()}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Subscribe Card */}
+            {/* Pending Verifications Card */
             <div
               className="absolute bg-white rounded-2xl"
               style={{
@@ -714,13 +720,13 @@ export const StoreManagement: React.FC<StoreManagementProps> = ({ className }) =
                     top: '20px',
                     width: '32px',
                     height: '32px',
-                    backgroundColor: '#A855F7'
+                    backgroundColor: '#EAB308'
                   }}
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                    <path d="M12 2v20"/>
-                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                    <line x1="12" y1="9" x2="12" y2="13"/>
+                    <line x1="12" y1="17" x2="12" y2="17"/>
                   </svg>
                 </div>
 
@@ -743,7 +749,7 @@ export const StoreManagement: React.FC<StoreManagementProps> = ({ className }) =
                       marginBottom: '4px'
                     }}
                   >
-                    Subscribe
+                    Pending Verifications
                   </p>
                 </div>
 
@@ -786,7 +792,7 @@ export const StoreManagement: React.FC<StoreManagementProps> = ({ className }) =
                       margin: 0
                     }}
                   >
-                    {(stats?.subscribedStores || stores.filter(s => s.subscriptionStatus !== 'free').length).toLocaleString()}
+                    {(stats?.pendingVerifications || users.filter(u => u.verificationStatus === 'pending').length).toLocaleString()}
                   </p>
                 </div>
               </div>
@@ -794,7 +800,7 @@ export const StoreManagement: React.FC<StoreManagementProps> = ({ className }) =
           </div>
         </div>
 
-        {/* Search and Filter Section - Aligned with other components */}
+        {/* Search and Filter Section - Below Cards */}
         <div
           className="absolute"
           style={{
@@ -838,7 +844,7 @@ export const StoreManagement: React.FC<StoreManagementProps> = ({ className }) =
             </div>
             <input
               type="text"
-              placeholder="Search stores by name, owner, or category..."
+              placeholder="Search users by name, email, or role..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               style={{
@@ -868,118 +874,61 @@ export const StoreManagement: React.FC<StoreManagementProps> = ({ className }) =
             />
           </div>
 
-          {/* Filters and Export Container */}
+          {/* Filter Buttons */}
           <div
             style={{
               display: 'flex',
-              alignItems: 'center',
-              gap: '16px'
+              gap: '8px'
             }}
           >
-            {/* Filter Buttons */}
-            <div
-              style={{
-                display: 'flex',
-                gap: '8px'
-              }}
-            >
-              {(['all', 'active', 'pending', 'suspended'] as const).map((status) => {
-                const isActive = filterStatus === status;
-                return (
-                  <button
-                    key={status}
-                    onClick={() => setFilterStatus(status)}
-                    style={{
-                      padding: '8px 16px',
-                      fontSize: '14px',
-                      fontFamily: 'Clash Grotesk Variable',
-                      fontWeight: 500,
-                      borderRadius: '6px',
-                      border: '1px solid',
-                      borderColor: isActive ? '#3BB77E' : '#CBD5E1',
-                      backgroundColor: isActive ? '#3BB77E' : '#FFFFFF',
-                      color: isActive ? '#FFFFFF' : '#64748B',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s ease'
-                    }}
-                    onMouseEnter={(e) => {
-                      if (!isActive) {
-                        e.currentTarget.style.backgroundColor = '#F1F5F9';
-                        e.currentTarget.style.borderColor = '#94A3B8';
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (!isActive) {
-                        e.currentTarget.style.backgroundColor = '#FFFFFF';
-                        e.currentTarget.style.borderColor = '#CBD5E1';
-                      }
-                    }}
-                  >
-                    {status.charAt(0).toUpperCase() + status.slice(1)}
-                    {status !== 'all' && (
-                      <span
-                        style={{
-                          marginLeft: '6px',
-                          fontSize: '12px',
-                          fontWeight: 600,
-                          opacity: 0.8
-                        }}
-                      >
-                        ({stores.filter(s => s.status === status).length})
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Export Button */}
-            <button
-              onClick={exportStores}
-              disabled={loading}
-              style={{
-                width: '120px',
-                height: '50px',
-                padding: '12px 16px',
-                borderRadius: '12px',
-                border: '1px solid rgba(0, 0, 0, 0.05)',
-                backgroundColor: '#3BB77E',
-                color: '#FFFFFF',
-                cursor: loading ? 'not-allowed' : 'pointer',
-                fontFamily: 'Clash Grotesk Variable',
-                fontWeight: 500,
-                fontSize: '14px',
-                boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
-                transition: 'all 0.2s ease',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
-                opacity: loading ? 0.6 : 1
-              }}
-              onMouseEnter={(e) => {
-                if (!loading) {
-                  e.currentTarget.style.backgroundColor = '#2CA968';
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!loading) {
-                  e.currentTarget.style.backgroundColor = '#3BB77E';
-                  e.currentTarget.style.transform = 'translateY(0px)';
-                }
-              }}
-            >
-              <Image
-                src="/images/admin-dashboard/settings-icon.png"
-                alt="Export"
-                width={16}
-                height={16}
-                className="object-contain"
-                style={{ filter: 'brightness(0) invert(1)' }}
-              />
-              {loading ? 'Exporting...' : 'Export CSV'}
-            </button>
+            {(['all', 'active', 'inactive', 'pending', 'suspended', 'banned'] as const).map((status) => {
+              const isActive = filterStatus === status;
+              return (
+                <button
+                  key={status}
+                  onClick={() => setFilterStatus(status)}
+                  style={{
+                    padding: '8px 16px',
+                    fontSize: '14px',
+                    fontFamily: 'Clash Grotesk Variable',
+                    fontWeight: 500,
+                    borderRadius: '6px',
+                    border: '1px solid',
+                    borderColor: isActive ? '#3BB77E' : '#CBD5E1',
+                    backgroundColor: isActive ? '#3BB77E' : '#FFFFFF',
+                    color: isActive ? '#FFFFFF' : '#64748B',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isActive) {
+                      e.currentTarget.style.backgroundColor = '#F1F5F9';
+                      e.currentTarget.style.borderColor = '#94A3B8';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isActive) {
+                      e.currentTarget.style.backgroundColor = '#FFFFFF';
+                      e.currentTarget.style.borderColor = '#CBD5E1';
+                    }
+                  }}
+                >
+                  {status.charAt(0).toUpperCase() + status.slice(1)}
+                  {status !== 'all' && (
+                    <span
+                      style={{
+                        marginLeft: '6px',
+                        fontSize: '12px',
+                        fontWeight: 600,
+                        opacity: 0.8
+                      }}
+                    >
+                      ({filteredUsers.filter(u => u.status === status).length})
+                    </span>
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
 
@@ -998,7 +947,55 @@ export const StoreManagement: React.FC<StoreManagementProps> = ({ className }) =
             overflow: 'hidden'
           }}
         >
-          {currentData.length === 0 ? (
+          {loading ? (
+            <div
+              style={{
+                padding: '48px 24px',
+                textAlign: 'center'
+              }}
+            >
+              <div
+                style={{
+                  fontFamily: 'Clash Grotesk Variable',
+                  fontWeight: 500,
+                  fontSize: '18px',
+                  color: '#1E293B'
+                }}
+              >
+                Loading users...
+              </div>
+            </div>
+          ) : error ? (
+            <div
+              style={{
+                padding: '48px 24px',
+                textAlign: 'center'
+              }}
+            >
+              <div
+                style={{
+                  fontFamily: 'Clash Grotesk Variable',
+                  fontWeight: 600,
+                  fontSize: '18px',
+                  color: '#EF4444',
+                  marginBottom: '8px'
+                }}
+              >
+                Error Loading Users
+              </div>
+              <p
+                style={{
+                  fontFamily: 'Clash Grotesk Variable',
+                  fontWeight: 400,
+                  fontSize: '14px',
+                  color: '#64748B',
+                  margin: 0
+                }}
+              >
+                {error}
+              </p>
+            </div>
+          ) : currentData.length === 0 ? (
             <div
               style={{
                 padding: '48px 24px',
@@ -1013,8 +1010,8 @@ export const StoreManagement: React.FC<StoreManagementProps> = ({ className }) =
                 }}
               >
                 <Image
-                  src="/images/admin-dashboard/store-icon.png"
-                  alt="No stores"
+                  src="/images/admin-dashboard/user-icon.png"
+                  alt="No users"
                   width={48}
                   height={48}
                   className="object-contain"
@@ -1030,7 +1027,7 @@ export const StoreManagement: React.FC<StoreManagementProps> = ({ className }) =
                   marginBottom: '8px'
                 }}
               >
-                No stores found
+                No users found
               </h3>
               <p
                 style={{
@@ -1043,7 +1040,7 @@ export const StoreManagement: React.FC<StoreManagementProps> = ({ className }) =
               >
                 {searchTerm || filterStatus !== 'all'
                   ? 'Try adjusting your search or filter criteria.'
-                  : 'No stores have been registered yet.'}
+                  : 'No users have been added yet.'}
               </p>
             </div>
           ) : (
@@ -1070,7 +1067,7 @@ export const StoreManagement: React.FC<StoreManagementProps> = ({ className }) =
                           borderBottom: '1px solid rgba(0, 0, 0, 0.05)'
                         }}
                       >
-                        Store
+                        User
                       </th>
                       <th
                         style={{
@@ -1084,7 +1081,7 @@ export const StoreManagement: React.FC<StoreManagementProps> = ({ className }) =
                           borderBottom: '1px solid rgba(0, 0, 0, 0.05)'
                         }}
                       >
-                        Owner
+                        Role
                       </th>
                       <th
                         style={{
@@ -1131,9 +1128,9 @@ export const StoreManagement: React.FC<StoreManagementProps> = ({ className }) =
                     </tr>
                   </thead>
                   <tbody>
-                    {currentData.map((store, index) => (
+                    {currentData.map((user, index) => (
                       <tr
-                        key={store.storeId}
+                        key={user.userId}
                         style={{
                           borderBottom: index < currentData.length - 1 ? '1px solid #E2E8F0' : 'none',
                           transition: 'background-color 0.2s ease'
@@ -1145,7 +1142,7 @@ export const StoreManagement: React.FC<StoreManagementProps> = ({ className }) =
                           e.currentTarget.style.backgroundColor = 'transparent';
                         }}
                       >
-                        {/* Store Column */}
+                        {/* User Column - Clean without avatar as requested */}
                         <td style={{ padding: '25px 20px' }}>
                           <div>
                             <div
@@ -1157,7 +1154,7 @@ export const StoreManagement: React.FC<StoreManagementProps> = ({ className }) =
                                 marginBottom: '4px'
                               }}
                             >
-                              {store.storeName}
+                              {user.displayName}
                             </div>
                             <div
                               style={{
@@ -1167,54 +1164,29 @@ export const StoreManagement: React.FC<StoreManagementProps> = ({ className }) =
                                 color: 'rgba(30, 30, 30, 0.6)'
                               }}
                             >
-                              {store.storeCategory || 'General Store'}
-                            </div>
-                            <div
-                              style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '6px',
-                                marginTop: '4px'
-                              }}
-                            >
-                              <span style={getSubscriptionBadge(store.subscriptionStatus || 'free')}>
-                                {store.subscriptionStatus || 'free'}
-                              </span>
+                              {user.email}
                             </div>
                           </div>
                         </td>
 
-                        {/* Owner Column */}
+                        {/* Role Column */}
                         <td style={{ padding: '25px 20px' }}>
-                          <div>
-                            <div
-                              style={{
-                                fontFamily: 'Clash Grotesk Variable',
-                                fontWeight: 500,
-                                fontSize: '14px',
-                                color: '#1E1E1E',
-                                marginBottom: '4px'
-                              }}
-                            >
-                              {store.ownerName}
-                            </div>
-                            <div
-                              style={{
-                                fontFamily: 'Clash Grotesk Variable',
-                                fontWeight: 400,
-                                fontSize: '12px',
-                                color: 'rgba(30, 30, 30, 0.6)'
-                              }}
-                            >
-                              {store.ownerEmail}
-                            </div>
+                          <div
+                            style={{
+                              fontFamily: 'Clash Grotesk Variable',
+                              fontWeight: 500,
+                              fontSize: '16px',
+                              color: '#1E1E1E'
+                            }}
+                          >
+                            {user.role}
                           </div>
                         </td>
 
                         {/* Status Column */}
                         <td style={{ padding: '25px 20px' }}>
-                          <span style={getStatusBadge(store.status)}>
-                            {store.status === 'pending' ? 'Pending' : store.status.charAt(0).toUpperCase() + store.status.slice(1)}
+                          <span style={getStatusBadge(user.status)}>
+                            {user.status.charAt(0).toUpperCase() + user.status.slice(1)}
                           </span>
                         </td>
 
@@ -1224,11 +1196,11 @@ export const StoreManagement: React.FC<StoreManagementProps> = ({ className }) =
                             style={{
                               fontFamily: 'Clash Grotesk Variable',
                               fontWeight: 400,
-                              fontSize: '14px',
-                              color: '#1E1E1E'
+                              fontSize: '16px',
+                              color: 'rgba(30, 30, 30, 0.6)'
                             }}
                           >
-                            {formatDate(store.joinedDate)}
+                            {formatDate(user.createdAt)}
                           </div>
                         </td>
 
@@ -1238,15 +1210,16 @@ export const StoreManagement: React.FC<StoreManagementProps> = ({ className }) =
                             style={{
                               display: 'flex',
                               justifyContent: 'center',
-                              gap: '12px'
+                              gap: '8px'
                             }}
                           >
+                            {/* View Button */}
                             <button
-                              onClick={() => handleView(store.storeId)}
+                              onClick={() => handleView(user.userId)}
                               style={{
-                                width: '40px',
-                                height: '40px',
-                                borderRadius: '10px',
+                                width: '36px',
+                                height: '36px',
+                                borderRadius: '8px',
                                 border: '1px solid rgba(0, 0, 0, 0.05)',
                                 backgroundColor: '#FFFFFF',
                                 cursor: 'pointer',
@@ -1257,8 +1230,8 @@ export const StoreManagement: React.FC<StoreManagementProps> = ({ className }) =
                                 boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.08)'
                               }}
                               onMouseEnter={(e) => {
-                                e.currentTarget.style.backgroundColor = '#3BB77E';
-                                e.currentTarget.style.borderColor = '#3BB77E';
+                                e.currentTarget.style.backgroundColor = '#22C55E';
+                                e.currentTarget.style.borderColor = '#22C55E';
                                 e.currentTarget.style.transform = 'translateY(-2px)';
                               }}
                               onMouseLeave={(e) => {
@@ -1266,23 +1239,21 @@ export const StoreManagement: React.FC<StoreManagementProps> = ({ className }) =
                                 e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.05)';
                                 e.currentTarget.style.transform = 'translateY(0px)';
                               }}
-                              title="View store details"
+                              title="View user details"
                             >
-                              <Image
-                                src="/images/admin-dashboard/store-icon.png"
-                                alt="View"
-                                width={18}
-                                height={18}
-                                className="object-contain"
-                                style={{ filter: 'brightness(0.4)' }}
-                              />
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                              </svg>
                             </button>
+
+                            {/* Edit Button */}
                             <button
-                              onClick={() => handleEdit(store.storeId)}
+                              onClick={() => handleEdit(user.userId)}
                               style={{
-                                width: '40px',
-                                height: '40px',
-                                borderRadius: '10px',
+                                width: '36px',
+                                height: '36px',
+                                borderRadius: '8px',
                                 border: '1px solid rgba(0, 0, 0, 0.05)',
                                 backgroundColor: '#FFFFFF',
                                 cursor: 'pointer',
@@ -1302,23 +1273,59 @@ export const StoreManagement: React.FC<StoreManagementProps> = ({ className }) =
                                 e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.05)';
                                 e.currentTarget.style.transform = 'translateY(0px)';
                               }}
-                              title="Edit store"
+                              title="Edit user"
                             >
                               <Image
                                 src="/images/admin-dashboard/edit-icon.svg"
                                 alt="Edit"
-                                width={18}
-                                height={18}
+                                width={16}
+                                height={16}
                                 className="object-contain"
                                 style={{ filter: 'brightness(0.4)' }}
                               />
                             </button>
+
+                            {/* Profile Button */}
                             <button
-                              onClick={() => handleSuspend(store.storeId)}
+                              onClick={() => handleProfile(user.userId)}
                               style={{
-                                width: '40px',
-                                height: '40px',
-                                borderRadius: '10px',
+                                width: '36px',
+                                height: '36px',
+                                borderRadius: '8px',
+                                border: '1px solid rgba(0, 0, 0, 0.05)',
+                                backgroundColor: '#FFFFFF',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s ease',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.08)'
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.backgroundColor = '#A855F7';
+                                e.currentTarget.style.borderColor = '#A855F7';
+                                e.currentTarget.style.transform = 'translateY(-2px)';
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.backgroundColor = '#FFFFFF';
+                                e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.05)';
+                                e.currentTarget.style.transform = 'translateY(0px)';
+                              }}
+                              title="View profile"
+                            >
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                <circle cx="12" cy="7" r="4"/>
+                              </svg>
+                            </button>
+
+                            {/* Delete Button */}
+                            <button
+                              onClick={() => handleDelete(user.userId)}
+                              style={{
+                                width: '36px',
+                                height: '36px',
+                                borderRadius: '8px',
                                 border: '1px solid rgba(0, 0, 0, 0.05)',
                                 backgroundColor: '#FFFFFF',
                                 cursor: 'pointer',
@@ -1338,13 +1345,13 @@ export const StoreManagement: React.FC<StoreManagementProps> = ({ className }) =
                                 e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.05)';
                                 e.currentTarget.style.transform = 'translateY(0px)';
                               }}
-                              title="Suspend store"
+                              title="Delete user"
                             >
                               <Image
                                 src="/images/admin-dashboard/delete-icon.svg"
-                                alt="Suspend"
-                                width={18}
-                                height={18}
+                                alt="Delete"
+                                width={16}
+                                height={16}
                                 className="object-contain"
                                 style={{ filter: 'brightness(0.4)' }}
                               />
@@ -1377,7 +1384,7 @@ export const StoreManagement: React.FC<StoreManagementProps> = ({ className }) =
                     color: 'rgba(30, 30, 30, 0.6)'
                   }}
                 >
-                  Showing {startIndex + 1}-{Math.min(startIndex + pageSize, filteredStores.length)} of {filteredStores.length} stores
+                  Showing {startIndex + 1}-{Math.min(startIndex + pageSize, filteredUsers.length)} of {filteredUsers.length} users
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>

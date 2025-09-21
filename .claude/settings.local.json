@@ -39,7 +39,9 @@
       "Bash(node:*)",
       "Bash(curl:*)",
       "Read(//c/**)",
-      "Bash(jq:*)"
+      "Bash(jq:*)",
+      "Bash(timeout 30 npm run build)",
+      "Bash(timeout 10s npm run dev)"
     ],
     "deny": [],
     "ask": []

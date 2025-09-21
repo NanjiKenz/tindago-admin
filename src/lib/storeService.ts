@@ -6,8 +6,8 @@
  */
 
 import { database } from './firebase.js';
-import { ref, get, set, update, remove, onValue, off, query, orderByChild, equalTo } from 'firebase/database';
-import { Store, StoreStats, StoreFilter, StoreAnalytics, StoreSubscription } from '@/types/storeManagement';
+import { ref, get, set, update, onValue, off } from 'firebase/database';
+import { Store, StoreStats, StoreFilter } from '@/types/storeManagement';
 
 export class StoreService {
   /**
@@ -54,7 +54,7 @@ export class StoreService {
               notes: verification.notes
             } : { status: 'pending' },
             performanceMetrics: {
-              totalSales: orders.reduce((sum: number, order: any) => sum + (order.total || 0), 0),
+              totalSales: (orders as Record<string, unknown>[]).reduce((sum: number, order: Record<string, unknown>) => sum + ((order.total as number) || 0), 0),
               totalOrders: orders.length,
               rating: storeData.rating || 4.5,
               responseTime: storeData.responseTime || 15
@@ -119,7 +119,7 @@ export class StoreService {
             notes: verification.notes
           } : { status: 'pending' },
           performanceMetrics: {
-            totalSales: orders.reduce((sum: number, order: any) => sum + (order.total || 0), 0),
+            totalSales: (orders as Record<string, unknown>[]).reduce((sum: number, order: Record<string, unknown>) => sum + ((order.total as number) || 0), 0),
             totalOrders: orders.length,
             rating: storeData.rating || 4.5,
             responseTime: storeData.responseTime || 15
@@ -150,7 +150,7 @@ export class StoreService {
     try {
       const storeRef = ref(database, `stores/${storeId}`);
 
-      const updateData: any = {
+      const updateData: Record<string, unknown> = {
         status,
         statusUpdatedAt: new Date().toISOString()
       };
@@ -189,7 +189,7 @@ export class StoreService {
     try {
       const verificationRef = ref(database, `store_verifications/${storeId}`);
 
-      const verificationData = {
+      const verificationData: Record<string, unknown> = {
         status: verificationStatus,
         updatedAt: new Date().toISOString(),
         notes: notes || '',

@@ -96,7 +96,7 @@ const DashboardPage: React.FC = () => {
                 margin: 0
               }}
             >
-              Welcome back! Here's what's happening with your TindaGo today.
+              Welcome back! Here&apos;s what&apos;s happening with your TindaGo today.
             </p>
           </div>
 

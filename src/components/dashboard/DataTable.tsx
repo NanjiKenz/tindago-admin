@@ -17,7 +17,7 @@ interface Column {
 
 interface DataTableProps {
   columns: Column[];
-  data: any[];
+  data: Record<string, unknown>[];
   title: string;
   searchable?: boolean;
   filterable?: boolean;
@@ -60,8 +60,8 @@ export const DataTable: React.FC<DataTableProps> = ({
     // Apply sorting
     if (sortColumn) {
       filtered = [...filtered].sort((a, b) => {
-        const aValue = a[sortColumn];
-        const bValue = b[sortColumn];
+        const aValue = a[sortColumn] as string | number;
+        const bValue = b[sortColumn] as string | number;
 
         if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
         if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
@@ -189,7 +189,7 @@ export const DataTable: React.FC<DataTableProps> = ({
               <tr key={index} className="hover:bg-gray-50 transition-colors">
                 {columns.map((column) => (
                   <td key={column.key} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {column.key === 'status' ? getStatusBadge(row[column.key]) : row[column.key]}
+                    {column.key === 'status' ? getStatusBadge(row[column.key] as string) : (row[column.key] as React.ReactNode)}
                   </td>
                 ))}
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">

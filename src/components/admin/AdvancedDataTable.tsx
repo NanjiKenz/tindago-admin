@@ -58,8 +58,8 @@ export const AdvancedDataTable: React.FC<AdvancedDataTableProps> = ({
 
     // Apply sorting
     filtered.sort((a, b) => {
-      let aValue: any = a[sortField];
-      let bValue: any = b[sortField];
+      let aValue: string | number | Date = (a as unknown as Record<string, unknown>)[sortField] as string | number | Date;
+      let bValue: string | number | Date = (b as unknown as Record<string, unknown>)[sortField] as string | number | Date;
 
       if (sortField === 'createdAt') {
         aValue = new Date(aValue).getTime();

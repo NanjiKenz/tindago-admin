@@ -73,12 +73,12 @@ export const UserManagement: React.FC<UserManagementProps> = ({ className }) => 
                    user.role === 'moderator' ? 'Moderator' : 'Viewer';
           } else {
             // For non-admin users, check their actual userType field from Firebase
-            // This should be either 'user' or 'store_owner'
+            // This should be either 'customer' or 'store_owner'
 
             if (user.userType === 'store_owner') {
               userType = 'store_owner';
               role = 'Store Owner';
-            } else if (user.userType === 'user') {
+            } else if (user.userType === 'customer') {
               userType = 'customer';
               role = 'Customer (App User)';
             } else {
@@ -138,7 +138,7 @@ export const UserManagement: React.FC<UserManagementProps> = ({ className }) => 
           if (user.userType === 'store_owner') {
             userType = 'store_owner';
             role = 'Store Owner';
-          } else if (user.userType === 'user') {
+          } else if (user.userType === 'customer') {
             userType = 'customer';
             role = 'Customer (App User)';
           } else {
@@ -278,19 +278,16 @@ export const UserManagement: React.FC<UserManagementProps> = ({ className }) => 
       style={{
         width: '100%',
         minHeight: '1024px',
-        backgroundColor: '#F3F5F9', // Exact admin dashboard background
+        backgroundColor: '#F3F5F9',
         fontFamily: 'Clash Grotesk Variable'
       }}
     >
-      {/* Main Container - Exact admin dashboard positioning */}
       <div
-        className="absolute"
+        className="absolute w-full lg:px-5 px-4"
         style={{
           left: '0px',
-          top: '0px',
-          width: '100%',
-          minHeight: '1024px',
-          padding: '40px 35px'
+          top: '80px',
+          minHeight: '1200px'
         }}
       >
         {/* Header Section - Exact positioning */}
@@ -303,7 +300,7 @@ export const UserManagement: React.FC<UserManagementProps> = ({ className }) => 
             height: '80px',
             borderBottom: '1px solid rgba(0, 0, 0, 0.05)',
             paddingBottom: '20px',
-            paddingTop: '20px'
+            marginBottom: '40px'
           }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -315,8 +312,8 @@ export const UserManagement: React.FC<UserManagementProps> = ({ className }) => 
                   fontSize: '48px',
                   lineHeight: '1.2em',
                   color: '#1E1E1E',
-                  margin: 0,
-                  marginBottom: '8px'
+                  marginBottom: '8px',
+                  margin: 0
                 }}
               >
                 User Management
@@ -387,17 +384,16 @@ export const UserManagement: React.FC<UserManagementProps> = ({ className }) => 
           </div>
         </div>
 
-        {/* User Stats Cards - Admin Dashboard Style */}
+        {/* User Stats Cards - Proper spacing below header */}
         <div
           className="absolute"
           style={{
             left: '35px',
-            top: '131px',
+            top: '120px',
             width: '1095px',
             height: '150px'
           }}
         >
-          {/* User Stats Cards Container */}
           <div
             className="relative"
             style={{
@@ -405,7 +401,6 @@ export const UserManagement: React.FC<UserManagementProps> = ({ className }) => 
               height: '150px'
             }}
           >
-            {/* Total Users Card */}
             <div
               className="absolute bg-white rounded-2xl"
               style={{
@@ -505,7 +500,6 @@ export const UserManagement: React.FC<UserManagementProps> = ({ className }) => 
               </div>
             </div>
 
-            {/* Active Users Card */}
             <div
               className="absolute bg-white rounded-2xl"
               style={{
@@ -554,7 +548,7 @@ export const UserManagement: React.FC<UserManagementProps> = ({ className }) => 
                       marginBottom: '4px'
                     }}
                   >
-                    Active Users
+                    Customers
                   </p>
                 </div>
 
@@ -597,13 +591,12 @@ export const UserManagement: React.FC<UserManagementProps> = ({ className }) => 
                       margin: 0
                     }}
                   >
-                    {(stats?.activeUsers || users.filter(u => u.status === 'active').length).toLocaleString()}
+                    {(stats?.totalCustomers || users.filter(u => u.userType === 'customer').length).toLocaleString()}
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* Admins Card */}
             <div
               className="absolute bg-white rounded-2xl"
               style={{
@@ -628,7 +621,9 @@ export const UserManagement: React.FC<UserManagementProps> = ({ className }) => 
                   }}
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+                    <line x1="3" y1="6" x2="21" y2="6"/>
+                    <path d="M16 10a4 4 0 0 1-8 0"/>
                   </svg>
                 </div>
 
@@ -651,7 +646,7 @@ export const UserManagement: React.FC<UserManagementProps> = ({ className }) => 
                       marginBottom: '4px'
                     }}
                   >
-                    Admins
+                    Store Owners
                   </p>
                 </div>
 
@@ -694,13 +689,12 @@ export const UserManagement: React.FC<UserManagementProps> = ({ className }) => 
                       margin: 0
                     }}
                   >
-                    {(stats?.totalAdmins || users.filter(u => 'role' in u).length).toLocaleString()}
+                    {(stats?.totalStoreOwners || users.filter(u => u.userType === 'store_owner').length).toLocaleString()}
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* New Users Card */}
             <div
               className="absolute bg-white rounded-2xl"
               style={{
@@ -721,14 +715,13 @@ export const UserManagement: React.FC<UserManagementProps> = ({ className }) => 
                     top: '20px',
                     width: '32px',
                     height: '32px',
-                    backgroundColor: '#A855F7'
+                    backgroundColor: '#EAB308'
                   }}
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                    <circle cx="9" cy="7" r="4"/>
-                    <line x1="19" y1="8" x2="19" y2="14"/>
-                    <line x1="22" y1="11" x2="16" y2="11"/>
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                    <line x1="12" y1="9" x2="12" y2="13"/>
+                    <line x1="12" y1="17" x2="12" y2="17"/>
                   </svg>
                 </div>
 
@@ -751,7 +744,7 @@ export const UserManagement: React.FC<UserManagementProps> = ({ className }) => 
                       marginBottom: '4px'
                     }}
                   >
-                    New Users
+                    Pending Verifications
                   </p>
                 </div>
 
@@ -794,7 +787,7 @@ export const UserManagement: React.FC<UserManagementProps> = ({ className }) => 
                       margin: 0
                     }}
                   >
-                    {(stats?.newUsersThisMonth || 0).toLocaleString()}
+                    {(stats?.pendingVerifications || users.filter(u => u.status === 'pending').length).toLocaleString()}
                   </p>
                 </div>
               </div>
@@ -807,7 +800,7 @@ export const UserManagement: React.FC<UserManagementProps> = ({ className }) => 
           className="absolute"
           style={{
             left: '35px',
-            top: '301px',
+            top: '290px',
             width: '1095px',
             height: '50px',
             display: 'flex',
@@ -934,13 +927,13 @@ export const UserManagement: React.FC<UserManagementProps> = ({ className }) => 
           </div>
         </div>
 
-        {/* Table Container - Exact positioning */}
+        {/* Table Container - Aligned with cards */}
         <div
           className="absolute"
           style={{
             left: '35px',
-            top: '371px',
-            width: '100%',
+            top: '360px',
+            width: '1095px',
             minHeight: '600px',
             backgroundColor: '#FFFFFF',
             borderRadius: '20px',
@@ -1048,8 +1041,8 @@ export const UserManagement: React.FC<UserManagementProps> = ({ className }) => 
           ) : (
             <>
               {/* Table */}
-              <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', minWidth: '1000px' }}>
+              <div>
+                <table style={{ width: '100%' }}>
                   <thead>
                     <tr
                       style={{
@@ -1059,7 +1052,7 @@ export const UserManagement: React.FC<UserManagementProps> = ({ className }) => 
                     >
                       <th
                         style={{
-                          padding: '20px 30px',
+                          padding: '20px 20px',
                           textAlign: 'left',
                           fontFamily: 'Clash Grotesk Variable',
                           fontWeight: 500,
@@ -1073,7 +1066,7 @@ export const UserManagement: React.FC<UserManagementProps> = ({ className }) => 
                       </th>
                       <th
                         style={{
-                          padding: '20px 30px',
+                          padding: '20px 20px',
                           textAlign: 'left',
                           fontFamily: 'Clash Grotesk Variable',
                           fontWeight: 500,
@@ -1087,7 +1080,7 @@ export const UserManagement: React.FC<UserManagementProps> = ({ className }) => 
                       </th>
                       <th
                         style={{
-                          padding: '20px 30px',
+                          padding: '20px 20px',
                           textAlign: 'left',
                           fontFamily: 'Clash Grotesk Variable',
                           fontWeight: 500,
@@ -1101,7 +1094,7 @@ export const UserManagement: React.FC<UserManagementProps> = ({ className }) => 
                       </th>
                       <th
                         style={{
-                          padding: '20px 30px',
+                          padding: '20px 20px',
                           textAlign: 'left',
                           fontFamily: 'Clash Grotesk Variable',
                           fontWeight: 500,
@@ -1115,7 +1108,7 @@ export const UserManagement: React.FC<UserManagementProps> = ({ className }) => 
                       </th>
                       <th
                         style={{
-                          padding: '20px 30px',
+                          padding: '20px 20px',
                           textAlign: 'center',
                           fontFamily: 'Clash Grotesk Variable',
                           fontWeight: 500,
@@ -1145,7 +1138,7 @@ export const UserManagement: React.FC<UserManagementProps> = ({ className }) => 
                         }}
                       >
                         {/* User Column - Clean without avatar as requested */}
-                        <td style={{ padding: '25px 30px' }}>
+                        <td style={{ padding: '25px 20px' }}>
                           <div>
                             <div
                               style={{
@@ -1172,7 +1165,7 @@ export const UserManagement: React.FC<UserManagementProps> = ({ className }) => 
                         </td>
 
                         {/* Role Column */}
-                        <td style={{ padding: '25px 30px' }}>
+                        <td style={{ padding: '25px 20px' }}>
                           <div
                             style={{
                               fontFamily: 'Clash Grotesk Variable',
@@ -1186,14 +1179,14 @@ export const UserManagement: React.FC<UserManagementProps> = ({ className }) => 
                         </td>
 
                         {/* Status Column */}
-                        <td style={{ padding: '25px 30px' }}>
+                        <td style={{ padding: '25px 20px' }}>
                           <span style={getStatusBadge(user.status)}>
                             {user.status.charAt(0).toUpperCase() + user.status.slice(1)}
                           </span>
                         </td>
 
                         {/* Joined Column */}
-                        <td style={{ padding: '25px 30px' }}>
+                        <td style={{ padding: '25px 20px' }}>
                           <div
                             style={{
                               fontFamily: 'Clash Grotesk Variable',
@@ -1207,7 +1200,7 @@ export const UserManagement: React.FC<UserManagementProps> = ({ className }) => 
                         </td>
 
                         {/* Actions Column */}
-                        <td style={{ padding: '25px 30px' }}>
+                        <td style={{ padding: '25px 20px' }}>
                           <div
                             style={{
                               display: 'flex',
@@ -1370,7 +1363,7 @@ export const UserManagement: React.FC<UserManagementProps> = ({ className }) => 
               <div
                 style={{
                   borderTop: '1px solid rgba(0, 0, 0, 0.05)',
-                  padding: '25px 30px',
+                  padding: '25px 20px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',

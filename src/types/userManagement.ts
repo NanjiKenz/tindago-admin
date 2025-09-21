@@ -33,7 +33,7 @@ export interface CustomerUser {
   totalSpent: number;
   avatar?: string;
   verificationStatus: 'verified' | 'pending' | 'unverified';
-  userType?: 'user' | 'store_owner' | 'admin'; // Firebase userType field
+  userType?: 'customer' | 'store_owner' | 'admin'; // Firebase userType field
   storeOwnership?: {
     hasStore: boolean;
     storeId?: string;
@@ -51,7 +51,7 @@ export interface StoreOwnerUser {
   createdAt: string;
   lastLoginAt?: string;
   avatar?: string;
-  userType?: 'user' | 'store_owner' | 'admin'; // Firebase userType field
+  userType?: 'customer' | 'store_owner' | 'admin'; // Firebase userType field
   stores: StoreOwnership[];
   businessVerification: BusinessVerification;
   performanceMetrics: {
