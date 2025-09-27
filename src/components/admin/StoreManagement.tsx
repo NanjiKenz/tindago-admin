@@ -20,6 +20,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Image from 'next/image';
 import { Store, StoreStats } from '@/types/storeManagement';
 import { StoreService } from '@/lib/storeService';
+import { AdminService } from '@/lib/adminService';
 
 interface StoreManagementProps {
   className?: string;
@@ -31,7 +32,7 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'pending' | 'suspended'>('all');
+  const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'pending' | 'rejected' | 'suspended'>('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(8);
 
@@ -64,7 +65,7 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
     try {
       setLoading(true);
       setError(null);
-      const storeData = await StoreService.getAllStores();
+      const storeData = await StoreService.getAllStoresWithRegistrations();
       setStores(storeData);
     } catch (err) {
       console.error('Error loading stores:', err);
@@ -86,6 +87,7 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
           totalStores: stores.length,
           activeStores: stores.filter(s => s.status === 'active').length,
           pendingApproval: stores.filter(s => s.status === 'pending').length,
+          rejectedStores: stores.filter(s => s.status === 'rejected').length,
           suspendedStores: stores.filter(s => s.status === 'suspended').length,
           subscribedStores: stores.filter(s => s.subscriptionStatus !== 'free').length,
           totalRevenue: stores.reduce((sum, s) => sum + (s.performanceMetrics?.totalSales || 0), 0),
@@ -395,7 +397,7 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
           >
             {/* Active Store Card */}
             <div
-              className="absolute bg-white rounded-2xl"
+              className="absolute bg-white rounded-2xl cursor-pointer transition-all duration-200 hover:shadow-lg hover:border-tindago-400"
               style={{
                 left: '0px',
                 top: '0px',
@@ -404,6 +406,7 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
                 boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
                 border: '1px solid rgba(0, 0, 0, 0.05)'
               }}
+              onClick={() => setFilterStatus('active')}
             >
               <div className="relative w-full h-full">
                 {/* Icon in top right */}
@@ -443,11 +446,11 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
                       marginBottom: '4px'
                     }}
                   >
-                    Active Store
+                    Active Stores
                   </p>
                 </div>
 
-                {/* View All */}
+                {/* View All - Active Stores */}
                 <div
                   className="absolute"
                   style={{
@@ -461,10 +464,27 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
                       fontWeight: 400,
                       fontSize: '12px',
                       color: 'rgba(30, 30, 30, 0.6)',
-                      margin: 0
+                      margin: 0,
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease'
+                    }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setFilterStatus('active');
+                      console.log('View all active stores');
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = '#22C55E';
+                      e.currentTarget.style.fontWeight = '500';
+                      e.currentTarget.style.transform = 'translateX(-2px)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = 'rgba(30, 30, 30, 0.6)';
+                      e.currentTarget.style.fontWeight = '400';
+                      e.currentTarget.style.transform = 'translateX(0px)';
                     }}
                   >
-                    view all
+                    View All
                   </p>
                 </div>
 
@@ -494,7 +514,7 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
 
             {/* Pending Approval Card */}
             <div
-              className="absolute bg-white rounded-2xl"
+              className="absolute bg-white rounded-2xl cursor-pointer transition-all duration-200 hover:shadow-lg hover:border-tindago-400"
               style={{
                 left: '275px',
                 top: '0px',
@@ -503,6 +523,7 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
                 boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
                 border: '1px solid rgba(0, 0, 0, 0.05)'
               }}
+              onClick={() => setFilterStatus('pending')}
             >
               <div className="relative w-full h-full">
                 {/* Icon in top right */}
@@ -545,7 +566,7 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
                   </p>
                 </div>
 
-                {/* View All */}
+                {/* View All - Pending Approval */}
                 <div
                   className="absolute"
                   style={{
@@ -559,10 +580,27 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
                       fontWeight: 400,
                       fontSize: '12px',
                       color: 'rgba(30, 30, 30, 0.6)',
-                      margin: 0
+                      margin: 0,
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease'
+                    }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setFilterStatus('pending');
+                      console.log('View all pending approval stores');
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = '#EAB308';
+                      e.currentTarget.style.fontWeight = '500';
+                      e.currentTarget.style.transform = 'translateX(-2px)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = 'rgba(30, 30, 30, 0.6)';
+                      e.currentTarget.style.fontWeight = '400';
+                      e.currentTarget.style.transform = 'translateX(0px)';
                     }}
                   >
-                    view all
+                    View All
                   </p>
                 </div>
 
@@ -592,15 +630,16 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
 
             {/* Suspended Store Card */}
             <div
-              className="absolute bg-white rounded-2xl"
+              className="absolute bg-white rounded-2xl cursor-pointer transition-all duration-200 hover:shadow-lg hover:border-tindago-400"
               style={{
-                left: '550px',
+                left: '825px',
                 top: '0px',
                 width: '270px',
                 height: '150px',
                 boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
                 border: '1px solid rgba(0, 0, 0, 0.05)'
               }}
+              onClick={() => setFilterStatus('suspended')}
             >
               <div className="relative w-full h-full">
                 {/* Icon in top right */}
@@ -611,12 +650,12 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
                     top: '20px',
                     width: '32px',
                     height: '32px',
-                    backgroundColor: '#EF4444'
+                    backgroundColor: '#F97316'
                   }}
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
                     <circle cx="12" cy="12" r="10"/>
-                    <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>
+                    <path d="M8 12h8"/>
                   </svg>
                 </div>
 
@@ -639,11 +678,11 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
                       marginBottom: '4px'
                     }}
                   >
-                    Suspended Store
+                    Suspended
                   </p>
                 </div>
 
-                {/* View All */}
+                {/* View All - Suspended */}
                 <div
                   className="absolute"
                   style={{
@@ -657,10 +696,27 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
                       fontWeight: 400,
                       fontSize: '12px',
                       color: 'rgba(30, 30, 30, 0.6)',
-                      margin: 0
+                      margin: 0,
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease'
+                    }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setFilterStatus('suspended');
+                      console.log('View all suspended stores');
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = '#F97316';
+                      e.currentTarget.style.fontWeight = '500';
+                      e.currentTarget.style.transform = 'translateX(-2px)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = 'rgba(30, 30, 30, 0.6)';
+                      e.currentTarget.style.fontWeight = '400';
+                      e.currentTarget.style.transform = 'translateX(0px)';
                     }}
                   >
-                    view all
+                    View All
                   </p>
                 </div>
 
@@ -688,17 +744,18 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
               </div>
             </div>
 
-            {/* Subscribe Card */}
+            {/* Rejected Card */}
             <div
-              className="absolute bg-white rounded-2xl"
+              className="absolute bg-white rounded-2xl cursor-pointer transition-all duration-200 hover:shadow-lg hover:border-tindago-400"
               style={{
-                left: '825px',
+                left: '550px',
                 top: '0px',
                 width: '270px',
                 height: '150px',
                 boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
                 border: '1px solid rgba(0, 0, 0, 0.05)'
               }}
+              onClick={() => setFilterStatus('rejected')}
             >
               <div className="relative w-full h-full">
                 {/* Icon in top right */}
@@ -709,13 +766,13 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
                     top: '20px',
                     width: '32px',
                     height: '32px',
-                    backgroundColor: '#A855F7'
+                    backgroundColor: '#EF4444'
                   }}
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                    <path d="M12 2v20"/>
-                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
                     <circle cx="12" cy="12" r="10"/>
+                    <line x1="15" y1="9" x2="9" y2="15"/>
+                    <line x1="9" y1="9" x2="15" y2="15"/>
                   </svg>
                 </div>
 
@@ -738,11 +795,11 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
                       marginBottom: '4px'
                     }}
                   >
-                    Subscribe
+                    Rejected
                   </p>
                 </div>
 
-                {/* View All */}
+                {/* View All - Rejected */}
                 <div
                   className="absolute"
                   style={{
@@ -756,10 +813,27 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
                       fontWeight: 400,
                       fontSize: '12px',
                       color: 'rgba(30, 30, 30, 0.6)',
-                      margin: 0
+                      margin: 0,
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease'
+                    }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setFilterStatus('rejected');
+                      console.log('View all rejected stores');
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = '#EF4444';
+                      e.currentTarget.style.fontWeight = '500';
+                      e.currentTarget.style.transform = 'translateX(-2px)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = 'rgba(30, 30, 30, 0.6)';
+                      e.currentTarget.style.fontWeight = '400';
+                      e.currentTarget.style.transform = 'translateX(0px)';
                     }}
                   >
-                    view all
+                    View All
                   </p>
                 </div>
 
@@ -781,7 +855,7 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
                       margin: 0
                     }}
                   >
-                    {(stats?.subscribedStores || stores.filter(s => s.subscriptionStatus !== 'free').length).toLocaleString()}
+                    {(stats?.rejectedStores || stores.filter(s => s.status === 'rejected').length).toLocaleString()}
                   </p>
                 </div>
               </div>
@@ -878,7 +952,7 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
                 gap: '8px'
               }}
             >
-              {(['all', 'active', 'pending', 'suspended'] as const).map((status) => {
+              {(['all', 'active', 'pending', 'rejected', 'suspended'] as const).map((status) => {
                 const isActive = filterStatus === status;
                 return (
                   <button

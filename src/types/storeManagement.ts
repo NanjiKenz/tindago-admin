@@ -50,6 +50,7 @@ export interface StoreStats {
   totalStores: number;
   activeStores: number;
   pendingApproval: number;
+  rejectedStores: number;
   suspendedStores: number;
   subscribedStores: number;
   totalRevenue: number;

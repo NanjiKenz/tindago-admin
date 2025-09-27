@@ -8,6 +8,7 @@
 import { database } from './firebase.js';
 import { ref, get, set, update, onValue, off } from 'firebase/database';
 import { Store, StoreStats, StoreFilter } from '@/types/storeManagement';
+import { AdminService, StoreRegistration } from './adminService';
 
 export class StoreService {
   /**
@@ -210,11 +211,52 @@ export class StoreService {
   }
 
   /**
+   * Get all stores including pending registrations
+   */
+  static async getAllStoresWithRegistrations(): Promise<Store[]> {
+    try {
+      // Get existing stores
+      const existingStores = await this.getAllStores();
+
+      // Get pending registrations
+      const pendingRegistrations = await AdminService.getPendingStoreRegistrations();
+
+      // Convert registrations to Store format
+      const pendingStores: Store[] = pendingRegistrations.map((registration: StoreRegistration) => ({
+        storeId: registration.userId,
+        storeName: registration.storeName,
+        ownerName: registration.ownerName,
+        ownerEmail: registration.email,
+        ownerPhone: registration.phone,
+        address: registration.address,
+        status: 'pending' as const,
+        joinedDate: registration.createdAt,
+        documents: registration.documents,
+        businessVerification: {
+          status: 'pending' as const
+        },
+        performanceMetrics: {
+          totalSales: 0,
+          totalOrders: 0,
+          rating: 0,
+          responseTime: 0
+        }
+      }));
+
+      // Combine and return
+      return [...existingStores, ...pendingStores];
+    } catch (error) {
+      console.error('Error fetching stores with registrations:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Get store statistics
    */
   static async getStoreStats(): Promise<StoreStats> {
     try {
-      const stores = await this.getAllStores();
+      const stores = await this.getAllStoresWithRegistrations();
 
       const now = new Date();
       const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -222,6 +264,7 @@ export class StoreService {
       const totalStores = stores.length;
       const activeStores = stores.filter(s => s.status === 'active').length;
       const pendingApproval = stores.filter(s => s.status === 'pending').length;
+      const rejectedStores = stores.filter(s => s.status === 'rejected').length;
       const suspendedStores = stores.filter(s => s.status === 'suspended').length;
 
       const subscribedStores = stores.filter(s =>
@@ -252,6 +295,7 @@ export class StoreService {
         totalStores,
         activeStores,
         pendingApproval,
+        rejectedStores,
         suspendedStores,
         subscribedStores,
         totalRevenue,
@@ -361,20 +405,23 @@ export class StoreService {
     callback: (stores: Store[]) => void
   ): () => void {
     const storesRef = ref(database, 'stores');
+    const registrationsRef = ref(database, 'store_registrations');
 
     const updateStores = async () => {
       try {
-        const stores = await this.getAllStores();
+        const stores = await this.getAllStoresWithRegistrations();
         callback(stores);
       } catch (error) {
         console.error('Error in store subscription:', error);
       }
     };
 
-    const unsubscribe = onValue(storesRef, updateStores);
+    const storeUnsubscribe = onValue(storesRef, updateStores);
+    const registrationUnsubscribe = onValue(registrationsRef, updateStores);
 
     return () => {
-      off(storesRef, 'value', unsubscribe);
+      off(storesRef, 'value', storeUnsubscribe);
+      off(registrationsRef, 'value', registrationUnsubscribe);
     };
   }
 
