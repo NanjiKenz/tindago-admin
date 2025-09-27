@@ -36,30 +36,181 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(8);
 
+  // View state management for category switching
+  const [viewMode, setViewMode] = useState<'overview' | 'active' | 'pending' | 'rejected' | 'suspended'>('overview');
+  const [categoryData, setCategoryData] = useState<Store[]>([]);
+
+  // Category-specific data loading functions
+  const loadCategoryData = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      let data: Store[] = [];
+
+      switch (viewMode) {
+        case 'active':
+          // Load active stores from stores collection
+          const allStores = await StoreService.getAllStores();
+          data = allStores.filter(store => store.status === 'active');
+          console.log('Loaded active stores:', data.length);
+          break;
+
+        case 'pending':
+          // Load pending registrations from store_registrations collection
+          const pendingRegistrations = await AdminService.getAllStoreRegistrations();
+          // Convert registrations to Store format for consistent table rendering
+          data = pendingRegistrations
+            .filter(reg => reg.status === 'pending')
+            .map(registration => ({
+              storeId: registration.userId,
+              storeName: registration.storeName,
+              ownerName: registration.ownerName,
+              ownerEmail: registration.email,
+              ownerPhone: registration.phone,
+              address: registration.address,
+              status: 'pending',
+              joinedDate: registration.createdAt,
+              documents: registration.documents,
+              businessVerification: { status: 'pending' },
+              performanceMetrics: {
+                totalSales: 0,
+                totalOrders: 0,
+                rating: 0,
+                responseTime: 0
+              },
+              registrationData: registration // Keep original registration data for actions
+            }));
+          console.log('Loaded pending registrations:', data.length);
+          break;
+
+        case 'rejected':
+          // Load rejected registrations from store_registrations collection
+          const rejectedRegistrations = await AdminService.getAllStoreRegistrations();
+          data = rejectedRegistrations
+            .filter(reg => reg.status === 'rejected')
+            .map(registration => ({
+              storeId: registration.userId,
+              storeName: registration.storeName,
+              ownerName: registration.ownerName,
+              ownerEmail: registration.email,
+              ownerPhone: registration.phone,
+              address: registration.address,
+              status: 'rejected',
+              joinedDate: registration.createdAt,
+              documents: registration.documents,
+              businessVerification: { status: 'rejected' },
+              performanceMetrics: {
+                totalSales: 0,
+                totalOrders: 0,
+                rating: 0,
+                responseTime: 0
+              },
+              registrationData: registration
+            }));
+          console.log('Loaded rejected registrations:', data.length);
+          break;
+
+        case 'suspended':
+          // Load suspended stores from stores collection
+          const suspendedStores = await StoreService.getAllStores();
+          data = suspendedStores.filter(store => store.status === 'suspended');
+          console.log('Loaded suspended stores:', data.length);
+          break;
+
+        default:
+          data = [];
+      }
+
+      setCategoryData(data);
+    } catch (error) {
+      console.error('Error loading category data:', error);
+      setError(`Failed to load ${viewMode} data. Please try again.`);
+    } finally {
+      setLoading(false);
+    }
+  }, [viewMode]);
+
   // Load stores and stats on component mount
   useEffect(() => {
-    loadStores();
-    loadStats();
+    if (viewMode === 'overview') {
+      loadStores();
+      loadStats();
 
-    // Set up real-time subscriptions
-    const unsubscribeStores = StoreService.subscribeToStores((updatedStores) => {
-      console.log('Stores updated:', updatedStores);
-      console.log('Pending stores:', updatedStores.filter(s => s.status === 'pending'));
-      setStores(updatedStores);
-      setLoading(false);
-    });
+      // Set up real-time subscriptions for overview
+      const unsubscribeStores = StoreService.subscribeToStores((updatedStores) => {
+        console.log('Stores updated:', updatedStores);
+        console.log('Pending stores:', updatedStores.filter(s => s.status === 'pending'));
+        setStores(updatedStores);
+        setLoading(false);
+      });
 
-    const unsubscribeStats = StoreService.subscribeToStoreStats((updatedStats) => {
-      console.log('Stats updated:', updatedStats);
-      setStats(updatedStats);
-    });
+      const unsubscribeStats = StoreService.subscribeToStoreStats((updatedStats) => {
+        console.log('Stats updated:', updatedStats);
+        setStats(updatedStats);
+      });
+
+      return () => {
+        unsubscribeStores();
+        unsubscribeStats();
+      };
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [viewMode]);
+
+  // Load category-specific data when view mode changes
+  useEffect(() => {
+    if (viewMode !== 'overview') {
+      loadCategoryData();
+    }
+  }, [viewMode, loadCategoryData]);
+
+  // Set up real-time subscriptions for category views
+  useEffect(() => {
+    let unsubscribe: (() => void) | null = null;
+
+    if (viewMode === 'pending' || viewMode === 'rejected') {
+      // Subscribe to store_registrations for pending/rejected data
+      unsubscribe = AdminService.subscribeToRegistrations((registrations) => {
+        const filteredData = registrations
+          .filter(reg => reg.status === viewMode)
+          .map(registration => ({
+            storeId: registration.userId,
+            storeName: registration.storeName,
+            ownerName: registration.ownerName,
+            ownerEmail: registration.email,
+            ownerPhone: registration.phone,
+            address: registration.address,
+            status: viewMode,
+            joinedDate: registration.createdAt,
+            documents: registration.documents,
+            businessVerification: { status: viewMode },
+            performanceMetrics: {
+              totalSales: 0,
+              totalOrders: 0,
+              rating: 0,
+              responseTime: 0
+            },
+            registrationData: registration
+          }));
+        setCategoryData(filteredData);
+        console.log(`Real-time ${viewMode} data updated:`, filteredData.length);
+      });
+    } else if (viewMode === 'active' || viewMode === 'suspended') {
+      // Subscribe to stores for active/suspended data
+      unsubscribe = StoreService.subscribeToStores((allStores) => {
+        const filteredData = allStores.filter(store => store.status === viewMode);
+        setCategoryData(filteredData);
+        console.log(`Real-time ${viewMode} data updated:`, filteredData.length);
+      });
+    }
 
     return () => {
-      unsubscribeStores();
-      unsubscribeStats();
+      if (unsubscribe) {
+        unsubscribe();
+      }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [viewMode]);
 
   const loadStores = async () => {
     try {
@@ -297,32 +448,74 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
           }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div>
-              <h1
-                style={{
-                  fontFamily: 'Clash Grotesk Variable',
-                  fontWeight: 500,
-                  fontSize: '48px',
-                  lineHeight: '1.2em',
-                  color: '#1E1E1E',
-                  marginBottom: '8px',
-                  margin: 0
-                }}
-              >
-                Store Management
-              </h1>
-              <p
-                style={{
-                  fontFamily: 'Clash Grotesk Variable',
-                  fontWeight: 400,
-                  fontSize: '16px',
-                  color: 'rgba(30, 30, 30, 0.6)',
-                  margin: 0,
-                  marginTop: '8px'
-                }}
-              >
-                Manage store registrations, approvals, and monitor store performance across the TindaGo platform
-              </p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+              {/* Back to Overview Button */}
+              {viewMode !== 'overview' && (
+                <button
+                  onClick={() => setViewMode('overview')}
+                  style={{
+                    padding: '8px 16px',
+                    borderRadius: '8px',
+                    border: '1px solid #3BB77E',
+                    backgroundColor: 'transparent',
+                    color: '#3BB77E',
+                    cursor: 'pointer',
+                    fontFamily: 'Clash Grotesk Variable',
+                    fontWeight: 500,
+                    fontSize: '14px',
+                    transition: 'all 0.2s ease',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#3BB77E';
+                    e.currentTarget.style.color = '#FFFFFF';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                    e.currentTarget.style.color = '#3BB77E';
+                  }}
+                >
+                  ← Back to Overview
+                </button>
+              )}
+
+              <div>
+                <h1
+                  style={{
+                    fontFamily: 'Clash Grotesk Variable',
+                    fontWeight: 500,
+                    fontSize: '48px',
+                    lineHeight: '1.2em',
+                    color: '#1E1E1E',
+                    marginBottom: '8px',
+                    margin: 0
+                  }}
+                >
+                  {viewMode === 'overview' ? 'Store Management' :
+                   viewMode === 'active' ? 'Active Stores' :
+                   viewMode === 'pending' ? 'Pending Approval' :
+                   viewMode === 'rejected' ? 'Rejected Applications' :
+                   viewMode === 'suspended' ? 'Suspended Stores' : 'Store Management'}
+                </h1>
+                <p
+                  style={{
+                    fontFamily: 'Clash Grotesk Variable',
+                    fontWeight: 400,
+                    fontSize: '16px',
+                    color: 'rgba(30, 30, 30, 0.6)',
+                    margin: 0,
+                    marginTop: '8px'
+                  }}
+                >
+                  {viewMode === 'overview' ? 'Manage store registrations, approvals, and monitor store performance across the TindaGo platform' :
+                   viewMode === 'active' ? 'View and manage all active stores on the TindaGo platform' :
+                   viewMode === 'pending' ? 'Review and approve pending store registration applications' :
+                   viewMode === 'rejected' ? 'Review rejected store applications and their rejection reasons' :
+                   viewMode === 'suspended' ? 'Manage suspended stores and restoration options' : ''}
+                </p>
+              </div>
             </div>
 
             {/* Error Display */}
@@ -377,16 +570,17 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
           </div>
         </div>
 
-        {/* Store Stats Cards - Proper spacing below header */}
-        <div
-          className="absolute"
-          style={{
-            left: '35px',
-            top: '120px',
-            width: '1095px',
-            height: '150px'
-          }}
-        >
+        {/* Store Stats Cards - Only show in overview mode */}
+        {viewMode === 'overview' && (
+          <div
+            className="absolute"
+            style={{
+              left: '35px',
+              top: '120px',
+              width: '1095px',
+              height: '150px'
+            }}
+          >
           {/* Store Stats Cards Container */}
           <div
             className="relative"
@@ -470,8 +664,8 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
                     }}
                     onClick={(e) => {
                       e.stopPropagation();
-                      setFilterStatus('active');
-                      console.log('View all active stores');
+                      setViewMode('active');
+                      console.log('Switching to active stores view');
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.color = '#22C55E';
@@ -586,8 +780,8 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
                     }}
                     onClick={(e) => {
                       e.stopPropagation();
-                      setFilterStatus('pending');
-                      console.log('View all pending approval stores');
+                      setViewMode('pending');
+                      console.log('Switching to pending approval view');
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.color = '#EAB308';
@@ -702,8 +896,8 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
                     }}
                     onClick={(e) => {
                       e.stopPropagation();
-                      setFilterStatus('suspended');
-                      console.log('View all suspended stores');
+                      setViewMode('suspended');
+                      console.log('Switching to suspended stores view');
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.color = '#F97316';
@@ -819,8 +1013,8 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
                     }}
                     onClick={(e) => {
                       e.stopPropagation();
-                      setFilterStatus('rejected');
-                      console.log('View all rejected stores');
+                      setViewMode('rejected');
+                      console.log('Switching to rejected stores view');
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.color = '#EF4444';
@@ -862,23 +1056,378 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
             </div>
           </div>
         </div>
+        )}
 
-        {/* Search and Filter Section - Aligned with other components */}
-        <div
-          className="absolute"
-          style={{
-            left: '35px',
-            top: '290px',
-            width: '1095px',
-            height: '50px',
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: '16px',
-            marginBottom: '30px'
-          }}
-        >
+        {/* Category-Specific Views */}
+        {viewMode !== 'overview' && (
+          <div
+            className="absolute"
+            style={{
+              left: '35px',
+              top: '120px',
+              width: '1095px',
+              minHeight: '600px'
+            }}
+          >
+            {/* Category Header */}
+            <div
+              style={{
+                marginBottom: '20px',
+                padding: '0 20px'
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <p
+                    style={{
+                      fontFamily: 'Clash Grotesk Variable',
+                      fontWeight: 400,
+                      fontSize: '16px',
+                      color: 'rgba(30, 30, 30, 0.6)',
+                      margin: 0
+                    }}
+                  >
+                    {loading ? 'Loading...' : `${categoryData.length} ${viewMode} ${categoryData.length === 1 ? (viewMode === 'pending' ? 'registration' : 'store') : (viewMode === 'pending' ? 'registrations' : 'stores')} found`}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Category Table */}
+            <div
+              style={{
+                backgroundColor: '#FFFFFF',
+                borderRadius: '20px',
+                border: '1px solid rgba(0, 0, 0, 0.05)',
+                boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
+                overflow: 'hidden'
+              }}
+            >
+              {loading ? (
+                <div
+                  style={{
+                    padding: '48px 24px',
+                    textAlign: 'center'
+                  }}
+                >
+                  <p
+                    style={{
+                      fontFamily: 'Clash Grotesk Variable',
+                      fontWeight: 400,
+                      fontSize: '16px',
+                      color: '#64748B',
+                      margin: 0
+                    }}
+                  >
+                    Loading {viewMode} data...
+                  </p>
+                </div>
+              ) : categoryData.length === 0 ? (
+                <div
+                  style={{
+                    padding: '48px 24px',
+                    textAlign: 'center'
+                  }}
+                >
+                  <h3
+                    style={{
+                      fontFamily: 'Clash Grotesk Variable',
+                      fontWeight: 600,
+                      fontSize: '18px',
+                      color: '#1E293B',
+                      marginBottom: '8px'
+                    }}
+                  >
+                    No {viewMode} {viewMode === 'pending' ? 'registrations' : 'stores'} found
+                  </h3>
+                  <p
+                    style={{
+                      fontFamily: 'Clash Grotesk Variable',
+                      fontWeight: 400,
+                      fontSize: '14px',
+                      color: '#64748B',
+                      margin: 0
+                    }}
+                  >
+                    {viewMode === 'pending' ? 'No new store registrations are waiting for approval.' :
+                     viewMode === 'active' ? 'No active stores are currently registered.' :
+                     viewMode === 'rejected' ? 'No store applications have been rejected.' :
+                     viewMode === 'suspended' ? 'No stores are currently suspended.' : ''}
+                  </p>
+                </div>
+              ) : (
+                <div>
+                  <table style={{ width: '100%' }}>
+                    <thead>
+                      <tr
+                        style={{
+                          borderBottom: '1px solid #E2E8F0',
+                          backgroundColor: '#F8FAFC'
+                        }}
+                      >
+                        <th
+                          style={{
+                            padding: '20px 20px',
+                            textAlign: 'left',
+                            fontFamily: 'Clash Grotesk Variable',
+                            fontWeight: 500,
+                            fontSize: '14px',
+                            color: 'rgba(30, 30, 30, 0.6)',
+                            textTransform: 'none',
+                            borderBottom: '1px solid rgba(0, 0, 0, 0.05)'
+                          }}
+                        >
+                          Store
+                        </th>
+                        <th
+                          style={{
+                            padding: '20px 20px',
+                            textAlign: 'left',
+                            fontFamily: 'Clash Grotesk Variable',
+                            fontWeight: 500,
+                            fontSize: '14px',
+                            color: 'rgba(30, 30, 30, 0.6)',
+                            textTransform: 'none',
+                            borderBottom: '1px solid rgba(0, 0, 0, 0.05)'
+                          }}
+                        >
+                          Owner
+                        </th>
+                        <th
+                          style={{
+                            padding: '20px 20px',
+                            textAlign: 'left',
+                            fontFamily: 'Clash Grotesk Variable',
+                            fontWeight: 500,
+                            fontSize: '14px',
+                            color: 'rgba(30, 30, 30, 0.6)',
+                            textTransform: 'none',
+                            borderBottom: '1px solid rgba(0, 0, 0, 0.05)'
+                          }}
+                        >
+                          Status
+                        </th>
+                        <th
+                          style={{
+                            padding: '20px 20px',
+                            textAlign: 'left',
+                            fontFamily: 'Clash Grotesk Variable',
+                            fontWeight: 500,
+                            fontSize: '14px',
+                            color: 'rgba(30, 30, 30, 0.6)',
+                            textTransform: 'none',
+                            borderBottom: '1px solid rgba(0, 0, 0, 0.05)'
+                          }}
+                        >
+                          {viewMode === 'pending' ? 'Submitted' : 'Joined'}
+                        </th>
+                        <th
+                          style={{
+                            padding: '20px 20px',
+                            textAlign: 'center',
+                            fontFamily: 'Clash Grotesk Variable',
+                            fontWeight: 500,
+                            fontSize: '14px',
+                            color: 'rgba(30, 30, 30, 0.6)',
+                            textTransform: 'none',
+                            borderBottom: '1px solid rgba(0, 0, 0, 0.05)'
+                          }}
+                        >
+                          Actions
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {categoryData.map((item, index) => (
+                        <tr
+                          key={item.storeId}
+                          style={{
+                            borderBottom: index < categoryData.length - 1 ? '1px solid #E2E8F0' : 'none',
+                            transition: 'background-color 0.2s ease'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.backgroundColor = '#F8FAFC';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.backgroundColor = 'transparent';
+                          }}
+                        >
+                          {/* Store Column */}
+                          <td style={{ padding: '25px 20px' }}>
+                            <div>
+                              <div
+                                style={{
+                                  fontFamily: 'Clash Grotesk Variable',
+                                  fontWeight: 500,
+                                  fontSize: '16px',
+                                  color: '#1E1E1E',
+                                  marginBottom: '4px'
+                                }}
+                              >
+                                {item.storeName}
+                              </div>
+                              <div
+                                style={{
+                                  fontFamily: 'Clash Grotesk Variable',
+                                  fontWeight: 400,
+                                  fontSize: '14px',
+                                  color: 'rgba(30, 30, 30, 0.6)'
+                                }}
+                              >
+                                {item.address || 'Address not provided'}
+                              </div>
+                            </div>
+                          </td>
+
+                          {/* Owner Column */}
+                          <td style={{ padding: '25px 20px' }}>
+                            <div>
+                              <div
+                                style={{
+                                  fontFamily: 'Clash Grotesk Variable',
+                                  fontWeight: 500,
+                                  fontSize: '14px',
+                                  color: '#1E1E1E',
+                                  marginBottom: '4px'
+                                }}
+                              >
+                                {item.ownerName}
+                              </div>
+                              <div
+                                style={{
+                                  fontFamily: 'Clash Grotesk Variable',
+                                  fontWeight: 400,
+                                  fontSize: '12px',
+                                  color: 'rgba(30, 30, 30, 0.6)'
+                                }}
+                              >
+                                {item.ownerEmail}
+                              </div>
+                            </div>
+                          </td>
+
+                          {/* Status Column */}
+                          <td style={{ padding: '25px 20px' }}>
+                            <span style={getStatusBadge(item.status)}>
+                              {item.status === 'pending' ? 'Pending' : item.status.charAt(0).toUpperCase() + item.status.slice(1)}
+                            </span>
+                          </td>
+
+                          {/* Date Column */}
+                          <td style={{ padding: '25px 20px' }}>
+                            <div
+                              style={{
+                                fontFamily: 'Clash Grotesk Variable',
+                                fontWeight: 400,
+                                fontSize: '14px',
+                                color: '#1E1E1E'
+                              }}
+                            >
+                              {formatDate(item.joinedDate)}
+                            </div>
+                          </td>
+
+                          {/* Actions Column - Will be customized per category later */}
+                          <td style={{ padding: '25px 20px' }}>
+                            <div
+                              style={{
+                                display: 'flex',
+                                justifyContent: 'center',
+                                gap: '12px'
+                              }}
+                            >
+                              <button
+                                onClick={() => console.log(`View ${viewMode} item:`, item.storeId)}
+                                style={{
+                                  width: '40px',
+                                  height: '40px',
+                                  borderRadius: '10px',
+                                  border: '1px solid rgba(0, 0, 0, 0.05)',
+                                  backgroundColor: '#FFFFFF',
+                                  cursor: 'pointer',
+                                  transition: 'all 0.2s ease',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.08)'
+                                }}
+                                title={`View ${viewMode} details`}
+                              >
+                                👁️
+                              </button>
+                              {viewMode === 'pending' && (
+                                <>
+                                  <button
+                                    onClick={() => console.log('Approve registration:', item.storeId)}
+                                    style={{
+                                      width: '40px',
+                                      height: '40px',
+                                      borderRadius: '10px',
+                                      border: '1px solid #22C55E',
+                                      backgroundColor: '#22C55E',
+                                      color: '#FFFFFF',
+                                      cursor: 'pointer',
+                                      transition: 'all 0.2s ease',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                      boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.08)'
+                                    }}
+                                    title="Approve registration"
+                                  >
+                                    ✓
+                                  </button>
+                                  <button
+                                    onClick={() => console.log('Reject registration:', item.storeId)}
+                                    style={{
+                                      width: '40px',
+                                      height: '40px',
+                                      borderRadius: '10px',
+                                      border: '1px solid #EF4444',
+                                      backgroundColor: '#EF4444',
+                                      color: '#FFFFFF',
+                                      cursor: 'pointer',
+                                      transition: 'all 0.2s ease',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                      boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.08)'
+                                    }}
+                                    title="Reject registration"
+                                  >
+                                    ✗
+                                  </button>
+                                </>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Search and Filter Section - Only show in overview mode */}
+        {viewMode === 'overview' && (
+          <div
+            className="absolute"
+            style={{
+              left: '35px',
+              top: '290px',
+              width: '1095px',
+              height: '50px',
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '16px',
+              marginBottom: '30px'
+            }}
+          >
           {/* Search Input - Exact styling */}
           <div
             style={{
@@ -1051,8 +1600,10 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
             </button>
           </div>
         </div>
+        )}
 
-        {/* Table Container - Aligned with cards */}
+        {/* Table Container - Only show in overview mode */}
+        {viewMode === 'overview' && (
         <div
           className="absolute"
           style={{
@@ -1520,6 +2071,7 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
             </>
           )}
         </div>
+        )}
       </div>
     </div>
   );
