@@ -40,6 +40,8 @@ TindaGo Admin is a Next.js web application designed for managing store registrat
 - **`src/app/landing/page.tsx`** - Landing page component
 - **`src/app/reports/page.tsx`** - Reports section for admin analysis
 - **`src/app/users/page.tsx`** - User management section for admin operations
+- **`src/app/customers/page.tsx`** - Customer management section for admin operations
+- **`src/app/stores/page.tsx`** - Store management section for admin operations
 - **`src/app/contact/page.tsx`** - Contact information and support page
 - **`src/app/globals.css`** - Tailwind CSS global styles
 - **`src/middleware.ts`** - Next.js middleware for authentication routing

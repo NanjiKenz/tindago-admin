@@ -445,6 +445,51 @@ export class UserManagementService {
   }
 
   /**
+   * Export users to CSV format
+   */
+  static async exportUsersToCSV(): Promise<string> {
+    try {
+      const users = await this.getAllUsers();
+
+      const headers = [
+        'User ID',
+        'Name',
+        'Email',
+        'Phone',
+        'Role',
+        'User Type',
+        'Status',
+        'Joined Date',
+        'Last Login',
+        'Address'
+      ];
+
+      const csvRows = [headers.join(',')];
+
+      users.forEach(user => {
+        const row = [
+          user.userId,
+          `"${user.displayName}"`,
+          user.email,
+          user.phone || '',
+          `"${('role' in user) ? user.role : (user.userType === 'store_owner' ? 'Store Owner' : 'Customer')}"`,
+          ('role' in user) ? 'admin' : user.userType,
+          user.status,
+          user.createdAt,
+          user.lastLoginAt || '',
+          `"${('address' in user) ? user.address || '' : ''}"`
+        ];
+        csvRows.push(row.join(','));
+      });
+
+      return csvRows.join('\\n');
+    } catch (error) {
+      console.error('Error exporting users to CSV:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Subscribe to user statistics
    */
   static subscribeToUserStats(

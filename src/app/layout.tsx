@@ -20,8 +20,8 @@ const abeeZee = ABeeZee({
 });
 
 export const metadata: Metadata = {
-  title: "TindaGo Admin - Store Management Dashboard",
-  description: "Administrative dashboard for managing TindaGo store registrations and marketplace operations",
+  title: "TindaGo Admin - Sari-Sari Store Admin Management Dashboard",
+  description: "Comprehensive administrative dashboard for managing TindaGo sari-sari store registrations, user management, and marketplace operations in the Philippines",
 };
 
 export default function RootLayout({
@@ -32,6 +32,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <link rel="icon" type="image/svg+xml" href="/images/tindagologofavicon.svg" />
+        <link rel="icon" type="image/png" href="/images/tindagologofavicon.png" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <meta name="theme-color" content="#E85A4F" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${abeeZee.variable} antialiased`}

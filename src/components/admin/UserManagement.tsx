@@ -44,6 +44,7 @@ export const UserManagement: React.FC<UserManagementProps> = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'inactive' | 'pending' | 'suspended' | 'banned'>('all');
+  const [filterRole, setFilterRole] = useState<'all' | 'customer' | 'store_owner'>('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(8);
   const [error, setError] = useState<string | null>(null);
@@ -187,6 +188,11 @@ export const UserManagement: React.FC<UserManagementProps> = () => {
       filtered = filtered.filter(user => user.status === filterStatus);
     }
 
+    // Apply role filter
+    if (filterRole !== 'all') {
+      filtered = filtered.filter(user => user.userType === filterRole);
+    }
+
     // Apply search filter
     if (searchTerm) {
       const searchLower = searchTerm.toLowerCase();
@@ -199,7 +205,7 @@ export const UserManagement: React.FC<UserManagementProps> = () => {
     }
 
     return filtered;
-  }, [users, filterStatus, searchTerm]);
+  }, [users, filterStatus, filterRole, searchTerm]);
 
   // Pagination logic
   const totalPages = Math.ceil(filteredUsers.length / pageSize);
@@ -268,6 +274,29 @@ export const UserManagement: React.FC<UserManagementProps> = () => {
   const handleDelete = (userId: string) => {
     console.log('Delete user:', userId);
     // TODO: Implement delete functionality with confirmation
+  };
+
+  const exportUsers = async () => {
+    try {
+      setLoading(true);
+      const csvData = await UserManagementService.exportUsersToCSV();
+
+      // Create and download CSV file
+      const blob = new Blob([csvData], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `users_export_${new Date().toISOString().split('T')[0]}.csv`;
+      link.click();
+      window.URL.revokeObjectURL(url);
+
+      console.log('User data exported successfully');
+    } catch (error) {
+      console.error('Error exporting users:', error);
+      setError('Failed to export user data. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -400,7 +429,7 @@ export const UserManagement: React.FC<UserManagementProps> = () => {
             }}
           >
             <div
-              className="absolute bg-white rounded-2xl"
+              className="absolute bg-white rounded-2xl cursor-pointer transition-all duration-200 hover:shadow-lg hover:border-tindago-400"
               style={{
                 left: '0px',
                 top: '0px',
@@ -408,6 +437,10 @@ export const UserManagement: React.FC<UserManagementProps> = () => {
                 height: '150px',
                 boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
                 border: '1px solid rgba(0, 0, 0, 0.05)'
+              }}
+              onClick={() => {
+                setFilterRole('all');
+                setFilterStatus('all');
               }}
             >
               <div className="relative w-full h-full">
@@ -470,7 +503,6 @@ export const UserManagement: React.FC<UserManagementProps> = () => {
                       margin: 0
                     }}
                   >
-                    view all
                   </p>
                 </div>
 
@@ -499,7 +531,7 @@ export const UserManagement: React.FC<UserManagementProps> = () => {
             </div>
 
             <div
-              className="absolute bg-white rounded-2xl"
+              className="absolute bg-white rounded-2xl cursor-pointer transition-all duration-200 hover:shadow-lg hover:border-tindago-400"
               style={{
                 left: '275px',
                 top: '0px',
@@ -508,6 +540,7 @@ export const UserManagement: React.FC<UserManagementProps> = () => {
                 boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
                 border: '1px solid rgba(0, 0, 0, 0.05)'
               }}
+              onClick={() => setFilterRole('customer')}
             >
               <div className="relative w-full h-full">
                 {/* Icon in top right */}
@@ -567,7 +600,6 @@ export const UserManagement: React.FC<UserManagementProps> = () => {
                       margin: 0
                     }}
                   >
-                    view all
                   </p>
                 </div>
 
@@ -596,7 +628,7 @@ export const UserManagement: React.FC<UserManagementProps> = () => {
             </div>
 
             <div
-              className="absolute bg-white rounded-2xl"
+              className="absolute bg-white rounded-2xl cursor-pointer transition-all duration-200 hover:shadow-lg hover:border-tindago-400"
               style={{
                 left: '550px',
                 top: '0px',
@@ -605,6 +637,7 @@ export const UserManagement: React.FC<UserManagementProps> = () => {
                 boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
                 border: '1px solid rgba(0, 0, 0, 0.05)'
               }}
+              onClick={() => setFilterRole('store_owner')}
             >
               <div className="relative w-full h-full">
                 {/* Icon in top right */}
@@ -665,7 +698,6 @@ export const UserManagement: React.FC<UserManagementProps> = () => {
                       margin: 0
                     }}
                   >
-                    view all
                   </p>
                 </div>
 
@@ -763,7 +795,6 @@ export const UserManagement: React.FC<UserManagementProps> = () => {
                       margin: 0
                     }}
                   >
-                    view all
                   </p>
                 </div>
 
@@ -871,57 +902,212 @@ export const UserManagement: React.FC<UserManagementProps> = () => {
           <div
             style={{
               display: 'flex',
-              gap: '8px'
+              gap: '16px',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              width: '100%'
             }}
           >
-            {(['all', 'active', 'inactive', 'pending', 'suspended', 'banned'] as const).map((status) => {
-              const isActive = filterStatus === status;
-              return (
-                <button
-                  key={status}
-                  onClick={() => setFilterStatus(status)}
-                  style={{
-                    padding: '8px 16px',
-                    fontSize: '14px',
-                    fontFamily: 'Clash Grotesk Variable',
-                    fontWeight: 500,
-                    borderRadius: '6px',
-                    border: '1px solid',
-                    borderColor: isActive ? '#3BB77E' : '#CBD5E1',
-                    backgroundColor: isActive ? '#3BB77E' : '#FFFFFF',
-                    color: isActive ? '#FFFFFF' : '#64748B',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease'
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!isActive) {
-                      e.currentTarget.style.backgroundColor = '#F1F5F9';
-                      e.currentTarget.style.borderColor = '#94A3B8';
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!isActive) {
-                      e.currentTarget.style.backgroundColor = '#FFFFFF';
-                      e.currentTarget.style.borderColor = '#CBD5E1';
-                    }
-                  }}
-                >
-                  {status.charAt(0).toUpperCase() + status.slice(1)}
-                  {status !== 'all' && (
-                    <span
-                      style={{
-                        marginLeft: '6px',
-                        fontSize: '12px',
-                        fontWeight: 600,
-                        opacity: 0.8
-                      }}
-                    >
-                      ({filteredUsers.filter(u => u.status === status).length})
-                    </span>
-                  )}
-                </button>
-              );
-            })}
+            {/* Left side - Filter Buttons */}
+            <div
+              style={{
+                display: 'flex',
+                gap: '16px',
+                alignItems: 'center'
+              }}
+            >
+            {/* Role Filters */}
+            <div
+              style={{
+                display: 'flex',
+                gap: '8px',
+                alignItems: 'center'
+              }}
+            >
+              <span
+                style={{
+                  fontFamily: 'Clash Grotesk Variable',
+                  fontWeight: 500,
+                  fontSize: '14px',
+                  color: 'rgba(30, 30, 30, 0.7)',
+                  marginRight: '8px'
+                }}
+              >
+                Role:
+              </span>
+              {(['all', 'customer', 'store_owner'] as const).map((role) => {
+                const isActive = filterRole === role;
+                const displayName = role === 'all' ? 'All' : role === 'customer' ? 'Customer' : 'Store';
+                return (
+                  <button
+                    key={role}
+                    onClick={() => {
+                      setFilterRole(role);
+                      if (role === 'all') {
+                        setFilterStatus('all');
+                      }
+                    }}
+                    style={{
+                      padding: '8px 16px',
+                      fontSize: '14px',
+                      fontFamily: 'Clash Grotesk Variable',
+                      fontWeight: 500,
+                      borderRadius: '6px',
+                      border: '1px solid',
+                      borderColor: isActive ? '#3BB77E' : '#CBD5E1',
+                      backgroundColor: isActive ? '#3BB77E' : '#FFFFFF',
+                      color: isActive ? '#FFFFFF' : '#64748B',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isActive) {
+                        e.currentTarget.style.backgroundColor = '#F1F5F9';
+                        e.currentTarget.style.borderColor = '#94A3B8';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isActive) {
+                        e.currentTarget.style.backgroundColor = '#FFFFFF';
+                        e.currentTarget.style.borderColor = '#CBD5E1';
+                      }
+                    }}
+                  >
+                    {displayName}
+                    {role !== 'all' && (
+                      <span
+                        style={{
+                          marginLeft: '6px',
+                          fontSize: '12px',
+                          fontWeight: 600,
+                          opacity: 0.8
+                        }}
+                      >
+                        ({users.filter(u => u.userType === role).length})
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Status Filters */}
+            <div
+              style={{
+                display: 'flex',
+                gap: '8px',
+                alignItems: 'center'
+              }}
+            >
+              <span
+                style={{
+                  fontFamily: 'Clash Grotesk Variable',
+                  fontWeight: 500,
+                  fontSize: '14px',
+                  color: 'rgba(30, 30, 30, 0.7)',
+                  marginRight: '8px'
+                }}
+              >
+                Status:
+              </span>
+              {(['all', 'active', 'pending', 'inactive'] as const).map((status) => {
+                const isActive = filterStatus === status;
+                return (
+                  <button
+                    key={status}
+                    onClick={() => setFilterStatus(status)}
+                    style={{
+                      padding: '8px 16px',
+                      fontSize: '14px',
+                      fontFamily: 'Clash Grotesk Variable',
+                      fontWeight: 500,
+                      borderRadius: '6px',
+                      border: '1px solid',
+                      borderColor: isActive ? '#3BB77E' : '#CBD5E1',
+                      backgroundColor: isActive ? '#3BB77E' : '#FFFFFF',
+                      color: isActive ? '#FFFFFF' : '#64748B',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isActive) {
+                        e.currentTarget.style.backgroundColor = '#F1F5F9';
+                        e.currentTarget.style.borderColor = '#94A3B8';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isActive) {
+                        e.currentTarget.style.backgroundColor = '#FFFFFF';
+                        e.currentTarget.style.borderColor = '#CBD5E1';
+                      }
+                    }}
+                  >
+                    {status.charAt(0).toUpperCase() + status.slice(1)}
+                    {status !== 'all' && (
+                      <span
+                        style={{
+                          marginLeft: '6px',
+                          fontSize: '12px',
+                          fontWeight: 600,
+                          opacity: 0.8
+                        }}
+                      >
+                        ({users.filter(u => u.status === status).length})
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+            </div>
+
+            {/* Right side - Export Button */}
+            <button
+              onClick={exportUsers}
+              disabled={loading}
+              style={{
+                width: '120px',
+                height: '50px',
+                padding: '12px 16px',
+                borderRadius: '12px',
+                border: '1px solid rgba(0, 0, 0, 0.05)',
+                backgroundColor: '#3BB77E',
+                color: '#FFFFFF',
+                cursor: loading ? 'not-allowed' : 'pointer',
+                fontFamily: 'Clash Grotesk Variable',
+                fontWeight: 500,
+                fontSize: '14px',
+                boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
+                transition: 'all 0.2s ease',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                opacity: loading ? 0.6 : 1
+              }}
+              onMouseEnter={(e) => {
+                if (!loading) {
+                  e.currentTarget.style.backgroundColor = '#2CA968';
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!loading) {
+                  e.currentTarget.style.backgroundColor = '#3BB77E';
+                  e.currentTarget.style.transform = 'translateY(0px)';
+                }
+              }}
+            >
+              <Image
+                src="/images/admin-dashboard/settings-icon.png"
+                alt="Export"
+                width={16}
+                height={16}
+                className="object-contain"
+                style={{ filter: 'brightness(0) invert(1)' }}
+              />
+              {loading ? 'Exporting...' : 'Export CSV'}
+            </button>
           </div>
         </div>
 
