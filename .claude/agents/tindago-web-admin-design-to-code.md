@@ -414,25 +414,177 @@ const ASSET_PATHS = {
 />
 ```
 
-## Conversion Workflow - PIXEL PERFECT
+## UPDATED Conversion Workflow - ENHANCED EXTRACTION
 
-1. **Extract Figma Data**: Use available MCP servers:
-   - `mcp__TindaGo_Admin_Figma__get_figma_data` for admin dashboard designs
-   - `mcp__Figma_Context_MCP__get_figma_data` for context-aware extraction
-   - `mcp__Framelink_Figma_MCP__get_figma_data` for pixel-perfect extraction
-2. **Script Integration**: Execute design extraction scripts:
-   - `node scripts/figma-design-extractor.js [node-id]` for complete design specifications
-   - `node scripts/figma-sync.js` for design token synchronization
-   - `npm run figma:sync` for automated token updates
-3. **Preserve Exact Coordinates**: Never round or approximate - use exact x,y positions from Figma
-4. **Download Assets**: Use MCP image download capabilities to `public/images/admin-dashboard/`
-5. **Absolute Positioning**: Use `position: absolute` with exact `left`, `top`, `width`, `height` values
-6. **Exact Typography**: Use "Clash Grotesk Variable" with exact font-weight and font-size values
-7. **Color Precision**: Use exact hex colors - never approximate or use Tailwind color names
-8. **Icon Integration**: Use exact asset paths and apply filters for color variations
-9. **Container Setup**: Use exact 1440x1024 baseline with 273px sidebar positioning
-10. **Component Generation**: Generate React components with TypeScript and Tailwind CSS
-11. **Specification Generation**: Create detailed design specifications in markdown format
+### **Step 1: Figma Data Extraction (CRITICAL)**
+```typescript
+// PRIORITY ORDER: Try these MCP servers in sequence
+1. mcp__figma-developer-mcp__get_figma_data  // Primary - most reliable
+2. mcp__Framelink_Figma_MCP__get_figma_data  // Backup - coordinate extraction
+3. mcp__Figma_Context_MCP__get_figma_data    // Fallback - context aware
+
+// FIGMA URL PROCESSING:
+// Input: https://www.figma.com/design/8I1Nr3vQZllDDknSevstvH/TindaGo-Share?node-id=585-3060&m=dev
+// Extract: fileKey = "8I1Nr3vQZllDDknSevstvH", nodeId = "585-3060"
+
+// EXACT EXTRACTION CALL:
+mcp__figma-developer-mcp__get_figma_data({
+  fileKey: "8I1Nr3vQZllDDknSevstvH",
+  nodeId: "585-3060",
+  depth: 2,
+  includeChildren: true,
+  extractLayout: true,
+  extractStyles: true
+})
+```
+
+### **Step 2: Enhanced Analysis & Component Structure**
+```typescript
+// ANALYZE FIGMA RESPONSE FOR:
+1. **Layout Structure**: Container dimensions, child positioning
+2. **Typography**: Font families, sizes, weights, line heights
+3. **Colors**: Fill colors, stroke colors, background colors
+4. **Spacing**: Margins, padding, gaps between elements
+5. **Component Hierarchy**: Parent-child relationships
+6. **Interactive Elements**: Buttons, inputs, clickable areas
+
+// CODEBASE INTEGRATION PATTERNS:
+- Follow existing StoreManagement.tsx structure
+- Use AdminService for data integration
+- Import patterns: '@/lib/adminService', '@/components/admin'
+- TypeScript interfaces: define props and data types
+```
+
+### **Step 3: Current Codebase Integration**
+```typescript
+// EXISTING SERVICE PATTERNS (USE THESE):
+import { AdminService, StoreRegistration } from '@/lib/adminService';
+import { StoreService } from '@/lib/storeService';
+import { UserManagementService } from '@/lib/userManagementService';
+
+// EXISTING COMPONENT PATTERNS (FOLLOW THESE):
+- AdminHeader.tsx - Header with menu toggle and user profile
+- AdminSidebar.tsx - Navigation with 273px width, exact positioning
+- StoreManagement.tsx - Main data table with filtering and pagination
+- PendingApprovalDetail.tsx - Detail view with approve/reject actions
+
+// COMPONENT CREATION TEMPLATE:
+export const ComponentName: React.FC<ComponentProps> = ({ ...props }) => {
+  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<DataType[]>([]);
+
+  // Firebase integration
+  useEffect(() => {
+    const fetchData = async () => {
+      const result = await AdminService.getData();
+      setData(result);
+      setLoading(false);
+    };
+    fetchData();
+  }, []);
+
+  return (
+    <div style={{ /* EXACT FIGMA POSITIONING */ }}>
+      {/* Component content */}
+    </div>
+  );
+};
+```
+
+### **Step 4: Pixel-Perfect Implementation**
+1. **Extract Exact Coordinates**: Never round or approximate - use exact x,y positions from Figma
+2. **Absolute Positioning**: Use `position: absolute` with exact `left`, `top`, `width`, `height` values
+3. **Typography Precision**: Use "Clash Grotesk Variable" with exact font-weight and font-size values
+4. **Color Accuracy**: Use exact hex colors from Figma - never approximate
+5. **Container Setup**: Use exact 1440x1024 baseline with 273px sidebar positioning
+6. **Component Integration**: Generate React components with TypeScript and existing patterns
+7. **Service Integration**: Connect to AdminService, StoreService as needed
+8. **Error Handling**: Include loading states, error boundaries, user feedback
+
+## FIGMA EXTRACTION TROUBLESHOOTING
+
+### **Common Issues & Solutions:**
+
+**❌ Issue 1: MCP Server Not Responding**
+```typescript
+// SOLUTION: Try multiple servers in sequence
+try {
+  // Primary attempt
+  const data = await mcp__figma-developer-mcp__get_figma_data({...});
+} catch (error) {
+  console.log('Primary failed, trying backup...');
+  try {
+    // Backup attempt
+    const data = await mcp__Framelink_Figma_MCP__get_figma_data({...});
+  } catch (error2) {
+    // Manual extraction with known patterns
+    console.log('MCP failed, using manual patterns');
+    return createManualLayout();
+  }
+}
+```
+
+**❌ Issue 2: Incorrect Node ID Extraction**
+```typescript
+// WRONG: Using full URL
+nodeId: "https://www.figma.com/design/8I1Nr3vQZllDDknSevstvH/TindaGo-Share?node-id=585-3060"
+
+// CORRECT: Extract just the node ID
+nodeId: "585-3060"  // After node-id= parameter
+
+// EXTRACTION FUNCTION:
+function extractFigmaParams(url: string) {
+  const match = url.match(/design\/([^\/]+).*node-id=([^&]+)/);
+  return {
+    fileKey: match?.[1] || '',
+    nodeId: match?.[2]?.replace('%3A', ':') || ''
+  };
+}
+```
+
+**❌ Issue 3: Missing Layout Context**
+```typescript
+// ADD CONTEXT PARAMETERS:
+{
+  fileKey: "8I1Nr3vQZllDDknSevstvH",
+  nodeId: "585-3060",
+  depth: 3,           // Get child elements
+  includeChildren: true,
+  extractStyles: true,
+  extractLayout: true,
+  includeText: true,
+  includeImages: true
+}
+```
+
+**✅ FALLBACK: Manual Component Creation**
+If Figma extraction fails, create components using established patterns:
+```typescript
+// Use existing component structure from codebase
+import { PendingApprovalDetail } from '@/components/admin/PendingApprovalDetail';
+
+// Apply TindaGo design system manually
+const styles = {
+  container: {
+    width: '100%',
+    maxWidth: '1440px',
+    backgroundColor: '#F3F5F9', // Dashboard background
+    padding: '40px'
+  },
+  card: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: '20px',
+    boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
+    border: '1px solid rgba(0, 0, 0, 0.05)'
+  },
+  title: {
+    fontFamily: 'Clash Grotesk Variable',
+    fontWeight: 600,
+    fontSize: '24px',
+    color: '#1E1E1E'
+  }
+};
+```
 
 ## CRITICAL Implementation Patterns
 

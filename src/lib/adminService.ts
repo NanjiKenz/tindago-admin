@@ -108,22 +108,60 @@ export class AdminService {
       const registrationData = registrationSnapshot.val();
       const approvedAt = new Date().toISOString();
 
+      // Debug: Log the registration data structure
+      console.log('Registration data for approval:', {
+        userId,
+        registrationData: JSON.stringify(registrationData, null, 2)
+      });
+
       await update(registrationRef, {
         status: 'approved',
         approvedAt
       });
 
-      await set(storeRef, {
+      // Extract store data with proper fallbacks for different field names
+      const storeData = {
         userId,
-        storeName: registrationData.storeName,
-        ownerName: registrationData.ownerName,
-        address: registrationData.address,
-        phone: registrationData.phone,
-        email: registrationData.email,
+        storeName: registrationData.storeName ||
+                  registrationData.businessName ||
+                  registrationData.name ||
+                  `${registrationData.ownerName || registrationData.personalInfo?.name || 'Unknown'}'s Store`,
+        ownerName: registrationData.ownerName ||
+                  registrationData.personalInfo?.name ||
+                  registrationData.displayName ||
+                  registrationData.owner ||
+                  'Unknown Owner',
+        address: registrationData.address ||
+                registrationData.businessAddress ||
+                registrationData.location ||
+                'Address not provided',
+        phone: registrationData.phone ||
+              registrationData.personalInfo?.mobile ||
+              registrationData.ownerPhone ||
+              registrationData.mobile ||
+              '',
+        email: registrationData.email ||
+              registrationData.personalInfo?.email ||
+              registrationData.ownerEmail ||
+              '',
         isActive: true,
         approvedAt,
-        createdAt: registrationData.createdAt
-      });
+        createdAt: registrationData.createdAt ||
+                  registrationData.submittedAt ||
+                  registrationData.dateCreated ||
+                  new Date().toISOString(),
+        businessType: registrationData.businessType || 'Sari-Sari Store',
+        permitType: registrationData.permitType || 'Business Permit',
+        documents: registrationData.documents || {},
+        status: 'active'
+      };
+
+      // Remove any undefined values to prevent Firebase errors
+      const cleanStoreData = Object.fromEntries(
+        Object.entries(storeData).filter(([_, value]) => value !== undefined)
+      );
+
+      await set(storeRef, cleanStoreData);
 
       console.log(`Store registration approved for user: ${userId}`);
     } catch (error) {

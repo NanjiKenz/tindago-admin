@@ -25,3 +25,7 @@ export { UserActivity } from './UserActivity';
 export { UserManagement } from './UserManagement';
 export { UserCreateModal } from './UserCreateModal';
 export { CustomerManagement } from './CustomerManagement';
+
+// Store management components
+export { StoreManagement } from './StoreManagement';
+export { PendingApprovalDetail } from './PendingApprovalDetail';

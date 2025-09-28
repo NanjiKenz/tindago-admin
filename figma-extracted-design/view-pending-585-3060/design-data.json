@@ -1,0 +1,2073 @@
+{
+  "meta": {
+    "extractedAt": "2025-09-28T08:25:04.870Z",
+    "nodeId": "585:3060",
+    "nodeName": "View Pending ",
+    "nodeType": "FRAME",
+    "componentName": "ViewPending",
+    "figmaFileId": "8I1Nr3vQZllDDknSevstvH",
+    "outputPath": "view-pending-585-3060"
+  },
+  "design": {
+    "id": "585:3060",
+    "name": "View Pending ",
+    "type": "FRAME",
+    "visible": true,
+    "layout": {
+      "width": 1200,
+      "height": 900,
+      "x": 11680,
+      "y": 1766,
+      "constraints": {
+        "vertical": "TOP",
+        "horizontal": "LEFT"
+      }
+    },
+    "effects": [],
+    "fills": [],
+    "strokes": [],
+    "strokeWeight": 1,
+    "strokeAlign": "INSIDE",
+    "children": [
+      {
+        "id": "585:3061",
+        "name": "Rectangle 108",
+        "type": "RECTANGLE",
+        "visible": true,
+        "layout": {
+          "width": 1200,
+          "height": 900,
+          "x": 11680,
+          "y": 1766,
+          "constraints": {
+            "vertical": "TOP",
+            "horizontal": "LEFT"
+          },
+          "cornerRadius": 16
+        },
+        "effects": [
+          {
+            "type": "DROP_SHADOW",
+            "visible": true,
+            "radius": 5,
+            "color": "rgba(0, 0, 0, 0.25)",
+            "offset": {
+              "x": 0,
+              "y": 0
+            },
+            "blendMode": "NORMAL"
+          }
+        ],
+        "fills": [
+          {
+            "type": "SOLID",
+            "color": "#f3f5f9"
+          }
+        ],
+        "strokes": [],
+        "strokeWeight": 1,
+        "strokeAlign": "INSIDE",
+        "children": []
+      },
+      {
+        "id": "585:3062",
+        "name": "Up",
+        "type": "GROUP",
+        "visible": true,
+        "layout": {
+          "width": 1200,
+          "height": 380,
+          "x": 11680,
+          "y": 1654,
+          "constraints": {
+            "vertical": "TOP",
+            "horizontal": "LEFT"
+          },
+          "rectangleCornerRadii": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "effects": [],
+        "fills": [],
+        "strokes": [],
+        "strokeWeight": 1,
+        "strokeAlign": "INSIDE",
+        "children": [
+          {
+            "id": "585:3063",
+            "name": "Rectangle 110",
+            "type": "RECTANGLE",
+            "visible": true,
+            "layout": {
+              "width": 1200,
+              "height": 100,
+              "x": 11680,
+              "y": 1766,
+              "constraints": {
+                "vertical": "TOP",
+                "horizontal": "LEFT"
+              },
+              "rectangleCornerRadii": [
+                16,
+                16,
+                0,
+                0
+              ]
+            },
+            "effects": [],
+            "fills": [
+              {
+                "type": "SOLID",
+                "color": "#ffffff"
+              }
+            ],
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeAlign": "INSIDE",
+            "children": []
+          },
+          {
+            "id": "585:3064",
+            "name": "Role based",
+            "type": "FRAME",
+            "visible": true,
+            "layout": {
+              "width": 98,
+              "height": 32,
+              "x": 12742,
+              "y": 1800,
+              "constraints": {
+                "vertical": "TOP",
+                "horizontal": "LEFT"
+              },
+              "layoutMode": "HORIZONTAL",
+              "primaryAxisAlignItems": "CENTER",
+              "counterAxisAlignItems": "CENTER",
+              "paddingLeft": 20,
+              "paddingRight": 20,
+              "paddingTop": 5,
+              "paddingBottom": 5,
+              "itemSpacing": 10,
+              "cornerRadius": 8
+            },
+            "effects": [],
+            "fills": [
+              {
+                "type": "SOLID",
+                "color": "#fef9c3"
+              }
+            ],
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeAlign": "INSIDE",
+            "children": [
+              {
+                "id": "585:3065",
+                "name": "Pending",
+                "type": "TEXT",
+                "visible": true,
+                "layout": {
+                  "width": 58,
+                  "height": 22,
+                  "x": 12762,
+                  "y": 1805,
+                  "constraints": {
+                    "vertical": "TOP",
+                    "horizontal": "LEFT"
+                  }
+                },
+                "effects": [],
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": "#b86b0e"
+                  }
+                ],
+                "strokes": [],
+                "strokeWeight": 1,
+                "strokeAlign": "OUTSIDE",
+                "children": [],
+                "text": {
+                  "characters": "Pending",
+                  "style": {
+                    "fontFamily": "Clash Grotesk Variable",
+                    "fontWeight": 500,
+                    "fontSize": 16,
+                    "lineHeight": 22,
+                    "letterSpacing": 0,
+                    "textAlign": "CENTER",
+                    "textColor": "#b86b0e"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "id": "585:3066",
+            "name": "image 20",
+            "type": "RECTANGLE",
+            "visible": true,
+            "layout": {
+              "width": 20,
+              "height": 20,
+              "x": 11720,
+              "y": 1806,
+              "constraints": {
+                "vertical": "TOP",
+                "horizontal": "LEFT"
+              }
+            },
+            "effects": [],
+            "fills": [
+              {
+                "type": "IMAGE",
+                "color": null
+              }
+            ],
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeAlign": "INSIDE",
+            "children": []
+          },
+          {
+            "id": "585:3067",
+            "name": "2-removebg-preview 2",
+            "type": "RECTANGLE",
+            "visible": true,
+            "layout": {
+              "width": 380,
+              "height": 380,
+              "x": 12090,
+              "y": 1654,
+              "constraints": {
+                "vertical": "TOP",
+                "horizontal": "LEFT"
+              }
+            },
+            "effects": [],
+            "fills": [
+              {
+                "type": "IMAGE",
+                "color": null
+              }
+            ],
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeAlign": "INSIDE",
+            "children": []
+          }
+        ]
+      },
+      {
+        "id": "585:3068",
+        "name": "Business Owner ",
+        "type": "GROUP",
+        "visible": true,
+        "layout": {
+          "width": 1120,
+          "height": 150,
+          "x": 11720,
+          "y": 1886,
+          "constraints": {
+            "vertical": "TOP",
+            "horizontal": "LEFT"
+          },
+          "rectangleCornerRadii": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "effects": [],
+        "fills": [],
+        "strokes": [],
+        "strokeWeight": 1,
+        "strokeAlign": "INSIDE",
+        "children": [
+          {
+            "id": "585:3069",
+            "name": "Rectangle 111",
+            "type": "RECTANGLE",
+            "visible": true,
+            "layout": {
+              "width": 1120,
+              "height": 150,
+              "x": 11720,
+              "y": 1886,
+              "constraints": {
+                "vertical": "TOP",
+                "horizontal": "LEFT"
+              },
+              "cornerRadius": 16
+            },
+            "effects": [
+              {
+                "type": "DROP_SHADOW",
+                "visible": true,
+                "radius": 5,
+                "color": "rgba(0, 0, 0, 0.25)",
+                "offset": {
+                  "x": 0,
+                  "y": 0
+                },
+                "blendMode": "NORMAL"
+              }
+            ],
+            "fills": [
+              {
+                "type": "SOLID",
+                "color": "#ffffff"
+              }
+            ],
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeAlign": "INSIDE",
+            "children": []
+          },
+          {
+            "id": "585:3070",
+            "name": "Mark",
+            "type": "GROUP",
+            "visible": true,
+            "layout": {
+              "width": 40,
+              "height": 40,
+              "x": 11740,
+              "y": 1906,
+              "constraints": {
+                "vertical": "TOP",
+                "horizontal": "LEFT"
+              }
+            },
+            "effects": [],
+            "fills": [],
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeAlign": "INSIDE",
+            "children": [
+              {
+                "id": "585:3071",
+                "name": "Ellipse 8",
+                "type": "ELLIPSE",
+                "visible": true,
+                "layout": {
+                  "width": 40,
+                  "height": 40,
+                  "x": 11740,
+                  "y": 1906,
+                  "constraints": {
+                    "vertical": "TOP",
+                    "horizontal": "LEFT"
+                  }
+                },
+                "effects": [],
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": "#dbeafe"
+                  }
+                ],
+                "strokes": [],
+                "strokeWeight": 1,
+                "strokeAlign": "INSIDE",
+                "children": []
+              },
+              {
+                "id": "585:3072",
+                "name": "User",
+                "type": "RECTANGLE",
+                "visible": true,
+                "layout": {
+                  "width": 25,
+                  "height": 25,
+                  "x": 11747,
+                  "y": 1913,
+                  "constraints": {
+                    "vertical": "TOP",
+                    "horizontal": "LEFT"
+                  }
+                },
+                "effects": [],
+                "fills": [
+                  {
+                    "type": "IMAGE",
+                    "color": null
+                  }
+                ],
+                "strokes": [],
+                "strokeWeight": 1,
+                "strokeAlign": "INSIDE",
+                "children": []
+              }
+            ]
+          },
+          {
+            "id": "585:3073",
+            "name": "Business Owner",
+            "type": "TEXT",
+            "visible": true,
+            "layout": {
+              "width": 145,
+              "height": 25,
+              "x": 11800,
+              "y": 1913,
+              "constraints": {
+                "vertical": "TOP",
+                "horizontal": "LEFT"
+              }
+            },
+            "effects": [],
+            "fills": [
+              {
+                "type": "SOLID",
+                "color": "#1e1e1e"
+              }
+            ],
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeAlign": "OUTSIDE",
+            "children": [],
+            "text": {
+              "characters": "Business Owner",
+              "style": {
+                "fontFamily": "Clash Grotesk Variable",
+                "fontWeight": 500,
+                "fontSize": 20,
+                "lineHeight": 24.600000381469727,
+                "letterSpacing": 0,
+                "textAlign": "CENTER",
+                "textColor": "#1e1e1e"
+              }
+            }
+          },
+          {
+            "id": "585:3074",
+            "name": "Maynard Dotarot",
+            "type": "TEXT",
+            "visible": true,
+            "layout": {
+              "width": 123,
+              "height": 20,
+              "x": 11740,
+              "y": 1956,
+              "constraints": {
+                "vertical": "TOP",
+                "horizontal": "LEFT"
+              }
+            },
+            "effects": [],
+            "fills": [
+              {
+                "type": "SOLID",
+                "color": "#1e1e1e"
+              }
+            ],
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeAlign": "OUTSIDE",
+            "children": [],
+            "text": {
+              "characters": "Maynard Dotarot",
+              "style": {
+                "fontFamily": "Clash Grotesk Variable",
+                "fontWeight": 500,
+                "fontSize": 16,
+                "lineHeight": 19.68000030517578,
+                "letterSpacing": 0,
+                "textAlign": "LEFT",
+                "textColor": "#1e1e1e"
+              }
+            }
+          },
+          {
+            "id": "585:3075",
+            "name": "label",
+            "type": "GROUP",
+            "visible": true,
+            "layout": {
+              "width": 90,
+              "height": 29,
+              "x": 11770,
+              "y": 1981,
+              "constraints": {
+                "vertical": "TOP",
+                "horizontal": "LEFT"
+              },
+              "rectangleCornerRadii": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            "effects": [],
+            "fills": [],
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeAlign": "INSIDE",
+            "children": [
+              {
+                "id": "585:3076",
+                "name": "+6394 943 2345",
+                "type": "TEXT",
+                "visible": true,
+                "layout": {
+                  "width": 78,
+                  "height": 12,
+                  "x": 11770,
+                  "y": 1998,
+                  "constraints": {
+                    "vertical": "TOP",
+                    "horizontal": "LEFT"
+                  }
+                },
+                "effects": [],
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": "#3b82f6"
+                  }
+                ],
+                "strokes": [],
+                "strokeWeight": 1,
+                "strokeAlign": "OUTSIDE",
+                "children": [],
+                "text": {
+                  "characters": "+6394 943 2345",
+                  "style": {
+                    "fontFamily": "Clash Grotesk Variable",
+                    "fontWeight": 500,
+                    "fontSize": 10,
+                    "lineHeight": 12.300000190734863,
+                    "letterSpacing": 0,
+                    "textAlign": "LEFT",
+                    "textColor": "#3b82f6"
+                  }
+                }
+              },
+              {
+                "id": "585:3077",
+                "name": "Dotarot@gmail.com",
+                "type": "TEXT",
+                "visible": true,
+                "layout": {
+                  "width": 90,
+                  "height": 12,
+                  "x": 11770,
+                  "y": 1981,
+                  "constraints": {
+                    "vertical": "TOP",
+                    "horizontal": "LEFT"
+                  }
+                },
+                "effects": [],
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": "#3b82f6"
+                  }
+                ],
+                "strokes": [],
+                "strokeWeight": 1,
+                "strokeAlign": "OUTSIDE",
+                "children": [],
+                "text": {
+                  "characters": "Dotarot@gmail.com",
+                  "style": {
+                    "fontFamily": "Clash Grotesk Variable",
+                    "fontWeight": 500,
+                    "fontSize": 10,
+                    "lineHeight": 12.300000190734863,
+                    "letterSpacing": 0,
+                    "textAlign": "LEFT",
+                    "textColor": "#3b82f6"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "585:3078",
+        "name": "Business Dateilas",
+        "type": "GROUP",
+        "visible": true,
+        "layout": {
+          "width": 1120,
+          "height": 180,
+          "x": 11720,
+          "y": 2056,
+          "constraints": {
+            "vertical": "TOP",
+            "horizontal": "LEFT"
+          }
+        },
+        "effects": [],
+        "fills": [],
+        "strokes": [],
+        "strokeWeight": 1,
+        "strokeAlign": "INSIDE",
+        "children": [
+          {
+            "id": "585:3079",
+            "name": "Subtract",
+            "type": "BOOLEAN_OPERATION",
+            "visible": true,
+            "layout": {
+              "width": 1120,
+              "height": 180,
+              "x": 11720,
+              "y": 2056,
+              "constraints": {
+                "vertical": "TOP",
+                "horizontal": "LEFT"
+              }
+            },
+            "effects": [
+              {
+                "type": "DROP_SHADOW",
+                "visible": true,
+                "radius": 5,
+                "color": "rgba(0, 0, 0, 0.25)",
+                "offset": {
+                  "x": 0,
+                  "y": 0
+                },
+                "blendMode": "NORMAL"
+              }
+            ],
+            "fills": [
+              {
+                "type": "SOLID",
+                "color": "#ffffff"
+              }
+            ],
+            "strokes": [],
+            "strokeWeight": 0,
+            "strokeAlign": "INSIDE",
+            "children": [
+              {
+                "id": "585:3080",
+                "name": "Rectangle 111",
+                "type": "RECTANGLE",
+                "visible": true,
+                "layout": {
+                  "width": 1120,
+                  "height": 180,
+                  "x": 11720,
+                  "y": 2056,
+                  "constraints": {
+                    "vertical": "TOP",
+                    "horizontal": "LEFT"
+                  },
+                  "cornerRadius": 16
+                },
+                "effects": [
+                  {
+                    "type": "DROP_SHADOW",
+                    "visible": true,
+                    "radius": 5,
+                    "color": "rgba(0, 0, 0, 0.25)",
+                    "offset": {
+                      "x": 0,
+                      "y": 0
+                    },
+                    "blendMode": "NORMAL"
+                  }
+                ],
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": "#ffffff"
+                  }
+                ],
+                "strokes": [],
+                "strokeWeight": 1,
+                "strokeAlign": "INSIDE",
+                "children": []
+              },
+              {
+                "id": "585:3081",
+                "name": "Rectangle 112",
+                "type": "RECTANGLE",
+                "visible": true,
+                "layout": {
+                  "width": 540,
+                  "height": 64,
+                  "x": 11730,
+                  "y": 2162,
+                  "constraints": {
+                    "vertical": "TOP",
+                    "horizontal": "LEFT"
+                  },
+                  "cornerRadius": 16
+                },
+                "effects": [
+                  {
+                    "type": "DROP_SHADOW",
+                    "visible": true,
+                    "radius": 5,
+                    "color": "rgba(0, 0, 0, 0.25)",
+                    "offset": {
+                      "x": 0,
+                      "y": 0
+                    },
+                    "blendMode": "NORMAL"
+                  }
+                ],
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": "#ffffff"
+                  }
+                ],
+                "strokes": [],
+                "strokeWeight": 1,
+                "strokeAlign": "INSIDE",
+                "children": []
+              },
+              {
+                "id": "585:3082",
+                "name": "Rectangle 113",
+                "type": "RECTANGLE",
+                "visible": true,
+                "layout": {
+                  "width": 540,
+                  "height": 64,
+                  "x": 12290,
+                  "y": 2162,
+                  "constraints": {
+                    "vertical": "TOP",
+                    "horizontal": "LEFT"
+                  },
+                  "cornerRadius": 16
+                },
+                "effects": [
+                  {
+                    "type": "DROP_SHADOW",
+                    "visible": true,
+                    "radius": 5,
+                    "color": "rgba(0, 0, 0, 0.25)",
+                    "offset": {
+                      "x": 0,
+                      "y": 0
+                    },
+                    "blendMode": "NORMAL"
+                  }
+                ],
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": "#ffffff"
+                  }
+                ],
+                "strokes": [],
+                "strokeWeight": 1,
+                "strokeAlign": "INSIDE",
+                "children": []
+              }
+            ]
+          },
+          {
+            "id": "585:3083",
+            "name": "Business Details",
+            "type": "GROUP",
+            "visible": true,
+            "layout": {
+              "width": 190,
+              "height": 40,
+              "x": 11740,
+              "y": 2076,
+              "constraints": {
+                "vertical": "TOP",
+                "horizontal": "LEFT"
+              }
+            },
+            "effects": [],
+            "fills": [],
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeAlign": "INSIDE",
+            "children": [
+              {
+                "id": "585:3084",
+                "name": "Ellipse 8",
+                "type": "ELLIPSE",
+                "visible": true,
+                "layout": {
+                  "width": 40,
+                  "height": 40,
+                  "x": 11740,
+                  "y": 2076,
+                  "constraints": {
+                    "vertical": "TOP",
+                    "horizontal": "LEFT"
+                  }
+                },
+                "effects": [],
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": "#dcfce7"
+                  }
+                ],
+                "strokes": [],
+                "strokeWeight": 1,
+                "strokeAlign": "INSIDE",
+                "children": []
+              },
+              {
+                "id": "585:3085",
+                "name": "Business Building",
+                "type": "RECTANGLE",
+                "visible": true,
+                "layout": {
+                  "width": 25,
+                  "height": 25,
+                  "x": 11747,
+                  "y": 2083,
+                  "constraints": {
+                    "vertical": "TOP",
+                    "horizontal": "LEFT"
+                  }
+                },
+                "effects": [],
+                "fills": [
+                  {
+                    "type": "IMAGE",
+                    "color": null
+                  }
+                ],
+                "strokes": [],
+                "strokeWeight": 1,
+                "strokeAlign": "INSIDE",
+                "children": []
+              },
+              {
+                "id": "585:3086",
+                "name": "Business Details",
+                "type": "TEXT",
+                "visible": true,
+                "layout": {
+                  "width": 130,
+                  "height": 22,
+                  "x": 11800,
+                  "y": 2085,
+                  "constraints": {
+                    "vertical": "TOP",
+                    "horizontal": "LEFT"
+                  }
+                },
+                "effects": [],
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": "#1e1e1e"
+                  }
+                ],
+                "strokes": [],
+                "strokeWeight": 1,
+                "strokeAlign": "OUTSIDE",
+                "children": [],
+                "text": {
+                  "characters": "Business Details",
+                  "style": {
+                    "fontFamily": "Clash Grotesk Variable",
+                    "fontWeight": 500,
+                    "fontSize": 18,
+                    "lineHeight": 22.139999389648438,
+                    "letterSpacing": 0,
+                    "textAlign": "CENTER",
+                    "textColor": "#1e1e1e"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "id": "585:3087",
+            "name": "63 Jacinto Street, Davao City",
+            "type": "TEXT",
+            "visible": true,
+            "layout": {
+              "width": 207,
+              "height": 20,
+              "x": 11760,
+              "y": 2126,
+              "constraints": {
+                "vertical": "TOP",
+                "horizontal": "LEFT"
+              }
+            },
+            "effects": [],
+            "fills": [
+              {
+                "type": "SOLID",
+                "color": "#1e1e1e"
+              }
+            ],
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeAlign": "OUTSIDE",
+            "children": [],
+            "text": {
+              "characters": "63 Jacinto Street, Davao City",
+              "style": {
+                "fontFamily": "Clash Grotesk Variable",
+                "fontWeight": 500,
+                "fontSize": 16,
+                "lineHeight": 19.68000030517578,
+                "letterSpacing": 0,
+                "textAlign": "LEFT",
+                "textColor": "#1e1e1e"
+              }
+            }
+          },
+          {
+            "id": "585:3088",
+            "name": "BUSINESS TYPE",
+            "type": "TEXT",
+            "visible": true,
+            "layout": {
+              "width": 97,
+              "height": 22,
+              "x": 11750,
+              "y": 2172,
+              "constraints": {
+                "vertical": "TOP",
+                "horizontal": "LEFT"
+              }
+            },
+            "effects": [],
+            "fills": [
+              {
+                "type": "SOLID",
+                "color": "#1e1e1e"
+              }
+            ],
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeAlign": "OUTSIDE",
+            "children": [],
+            "text": {
+              "characters": "BUSINESS TYPE",
+              "style": {
+                "fontFamily": "Clash Grotesk Variable",
+                "fontWeight": 400,
+                "fontSize": 14,
+                "lineHeight": 22,
+                "letterSpacing": 0,
+                "textAlign": "LEFT",
+                "textColor": "#1e1e1e"
+              }
+            }
+          },
+          {
+            "id": "585:3089",
+            "name": "PERMIT TYPE",
+            "type": "TEXT",
+            "visible": true,
+            "layout": {
+              "width": 81,
+              "height": 22,
+              "x": 12310,
+              "y": 2172,
+              "constraints": {
+                "vertical": "TOP",
+                "horizontal": "LEFT"
+              }
+            },
+            "effects": [],
+            "fills": [
+              {
+                "type": "SOLID",
+                "color": "#1e1e1e"
+              }
+            ],
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeAlign": "OUTSIDE",
+            "children": [],
+            "text": {
+              "characters": "PERMIT TYPE",
+              "style": {
+                "fontFamily": "Clash Grotesk Variable",
+                "fontWeight": 400,
+                "fontSize": 14,
+                "lineHeight": 22,
+                "letterSpacing": 0,
+                "textAlign": "LEFT",
+                "textColor": "#1e1e1e"
+              }
+            }
+          },
+          {
+            "id": "585:3090",
+            "name": "Sari-Sari Store",
+            "type": "TEXT",
+            "visible": true,
+            "layout": {
+              "width": 100,
+              "height": 22,
+              "x": 11750,
+              "y": 2194,
+              "constraints": {
+                "vertical": "TOP",
+                "horizontal": "LEFT"
+              }
+            },
+            "effects": [],
+            "fills": [
+              {
+                "type": "SOLID",
+                "color": "#1e1e1e"
+              }
+            ],
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeAlign": "OUTSIDE",
+            "children": [],
+            "text": {
+              "characters": "Sari-Sari Store",
+              "style": {
+                "fontFamily": "Clash Grotesk Variable",
+                "fontWeight": 400,
+                "fontSize": 16,
+                "lineHeight": 22,
+                "letterSpacing": 0,
+                "textAlign": "LEFT",
+                "textColor": "#1e1e1e"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "585:3091",
+        "name": "Descrip",
+        "type": "GROUP",
+        "visible": true,
+        "layout": {
+          "width": 1120,
+          "height": 90,
+          "x": 11720,
+          "y": 2256,
+          "constraints": {
+            "vertical": "TOP",
+            "horizontal": "LEFT"
+          },
+          "cornerRadius": 16
+        },
+        "effects": [],
+        "fills": [],
+        "strokes": [],
+        "strokeWeight": 1,
+        "strokeAlign": "INSIDE",
+        "children": [
+          {
+            "id": "585:3092",
+            "name": "Rectangle 114",
+            "type": "RECTANGLE",
+            "visible": true,
+            "layout": {
+              "width": 1120,
+              "height": 90,
+              "x": 11720,
+              "y": 2256,
+              "constraints": {
+                "vertical": "TOP",
+                "horizontal": "LEFT"
+              },
+              "cornerRadius": 16
+            },
+            "effects": [
+              {
+                "type": "DROP_SHADOW",
+                "visible": true,
+                "radius": 5,
+                "color": "rgba(0, 0, 0, 0.25)",
+                "offset": {
+                  "x": 0,
+                  "y": 0
+                },
+                "blendMode": "NORMAL"
+              }
+            ],
+            "fills": [
+              {
+                "type": "SOLID",
+                "color": "#ffffff"
+              }
+            ],
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeAlign": "INSIDE",
+            "children": []
+          },
+          {
+            "id": "585:3093",
+            "name": "Business Description",
+            "type": "TEXT",
+            "visible": true,
+            "layout": {
+              "width": 168,
+              "height": 22,
+              "x": 11740,
+              "y": 2276,
+              "constraints": {
+                "vertical": "TOP",
+                "horizontal": "LEFT"
+              }
+            },
+            "effects": [],
+            "fills": [
+              {
+                "type": "SOLID",
+                "color": "#1e1e1e"
+              }
+            ],
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeAlign": "OUTSIDE",
+            "children": [],
+            "text": {
+              "characters": "Business Description",
+              "style": {
+                "fontFamily": "Clash Grotesk Variable",
+                "fontWeight": 500,
+                "fontSize": 18,
+                "lineHeight": 22.139999389648438,
+                "letterSpacing": 0,
+                "textAlign": "LEFT",
+                "textColor": "#1e1e1e"
+              }
+            }
+          },
+          {
+            "id": "585:3094",
+            "name": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam",
+            "type": "TEXT",
+            "visible": true,
+            "layout": {
+              "width": 877,
+              "height": 17,
+              "x": 11740,
+              "y": 2308,
+              "constraints": {
+                "vertical": "TOP",
+                "horizontal": "LEFT"
+              }
+            },
+            "effects": [],
+            "fills": [
+              {
+                "type": "SOLID",
+                "color": "#1e1e1e"
+              }
+            ],
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeAlign": "OUTSIDE",
+            "children": [],
+            "text": {
+              "characters": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam",
+              "style": {
+                "fontFamily": "Clash Grotesk Variable",
+                "fontWeight": 400,
+                "fontSize": 14,
+                "lineHeight": 17.220001220703125,
+                "letterSpacing": 0,
+                "textAlign": "LEFT",
+                "textColor": "#1e1e1e"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "585:3095",
+        "name": "Submitted Doc",
+        "type": "GROUP",
+        "visible": true,
+        "layout": {
+          "width": 1120,
+          "height": 180,
+          "x": 11720,
+          "y": 2366,
+          "constraints": {
+            "vertical": "TOP",
+            "horizontal": "LEFT"
+          },
+          "rectangleCornerRadii": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "effects": [],
+        "fills": [],
+        "strokes": [],
+        "strokeWeight": 1,
+        "strokeAlign": "INSIDE",
+        "children": [
+          {
+            "id": "585:3096",
+            "name": "Subtract",
+            "type": "BOOLEAN_OPERATION",
+            "visible": true,
+            "layout": {
+              "width": 1120,
+              "height": 180,
+              "x": 11720,
+              "y": 2366,
+              "constraints": {
+                "vertical": "TOP",
+                "horizontal": "LEFT"
+              }
+            },
+            "effects": [
+              {
+                "type": "DROP_SHADOW",
+                "visible": true,
+                "radius": 5,
+                "color": "rgba(0, 0, 0, 0.25)",
+                "offset": {
+                  "x": 0,
+                  "y": 0
+                },
+                "blendMode": "NORMAL"
+              }
+            ],
+            "fills": [
+              {
+                "type": "SOLID",
+                "color": "#ffffff"
+              }
+            ],
+            "strokes": [],
+            "strokeWeight": 0,
+            "strokeAlign": "INSIDE",
+            "children": [
+              {
+                "id": "585:3097",
+                "name": "Rectangle 115",
+                "type": "RECTANGLE",
+                "visible": true,
+                "layout": {
+                  "width": 1120,
+                  "height": 180,
+                  "x": 11720,
+                  "y": 2366,
+                  "constraints": {
+                    "vertical": "TOP",
+                    "horizontal": "LEFT"
+                  },
+                  "cornerRadius": 16
+                },
+                "effects": [
+                  {
+                    "type": "DROP_SHADOW",
+                    "visible": true,
+                    "radius": 5,
+                    "color": "rgba(0, 0, 0, 0.25)",
+                    "offset": {
+                      "x": 0,
+                      "y": 0
+                    },
+                    "blendMode": "NORMAL"
+                  }
+                ],
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": "#ffffff"
+                  }
+                ],
+                "strokes": [],
+                "strokeWeight": 1,
+                "strokeAlign": "INSIDE",
+                "children": []
+              },
+              {
+                "id": "585:3098",
+                "name": "Rectangle 118",
+                "type": "RECTANGLE",
+                "visible": true,
+                "layout": {
+                  "width": 1080,
+                  "height": 40,
+                  "x": 11740,
+                  "y": 2436,
+                  "constraints": {
+                    "vertical": "TOP",
+                    "horizontal": "LEFT"
+                  },
+                  "cornerRadius": 8
+                },
+                "effects": [],
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": "#d9d9d9"
+                  }
+                ],
+                "strokes": [],
+                "strokeWeight": 1,
+                "strokeAlign": "INSIDE",
+                "children": []
+              },
+              {
+                "id": "585:3099",
+                "name": "Rectangle 119",
+                "type": "RECTANGLE",
+                "visible": true,
+                "layout": {
+                  "width": 1080,
+                  "height": 40,
+                  "x": 11740,
+                  "y": 2486,
+                  "constraints": {
+                    "vertical": "TOP",
+                    "horizontal": "LEFT"
+                  },
+                  "cornerRadius": 8
+                },
+                "effects": [],
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": "#d9d9d9"
+                  }
+                ],
+                "strokes": [],
+                "strokeWeight": 1,
+                "strokeAlign": "INSIDE",
+                "children": []
+              }
+            ]
+          },
+          {
+            "id": "585:3100",
+            "name": "Ellipse 8",
+            "type": "ELLIPSE",
+            "visible": true,
+            "layout": {
+              "width": 40,
+              "height": 40,
+              "x": 11740,
+              "y": 2386,
+              "constraints": {
+                "vertical": "TOP",
+                "horizontal": "LEFT"
+              }
+            },
+            "effects": [],
+            "fills": [
+              {
+                "type": "SOLID",
+                "color": "#f3e8ff"
+              }
+            ],
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeAlign": "INSIDE",
+            "children": []
+          },
+          {
+            "id": "585:3101",
+            "name": "Document",
+            "type": "RECTANGLE",
+            "visible": true,
+            "layout": {
+              "width": 25,
+              "height": 25,
+              "x": 11747,
+              "y": 2393,
+              "constraints": {
+                "vertical": "TOP",
+                "horizontal": "LEFT"
+              }
+            },
+            "effects": [],
+            "fills": [
+              {
+                "type": "IMAGE",
+                "color": null
+              }
+            ],
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeAlign": "INSIDE",
+            "children": []
+          },
+          {
+            "id": "585:3102",
+            "name": "Submitted Documents",
+            "type": "TEXT",
+            "visible": true,
+            "layout": {
+              "width": 181,
+              "height": 22,
+              "x": 11800,
+              "y": 2395,
+              "constraints": {
+                "vertical": "TOP",
+                "horizontal": "LEFT"
+              }
+            },
+            "effects": [],
+            "fills": [
+              {
+                "type": "SOLID",
+                "color": "#1e1e1e"
+              }
+            ],
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeAlign": "OUTSIDE",
+            "children": [],
+            "text": {
+              "characters": "Submitted Documents",
+              "style": {
+                "fontFamily": "Clash Grotesk Variable",
+                "fontWeight": 500,
+                "fontSize": 18,
+                "lineHeight": 22.139999389648438,
+                "letterSpacing": 0,
+                "textAlign": "LEFT",
+                "textColor": "#1e1e1e"
+              }
+            }
+          },
+          {
+            "id": "585:3103",
+            "name": "Doc 1",
+            "type": "GROUP",
+            "visible": true,
+            "layout": {
+              "width": 1054,
+              "height": 20,
+              "x": 11750,
+              "y": 2446,
+              "constraints": {
+                "vertical": "TOP",
+                "horizontal": "LEFT"
+              },
+              "rectangleCornerRadii": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            "effects": [],
+            "fills": [],
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeAlign": "INSIDE",
+            "children": [
+              {
+                "id": "585:3104",
+                "name": "Rectangle 120",
+                "type": "RECTANGLE",
+                "visible": true,
+                "layout": {
+                  "width": 20,
+                  "height": 20,
+                  "x": 11750,
+                  "y": 2446,
+                  "constraints": {
+                    "vertical": "TOP",
+                    "horizontal": "LEFT"
+                  },
+                  "cornerRadius": 5
+                },
+                "effects": [],
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": "#dbeafe"
+                  }
+                ],
+                "strokes": [],
+                "strokeWeight": 1,
+                "strokeAlign": "INSIDE",
+                "children": []
+              },
+              {
+                "id": "585:3105",
+                "name": "Document",
+                "type": "RECTANGLE",
+                "visible": true,
+                "layout": {
+                  "width": 15,
+                  "height": 15,
+                  "x": 11752,
+                  "y": 2448,
+                  "constraints": {
+                    "vertical": "TOP",
+                    "horizontal": "LEFT"
+                  }
+                },
+                "effects": [],
+                "fills": [
+                  {
+                    "type": "IMAGE",
+                    "color": null
+                  }
+                ],
+                "strokes": [],
+                "strokeWeight": 1,
+                "strokeAlign": "INSIDE",
+                "children": []
+              },
+              {
+                "id": "585:3106",
+                "name": "Barangay Clearance",
+                "type": "TEXT",
+                "visible": true,
+                "layout": {
+                  "width": 104,
+                  "height": 15,
+                  "x": 11790,
+                  "y": 2448,
+                  "constraints": {
+                    "vertical": "TOP",
+                    "horizontal": "LEFT"
+                  }
+                },
+                "effects": [],
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": "#000000"
+                  }
+                ],
+                "strokes": [],
+                "strokeWeight": 1,
+                "strokeAlign": "OUTSIDE",
+                "children": [],
+                "text": {
+                  "characters": "Barangay Clearance",
+                  "style": {
+                    "fontFamily": "Clash Grotesk Variable",
+                    "fontWeight": 400,
+                    "fontSize": 12,
+                    "lineHeight": 14.760000228881836,
+                    "letterSpacing": 0,
+                    "textAlign": "LEFT",
+                    "textColor": "#000000"
+                  }
+                }
+              },
+              {
+                "id": "585:3107",
+                "name": "View",
+                "type": "TEXT",
+                "visible": true,
+                "layout": {
+                  "width": 21,
+                  "height": 12,
+                  "x": 12783,
+                  "y": 2450,
+                  "constraints": {
+                    "vertical": "TOP",
+                    "horizontal": "LEFT"
+                  }
+                },
+                "effects": [],
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": "#3b82f6"
+                  }
+                ],
+                "strokes": [],
+                "strokeWeight": 1,
+                "strokeAlign": "OUTSIDE",
+                "children": [],
+                "text": {
+                  "characters": "View",
+                  "style": {
+                    "fontFamily": "Clash Grotesk Variable",
+                    "fontWeight": 400,
+                    "fontSize": 10,
+                    "lineHeight": 12.300000190734863,
+                    "letterSpacing": 0,
+                    "textAlign": "LEFT",
+                    "textColor": "#3b82f6"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "id": "585:3108",
+            "name": "Doc 2",
+            "type": "GROUP",
+            "visible": true,
+            "layout": {
+              "width": 1054,
+              "height": 20,
+              "x": 11750,
+              "y": 2496,
+              "constraints": {
+                "vertical": "TOP",
+                "horizontal": "LEFT"
+              },
+              "rectangleCornerRadii": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            "effects": [],
+            "fills": [],
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeAlign": "INSIDE",
+            "children": [
+              {
+                "id": "585:3109",
+                "name": "Rectangle 121",
+                "type": "RECTANGLE",
+                "visible": true,
+                "layout": {
+                  "width": 20,
+                  "height": 20,
+                  "x": 11750,
+                  "y": 2496,
+                  "constraints": {
+                    "vertical": "TOP",
+                    "horizontal": "LEFT"
+                  },
+                  "cornerRadius": 5
+                },
+                "effects": [],
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": "#dbeafe"
+                  }
+                ],
+                "strokes": [],
+                "strokeWeight": 1,
+                "strokeAlign": "INSIDE",
+                "children": []
+              },
+              {
+                "id": "585:3110",
+                "name": "Barangay Clearance",
+                "type": "TEXT",
+                "visible": true,
+                "layout": {
+                  "width": 104,
+                  "height": 15,
+                  "x": 11790,
+                  "y": 2498,
+                  "constraints": {
+                    "vertical": "TOP",
+                    "horizontal": "LEFT"
+                  }
+                },
+                "effects": [],
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": "#000000"
+                  }
+                ],
+                "strokes": [],
+                "strokeWeight": 1,
+                "strokeAlign": "OUTSIDE",
+                "children": [],
+                "text": {
+                  "characters": "Barangay Clearance",
+                  "style": {
+                    "fontFamily": "Clash Grotesk Variable",
+                    "fontWeight": 400,
+                    "fontSize": 12,
+                    "lineHeight": 14.760000228881836,
+                    "letterSpacing": 0,
+                    "textAlign": "LEFT",
+                    "textColor": "#000000"
+                  }
+                }
+              },
+              {
+                "id": "585:3111",
+                "name": "View",
+                "type": "TEXT",
+                "visible": true,
+                "layout": {
+                  "width": 21,
+                  "height": 12,
+                  "x": 12783,
+                  "y": 2500,
+                  "constraints": {
+                    "vertical": "TOP",
+                    "horizontal": "LEFT"
+                  }
+                },
+                "effects": [],
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": "#3b82f6"
+                  }
+                ],
+                "strokes": [],
+                "strokeWeight": 1,
+                "strokeAlign": "OUTSIDE",
+                "children": [],
+                "text": {
+                  "characters": "View",
+                  "style": {
+                    "fontFamily": "Clash Grotesk Variable",
+                    "fontWeight": 400,
+                    "fontSize": 10,
+                    "lineHeight": 12.300000190734863,
+                    "letterSpacing": 0,
+                    "textAlign": "LEFT",
+                    "textColor": "#3b82f6"
+                  }
+                }
+              },
+              {
+                "id": "585:3112",
+                "name": "Document",
+                "type": "RECTANGLE",
+                "visible": true,
+                "layout": {
+                  "width": 15,
+                  "height": 15,
+                  "x": 11752,
+                  "y": 2498,
+                  "constraints": {
+                    "vertical": "TOP",
+                    "horizontal": "LEFT"
+                  }
+                },
+                "effects": [],
+                "fills": [
+                  {
+                    "type": "IMAGE",
+                    "color": null
+                  }
+                ],
+                "strokes": [],
+                "strokeWeight": 1,
+                "strokeAlign": "INSIDE",
+                "children": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "585:3113",
+        "name": "Approve",
+        "type": "GROUP",
+        "visible": true,
+        "layout": {
+          "width": 540,
+          "height": 50,
+          "x": 11720,
+          "y": 2586,
+          "constraints": {
+            "vertical": "TOP",
+            "horizontal": "LEFT"
+          },
+          "cornerRadius": 16
+        },
+        "effects": [],
+        "fills": [],
+        "strokes": [],
+        "strokeWeight": 1,
+        "strokeAlign": "INSIDE",
+        "children": [
+          {
+            "id": "585:3114",
+            "name": "Approve",
+            "type": "FRAME",
+            "visible": true,
+            "layout": {
+              "width": 540,
+              "height": 50,
+              "x": 11720,
+              "y": 2586,
+              "constraints": {
+                "vertical": "TOP",
+                "horizontal": "LEFT"
+              },
+              "layoutMode": "HORIZONTAL",
+              "primaryAxisSizingMode": "FIXED",
+              "counterAxisSizingMode": "FIXED",
+              "primaryAxisAlignItems": "CENTER",
+              "counterAxisAlignItems": "CENTER",
+              "paddingLeft": 188,
+              "paddingRight": 188,
+              "paddingTop": 14,
+              "paddingBottom": 14,
+              "itemSpacing": 10,
+              "cornerRadius": 16
+            },
+            "effects": [
+              {
+                "type": "DROP_SHADOW",
+                "visible": true,
+                "radius": 5,
+                "color": "rgba(0, 0, 0, 0.25)",
+                "offset": {
+                  "x": 0,
+                  "y": 0
+                },
+                "blendMode": "NORMAL"
+              }
+            ],
+            "fills": [
+              {
+                "type": "SOLID",
+                "color": "#3bb77e"
+              }
+            ],
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeAlign": "INSIDE",
+            "children": [
+              {
+                "id": "585:3115",
+                "name": "Done",
+                "type": "RECTANGLE",
+                "visible": true,
+                "layout": {
+                  "width": 25,
+                  "height": 25,
+                  "x": 11891,
+                  "y": 2598.5,
+                  "constraints": {
+                    "vertical": "TOP",
+                    "horizontal": "LEFT"
+                  }
+                },
+                "effects": [],
+                "fills": [
+                  {
+                    "type": "IMAGE",
+                    "color": null
+                  }
+                ],
+                "strokes": [],
+                "strokeWeight": 1,
+                "strokeAlign": "INSIDE",
+                "children": []
+              },
+              {
+                "id": "585:3116",
+                "name": "Approve Application",
+                "type": "TEXT",
+                "visible": true,
+                "layout": {
+                  "width": 163,
+                  "height": 22,
+                  "x": 11926,
+                  "y": 2600,
+                  "constraints": {
+                    "vertical": "TOP",
+                    "horizontal": "LEFT"
+                  }
+                },
+                "effects": [],
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": "#ffffff"
+                  }
+                ],
+                "strokes": [],
+                "strokeWeight": 1,
+                "strokeAlign": "OUTSIDE",
+                "children": [],
+                "text": {
+                  "characters": "Approve Application",
+                  "style": {
+                    "fontFamily": "Clash Grotesk Variable",
+                    "fontWeight": 500,
+                    "fontSize": 18,
+                    "lineHeight": 22,
+                    "letterSpacing": 0,
+                    "textAlign": "CENTER",
+                    "textColor": "#ffffff"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "585:3117",
+        "name": "Reject",
+        "type": "GROUP",
+        "visible": true,
+        "layout": {
+          "width": 540,
+          "height": 50,
+          "x": 12300,
+          "y": 2586,
+          "constraints": {
+            "vertical": "TOP",
+            "horizontal": "LEFT"
+          },
+          "cornerRadius": 16
+        },
+        "effects": [],
+        "fills": [],
+        "strokes": [],
+        "strokeWeight": 1,
+        "strokeAlign": "INSIDE",
+        "children": [
+          {
+            "id": "585:3118",
+            "name": "Reject",
+            "type": "FRAME",
+            "visible": true,
+            "layout": {
+              "width": 540,
+              "height": 50,
+              "x": 12300,
+              "y": 2586,
+              "constraints": {
+                "vertical": "TOP",
+                "horizontal": "LEFT"
+              },
+              "layoutMode": "HORIZONTAL",
+              "primaryAxisSizingMode": "FIXED",
+              "counterAxisSizingMode": "FIXED",
+              "primaryAxisAlignItems": "CENTER",
+              "counterAxisAlignItems": "CENTER",
+              "paddingLeft": 198,
+              "paddingRight": 198,
+              "paddingTop": 14,
+              "paddingBottom": 14,
+              "itemSpacing": 10,
+              "cornerRadius": 16
+            },
+            "effects": [
+              {
+                "type": "DROP_SHADOW",
+                "visible": true,
+                "radius": 5,
+                "color": "rgba(0, 0, 0, 0.25)",
+                "offset": {
+                  "x": 0,
+                  "y": 0
+                },
+                "blendMode": "NORMAL"
+              }
+            ],
+            "fills": [
+              {
+                "type": "SOLID",
+                "color": "#ef4343"
+              }
+            ],
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeAlign": "INSIDE",
+            "children": [
+              {
+                "id": "585:3119",
+                "name": "Close",
+                "type": "RECTANGLE",
+                "visible": true,
+                "layout": {
+                  "width": 25,
+                  "height": 25,
+                  "x": 12481,
+                  "y": 2598.5,
+                  "constraints": {
+                    "vertical": "TOP",
+                    "horizontal": "LEFT"
+                  }
+                },
+                "effects": [],
+                "fills": [
+                  {
+                    "type": "IMAGE",
+                    "color": null
+                  }
+                ],
+                "strokes": [],
+                "strokeWeight": 1,
+                "strokeAlign": "INSIDE",
+                "children": []
+              },
+              {
+                "id": "585:3120",
+                "name": "Reject Application",
+                "type": "TEXT",
+                "visible": true,
+                "layout": {
+                  "width": 143,
+                  "height": 22,
+                  "x": 12516,
+                  "y": 2600,
+                  "constraints": {
+                    "vertical": "TOP",
+                    "horizontal": "LEFT"
+                  }
+                },
+                "effects": [],
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": "#ffffff"
+                  }
+                ],
+                "strokes": [],
+                "strokeWeight": 1,
+                "strokeAlign": "OUTSIDE",
+                "children": [],
+                "text": {
+                  "characters": "Reject Application",
+                  "style": {
+                    "fontFamily": "Clash Grotesk Variable",
+                    "fontWeight": 500,
+                    "fontSize": 18,
+                    "lineHeight": 22,
+                    "letterSpacing": 0,
+                    "textAlign": "CENTER",
+                    "textColor": "#ffffff"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "assets": {
+    "585:3066": "585:3066.png",
+    "585:3067": "585:3067.png",
+    "585:3072": "585:3072.png",
+    "585:3085": "585:3085.png",
+    "585:3101": "585:3101.png",
+    "585:3105": "585:3105.png",
+    "585:3112": "585:3112.png",
+    "585:3115": "585:3115.png",
+    "585:3119": "585:3119.png"
+  },
+  "implementation": {
+    "reactComponent": "import React from 'react';\n\nconst ViewPending = () => {\n  return (\n    <div className=\"w-[1200px] h-[900px]\">\n      <div className=\"w-[1200px] h-[900px] bg-[#f3f5f9] rounded-[16px]\">\n      </div>\n      <div className=\"w-[1200px] h-[380px]\">\n        <div className=\"w-[1200px] h-[100px] bg-[#ffffff]\">\n        </div>\n        <div className=\"w-[98px] h-[32px] bg-[#fef9c3] rounded-[8px]\">\n          <div className=\"w-[58px] h-[22px] bg-[#b86b0e] text-[16px] font-[500] text-[#b86b0e] text-center\">\n            Pending\n          </div>\n        </div>\n        <div className=\"w-[20px] h-[20px]\">\n        </div>\n        <div className=\"w-[380px] h-[380px]\">\n        </div>\n      </div>\n      <div className=\"w-[1120px] h-[150px]\">\n        <div className=\"w-[1120px] h-[150px] bg-[#ffffff] rounded-[16px]\">\n        </div>\n        <div className=\"w-[40px] h-[40px]\">\n          <div className=\"w-[40px] h-[40px] bg-[#dbeafe]\">\n          </div>\n          <div className=\"w-[25px] h-[25px]\">\n          </div>\n        </div>\n        <div className=\"w-[145px] h-[25px] bg-[#1e1e1e] text-[20px] font-[500] text-[#1e1e1e] text-center\">\n          Business Owner\n        </div>\n        <div className=\"w-[123px] h-[20px] bg-[#1e1e1e] text-[16px] font-[500] text-[#1e1e1e] text-left\">\n          Maynard Dotarot\n        </div>\n        <div className=\"w-[90px] h-[29px]\">\n          <div className=\"w-[78px] h-[12px] bg-[#3b82f6] text-[10px] font-[500] text-[#3b82f6] text-left\">\n            +6394 943 2345\n          </div>\n          <div className=\"w-[90px] h-[12px] bg-[#3b82f6] text-[10px] font-[500] text-[#3b82f6] text-left\">\n            Dotarot@gmail.com\n          </div>\n        </div>\n      </div>\n      <div className=\"w-[1120px] h-[180px]\">\n        <div className=\"w-[1120px] h-[180px] bg-[#ffffff]\">\n          <div className=\"w-[1120px] h-[180px] bg-[#ffffff] rounded-[16px]\">\n          </div>\n          <div className=\"w-[540px] h-[64px] bg-[#ffffff] rounded-[16px]\">\n          </div>\n          <div className=\"w-[540px] h-[64px] bg-[#ffffff] rounded-[16px]\">\n          </div>\n        </div>\n        <div className=\"w-[190px] h-[40px]\">\n          <div className=\"w-[40px] h-[40px] bg-[#dcfce7]\">\n          </div>\n          <div className=\"w-[25px] h-[25px]\">\n          </div>\n          <div className=\"w-[130px] h-[22px] bg-[#1e1e1e] text-[18px] font-[500] text-[#1e1e1e] text-center\">\n            Business Details\n          </div>\n        </div>\n        <div className=\"w-[207px] h-[20px] bg-[#1e1e1e] text-[16px] font-[500] text-[#1e1e1e] text-left\">\n          63 Jacinto Street, Davao City\n        </div>\n        <div className=\"w-[97px] h-[22px] bg-[#1e1e1e] text-[14px] font-[400] text-[#1e1e1e] text-left\">\n          BUSINESS TYPE\n        </div>\n        <div className=\"w-[81px] h-[22px] bg-[#1e1e1e] text-[14px] font-[400] text-[#1e1e1e] text-left\">\n          PERMIT TYPE\n        </div>\n        <div className=\"w-[100px] h-[22px] bg-[#1e1e1e] text-[16px] font-[400] text-[#1e1e1e] text-left\">\n          Sari-Sari Store\n        </div>\n      </div>\n      <div className=\"w-[1120px] h-[90px] rounded-[16px]\">\n        <div className=\"w-[1120px] h-[90px] bg-[#ffffff] rounded-[16px]\">\n        </div>\n        <div className=\"w-[168px] h-[22px] bg-[#1e1e1e] text-[18px] font-[500] text-[#1e1e1e] text-left\">\n          Business Description\n        </div>\n        <div className=\"w-[877px] h-[17px] bg-[#1e1e1e] text-[14px] font-[400] text-[#1e1e1e] text-left\">\n          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam\n        </div>\n      </div>\n      <div className=\"w-[1120px] h-[180px]\">\n        <div className=\"w-[1120px] h-[180px] bg-[#ffffff]\">\n          <div className=\"w-[1120px] h-[180px] bg-[#ffffff] rounded-[16px]\">\n          </div>\n          <div className=\"w-[1080px] h-[40px] bg-[#d9d9d9] rounded-[8px]\">\n          </div>\n          <div className=\"w-[1080px] h-[40px] bg-[#d9d9d9] rounded-[8px]\">\n          </div>\n        </div>\n        <div className=\"w-[40px] h-[40px] bg-[#f3e8ff]\">\n        </div>\n        <div className=\"w-[25px] h-[25px]\">\n        </div>\n        <div className=\"w-[181px] h-[22px] bg-[#1e1e1e] text-[18px] font-[500] text-[#1e1e1e] text-left\">\n          Submitted Documents\n        </div>\n        <div className=\"w-[1054px] h-[20px]\">\n          <div className=\"w-[20px] h-[20px] bg-[#dbeafe] rounded-[5px]\">\n          </div>\n          <div className=\"w-[15px] h-[15px]\">\n          </div>\n          <div className=\"w-[104px] h-[15px] bg-[#000000] text-[12px] font-[400] text-[#000000] text-left\">\n            Barangay Clearance\n          </div>\n          <div className=\"w-[21px] h-[12px] bg-[#3b82f6] text-[10px] font-[400] text-[#3b82f6] text-left\">\n            View\n          </div>\n        </div>\n        <div className=\"w-[1054px] h-[20px]\">\n          <div className=\"w-[20px] h-[20px] bg-[#dbeafe] rounded-[5px]\">\n          </div>\n          <div className=\"w-[104px] h-[15px] bg-[#000000] text-[12px] font-[400] text-[#000000] text-left\">\n            Barangay Clearance\n          </div>\n          <div className=\"w-[21px] h-[12px] bg-[#3b82f6] text-[10px] font-[400] text-[#3b82f6] text-left\">\n            View\n          </div>\n          <div className=\"w-[15px] h-[15px]\">\n          </div>\n        </div>\n      </div>\n      <div className=\"w-[540px] h-[50px] rounded-[16px]\">\n        <div className=\"w-[540px] h-[50px] bg-[#3bb77e] rounded-[16px]\">\n          <div className=\"w-[25px] h-[25px]\">\n          </div>\n          <div className=\"w-[163px] h-[22px] bg-[#ffffff] text-[18px] font-[500] text-[#ffffff] text-center\">\n            Approve Application\n          </div>\n        </div>\n      </div>\n      <div className=\"w-[540px] h-[50px] rounded-[16px]\">\n        <div className=\"w-[540px] h-[50px] bg-[#ef4343] rounded-[16px]\">\n          <div className=\"w-[25px] h-[25px]\">\n          </div>\n          <div className=\"w-[143px] h-[22px] bg-[#ffffff] text-[18px] font-[500] text-[#ffffff] text-center\">\n            Reject Application\n          </div>\n        </div>\n      </div>\n    </div>\n  );\n};\n\nexport default ViewPending;",
+    "tailwindClasses": "w-[1200px] h-[900px]"
+  }
+}

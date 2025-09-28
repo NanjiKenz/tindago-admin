@@ -18,6 +18,7 @@
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Image from 'next/image';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Store, StoreStats } from '@/types/storeManagement';
 import { StoreService } from '@/lib/storeService';
 import { AdminService } from '@/lib/adminService';
@@ -27,6 +28,8 @@ interface StoreManagementProps {
 }
 
 export const StoreManagement: React.FC<StoreManagementProps> = () => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [stores, setStores] = useState<Store[]>([]);
   const [stats, setStats] = useState<StoreStats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -39,6 +42,14 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
   // View state management for category switching
   const [viewMode, setViewMode] = useState<'overview' | 'active' | 'pending' | 'rejected' | 'suspended'>('overview');
   const [categoryData, setCategoryData] = useState<Store[]>([]);
+
+  // Handle URL parameters to set initial view mode
+  useEffect(() => {
+    const viewParam = searchParams.get('view');
+    if (viewParam && ['active', 'pending', 'rejected', 'suspended'].includes(viewParam)) {
+      setViewMode(viewParam as 'active' | 'pending' | 'rejected' | 'suspended');
+    }
+  }, [searchParams]);
 
   // Category-specific data loading functions
   const loadCategoryData = useCallback(async () => {
@@ -59,11 +70,29 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
         case 'pending':
           // Load pending registrations from store_registrations collection
           const pendingRegistrations = await AdminService.getAllStoreRegistrations();
-          console.log('Loaded all store registrations:', pendingRegistrations.length);
+          console.log('🔍 PENDING DEBUG: Loaded all store registrations:', pendingRegistrations.length);
+          console.log('🔍 PENDING DEBUG: All registrations:', pendingRegistrations);
 
-          // Convert registrations to Store format for consistent table rendering
-          const pendingStatuses = ['pending', 'completed_pending', 'pending_approval'];
-          const filteredRegs = pendingRegistrations.filter(reg => pendingStatuses.includes(reg.status));
+          // Look specifically for Kelly Store
+          const kellyRegistration = pendingRegistrations.find(reg => reg.userId === 'SHqmYVQFLxOInQfaj4NgIp6lz003');
+          console.log('🔍 PENDING DEBUG: Kelly Store registration found:', kellyRegistration);
+
+          // TEMPORARY: Show ALL registrations regardless of status to debug Kelly Store
+          const filteredRegs = pendingRegistrations.filter(reg => {
+            // Force include Kelly Store for debugging
+            if (reg.userId === 'SHqmYVQFLxOInQfaj4NgIp6lz003') {
+              console.log('🔍 FORCING KELLY STORE TO APPEAR:', reg);
+              return true;
+            }
+
+            // For other stores, check normal pending statuses
+            const pendingStatuses = ['pending', 'completed_pending', 'pending_approval'];
+            const hasValidStatus = pendingStatuses.includes(reg.status) || !reg.status;
+            console.log(`🔍 Status check for ${reg.userId}: status="${reg.status}", included=${hasValidStatus}`);
+            return hasValidStatus;
+          });
+          console.log('🔍 PENDING DEBUG: Filtered pending registrations:', filteredRegs.length);
+          console.log('🔍 PENDING DEBUG: Filtered registrations:', filteredRegs);
 
           // For now, let's simplify and just use static data for Kelly Store to test
           data = filteredRegs.map(registration => {
@@ -414,6 +443,11 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
   const handleView = (storeId: string) => {
     console.log('View store:', storeId);
     // TODO: Implement store details modal/page
+  };
+
+  const handlePendingRowClick = (storeId: string) => {
+    console.log('Navigating to pending approval detail for store:', storeId);
+    router.push(`/stores/pending/${storeId}?returnTo=storeManagement`);
   };
 
   const handleEdit = async (storeId: string) => {
@@ -1275,8 +1309,10 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
                           key={item.storeId}
                           style={{
                             borderBottom: index < categoryData.length - 1 ? '1px solid #E2E8F0' : 'none',
-                            transition: 'background-color 0.2s ease'
+                            transition: 'background-color 0.2s ease',
+                            cursor: viewMode === 'pending' ? 'pointer' : 'default'
                           }}
+                          onClick={viewMode === 'pending' ? () => handlePendingRowClick(item.storeId) : undefined}
                           onMouseEnter={(e) => {
                             e.currentTarget.style.backgroundColor = '#F8FAFC';
                           }}

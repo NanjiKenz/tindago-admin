@@ -1,0 +1,14 @@
+{
+  "extractions": [
+    {
+      "nodeId": "585:3060",
+      "nodeName": "View Pending ",
+      "componentName": "ViewPending",
+      "extractedAt": "2025-09-28T08:25:04.895Z",
+      "outputPath": "view-pending-585-3060",
+      "folderName": "view-pending-585-3060",
+      "assetCount": 9
+    }
+  ],
+  "lastUpdated": "2025-09-28T08:25:04.895Z"
+}
