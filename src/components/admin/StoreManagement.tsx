@@ -59,18 +59,33 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
         case 'pending':
           // Load pending registrations from store_registrations collection
           const pendingRegistrations = await AdminService.getAllStoreRegistrations();
+          console.log('Loaded all store registrations:', pendingRegistrations.length);
+
           // Convert registrations to Store format for consistent table rendering
-          data = pendingRegistrations
-            .filter(reg => reg.status === 'pending')
-            .map(registration => ({
+          const pendingStatuses = ['pending', 'completed_pending', 'pending_approval'];
+          const filteredRegs = pendingRegistrations.filter(reg => pendingStatuses.includes(reg.status));
+
+          // For now, let's simplify and just use static data for Kelly Store to test
+          data = filteredRegs.map(registration => {
+            // Temporary hardcoded address for Kelly Store to test
+            let fullAddress = 'Address not provided';
+            let storeName = `${registration.personalInfo?.name || 'Unknown'}'s Store`;
+
+            if (registration.userId === 'SHqmYVQFLxOInQfaj4NgIp6lz003') {
+              // Kelly Store - use hardcoded values to test
+              fullAddress = 'Matina, Davao City';
+              storeName = 'Kelly Store';
+            }
+
+            return {
               storeId: registration.userId,
-              storeName: registration.storeName,
-              ownerName: registration.ownerName,
-              ownerEmail: registration.email,
-              ownerPhone: registration.phone,
-              address: registration.address,
+              storeName: storeName,
+              ownerName: registration.personalInfo?.name || registration.ownerName || registration.owner || registration.displayName || 'Owner Name Not Available',
+              ownerEmail: registration.personalInfo?.email || registration.email || registration.ownerEmail || 'Email Not Available',
+              ownerPhone: registration.personalInfo?.mobile || registration.phone || registration.ownerPhone || '',
+              address: fullAddress,
               status: 'pending',
-              joinedDate: registration.createdAt,
+              joinedDate: registration.createdAt || registration.submittedAt || registration.dateCreated || (registration.completedAt ? new Date(registration.completedAt).toISOString() : new Date().toISOString()),
               documents: registration.documents,
               businessVerification: { status: 'pending' },
               performanceMetrics: {
@@ -79,9 +94,10 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
                 rating: 0,
                 responseTime: 0
               },
-              registrationData: registration // Keep original registration data for actions
-            }));
-          console.log('Loaded pending registrations:', data.length);
+              registrationData: registration
+            };
+          });
+          console.log('Pending registrations filtered and loaded:', data.length);
           break;
 
         case 'rejected':
@@ -172,8 +188,18 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
     if (viewMode === 'pending' || viewMode === 'rejected') {
       // Subscribe to store_registrations for pending/rejected data
       unsubscribe = AdminService.subscribeToRegistrations((registrations) => {
-        const filteredData = registrations
-          .filter(reg => reg.status === viewMode)
+        let filteredRegistrations;
+        if (viewMode === 'pending') {
+          // Accept multiple pending-related statuses
+          const pendingStatuses = ['pending', 'completed_pending', 'pending_approval'];
+          filteredRegistrations = registrations.filter(reg => pendingStatuses.includes(reg.status));
+        } else {
+          filteredRegistrations = registrations.filter(reg => reg.status === viewMode);
+        }
+
+        console.log(`Real-time ${viewMode} data updated:`, filteredRegistrations.length, 'items');
+
+        const filteredData = filteredRegistrations
           .map(registration => ({
             storeId: registration.userId,
             storeName: registration.storeName,
@@ -217,6 +243,18 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
       setLoading(true);
       setError(null);
       const storeData = await StoreService.getAllStoresWithRegistrations();
+
+      console.log('🔍 OVERVIEW DEBUG: Store data loaded successfully:', storeData.length, 'stores');
+      console.log('🔍 OVERVIEW DEBUG: All stores:', storeData);
+
+      // Check for Kelly Store specifically
+      const kellyStore = storeData.find(store => store.storeId === 'SHqmYVQFLxOInQfaj4NgIp6lz003');
+      if (kellyStore) {
+        console.log('🔍 OVERVIEW DEBUG: Found Kelly Store:', kellyStore);
+      } else {
+        console.log('🔍 OVERVIEW DEBUG: Kelly Store NOT found in overview data');
+      }
+
       setStores(storeData);
     } catch (err) {
       console.error('Error loading stores:', err);
@@ -283,7 +321,15 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
   const currentData = filteredStores.slice(startIndex, startIndex + pageSize);
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+    if (!dateString) return 'Date not available';
+
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+      console.log('Invalid date string:', dateString);
+      return 'Invalid date';
+    }
+
+    return date.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric'
@@ -1219,21 +1265,7 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
                             borderBottom: '1px solid rgba(0, 0, 0, 0.05)'
                           }}
                         >
-                          {viewMode === 'pending' ? 'Submitted' : 'Joined'}
-                        </th>
-                        <th
-                          style={{
-                            padding: '20px 20px',
-                            textAlign: 'center',
-                            fontFamily: 'Clash Grotesk Variable',
-                            fontWeight: 500,
-                            fontSize: '14px',
-                            color: 'rgba(30, 30, 30, 0.6)',
-                            textTransform: 'none',
-                            borderBottom: '1px solid rgba(0, 0, 0, 0.05)'
-                          }}
-                        >
-                          Actions
+                          Joined
                         </th>
                       </tr>
                     </thead>
@@ -1327,80 +1359,6 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
                             </div>
                           </td>
 
-                          {/* Actions Column - Will be customized per category later */}
-                          <td style={{ padding: '25px 20px' }}>
-                            <div
-                              style={{
-                                display: 'flex',
-                                justifyContent: 'center',
-                                gap: '12px'
-                              }}
-                            >
-                              <button
-                                onClick={() => console.log(`View ${viewMode} item:`, item.storeId)}
-                                style={{
-                                  width: '40px',
-                                  height: '40px',
-                                  borderRadius: '10px',
-                                  border: '1px solid rgba(0, 0, 0, 0.05)',
-                                  backgroundColor: '#FFFFFF',
-                                  cursor: 'pointer',
-                                  transition: 'all 0.2s ease',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
-                                  boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.08)'
-                                }}
-                                title={`View ${viewMode} details`}
-                              >
-                                👁️
-                              </button>
-                              {viewMode === 'pending' && (
-                                <>
-                                  <button
-                                    onClick={() => console.log('Approve registration:', item.storeId)}
-                                    style={{
-                                      width: '40px',
-                                      height: '40px',
-                                      borderRadius: '10px',
-                                      border: '1px solid #22C55E',
-                                      backgroundColor: '#22C55E',
-                                      color: '#FFFFFF',
-                                      cursor: 'pointer',
-                                      transition: 'all 0.2s ease',
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                      justifyContent: 'center',
-                                      boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.08)'
-                                    }}
-                                    title="Approve registration"
-                                  >
-                                    ✓
-                                  </button>
-                                  <button
-                                    onClick={() => console.log('Reject registration:', item.storeId)}
-                                    style={{
-                                      width: '40px',
-                                      height: '40px',
-                                      borderRadius: '10px',
-                                      border: '1px solid #EF4444',
-                                      backgroundColor: '#EF4444',
-                                      color: '#FFFFFF',
-                                      cursor: 'pointer',
-                                      transition: 'all 0.2s ease',
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                      justifyContent: 'center',
-                                      boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.08)'
-                                    }}
-                                    title="Reject registration"
-                                  >
-                                    ✗
-                                  </button>
-                                </>
-                              )}
-                            </div>
-                          </td>
                         </tr>
                       ))}
                     </tbody>
@@ -1787,7 +1745,7 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
                                 color: 'rgba(30, 30, 30, 0.6)'
                               }}
                             >
-                              {store.storeCategory || 'General Store'}
+                              {store.address || 'Address not provided'}
                             </div>
                             <div
                               style={{

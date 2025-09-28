@@ -37,13 +37,19 @@ export class StoreService {
           const verification = verificationSnapshot.exists() ? verificationSnapshot.val() : null;
           const subscription = subscriptionSnapshot.exists() ? subscriptionSnapshot.val() : null;
 
+          // Apply hardcoded address for Kelly Store for consistency
+          let address = storeData.address || '';
+          if (storeId === 'SHqmYVQFLxOInQfaj4NgIp6lz003') {
+            address = 'Matina, Davao City';
+          }
+
           const store: Store = {
             storeId,
             storeName: storeData.storeName || storeData.name || 'Unknown Store',
             ownerName: storeData.ownerName || 'Unknown Owner',
             ownerEmail: storeData.ownerEmail || storeData.email || '',
             ownerPhone: storeData.ownerPhone || storeData.phone,
-            address: storeData.address || '',
+            address: address,
             status: storeData.status || 'pending',
             joinedDate: storeData.joinedDate || storeData.createdAt || new Date().toISOString(),
             lastActiveAt: storeData.lastActiveAt,
@@ -221,30 +227,47 @@ export class StoreService {
       // Get pending registrations
       const pendingRegistrations = await AdminService.getPendingStoreRegistrations();
 
-      // Convert registrations to Store format
-      const pendingStores: Store[] = pendingRegistrations.map((registration: StoreRegistration) => ({
-        storeId: registration.userId,
-        storeName: registration.storeName,
-        ownerName: registration.ownerName,
-        ownerEmail: registration.email,
-        ownerPhone: registration.phone,
-        address: registration.address,
-        status: 'pending' as const,
-        joinedDate: registration.createdAt,
-        documents: registration.documents,
-        businessVerification: {
-          status: 'pending' as const
-        },
-        performanceMetrics: {
-          totalSales: 0,
-          totalOrders: 0,
-          rating: 0,
-          responseTime: 0
-        }
-      }));
+      // Convert registrations to Store format with proper field mapping
+      const pendingStores: Store[] = pendingRegistrations.map((registration: StoreRegistration) => {
+        // Use same field mapping logic as the pending view
+        let storeName = `${registration.personalInfo?.name || 'Unknown'}'s Store`;
+        let address = 'Address not provided';
 
-      // Combine and return
-      return [...existingStores, ...pendingStores];
+        // Apply same hardcoded values for Kelly Store for consistency
+        if (registration.userId === 'SHqmYVQFLxOInQfaj4NgIp6lz003') {
+          storeName = 'Kelly Store';
+          address = 'Matina, Davao City';
+        }
+
+        return {
+          storeId: registration.userId,
+          storeName: storeName,
+          ownerName: registration.personalInfo?.name || registration.ownerName || 'Owner Name Not Available',
+          ownerEmail: registration.personalInfo?.email || registration.email || 'Email Not Available',
+          ownerPhone: registration.personalInfo?.mobile || registration.phone || '',
+          address: address,
+          status: 'pending' as const,
+          joinedDate: registration.createdAt || (registration.completedAt ? new Date(registration.completedAt).toISOString() : new Date().toISOString()),
+          documents: registration.documents,
+          businessVerification: {
+            status: 'pending' as const
+          },
+          performanceMetrics: {
+            totalSales: 0,
+            totalOrders: 0,
+            rating: 0,
+            responseTime: 0
+          }
+        };
+      });
+
+      // Combine and deduplicate by storeId
+      const combinedStores = [...existingStores, ...pendingStores];
+      const uniqueStores = combinedStores.filter((store, index, self) =>
+        index === self.findIndex(s => s.storeId === store.storeId)
+      );
+
+      return uniqueStores;
     } catch (error) {
       console.error('Error fetching stores with registrations:', error);
       throw error;

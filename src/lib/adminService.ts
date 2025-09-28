@@ -8,13 +8,27 @@ export interface StoreRegistration {
   email: string;
   phone: string;
   address: string;
-  status: 'pending' | 'approved' | 'rejected';
+  status: 'pending' | 'approved' | 'rejected' | 'completed_pending' | 'pending_approval' | 'submitted' | 'awaiting_review';
   createdAt: string;
   documents?: {
     businessPermit?: string;
     validId?: string;
     storePhoto?: string;
   };
+  // Firebase data structure fields
+  personalInfo?: {
+    name?: string;
+    email?: string;
+    mobile?: string;
+  };
+  owner?: string;
+  displayName?: string;
+  ownerEmail?: string;
+  ownerPhone?: string;
+  // Date fields variations
+  submittedAt?: string;
+  dateCreated?: string;
+  completedAt?: string;
 }
 
 export interface User {
@@ -45,7 +59,10 @@ export class AdminService {
             userId,
             ...data[userId]
           }))
-          .filter(registration => registration.status === 'pending')
+          .filter(registration => {
+            const pendingStatuses = ['pending', 'completed_pending', 'pending_approval'];
+            return pendingStatuses.includes(registration.status);
+          })
           .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
       }
 

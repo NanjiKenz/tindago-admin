@@ -12,7 +12,9 @@
     "migrate:usertype": "node scripts/migrate-usertype-to-customer.js",
     "migrate:usertype:dry-run": "node scripts/migrate-usertype-to-customer.js --dry-run",
     "migrate:usertype:backup": "node scripts/migrate-usertype-to-customer.js --backup-only",
-    "migrate:usertype:rollback": "node scripts/migrate-usertype-to-customer.js --rollback"
+    "migrate:usertype:rollback": "node scripts/migrate-usertype-to-customer.js --rollback",
+    "standardize:status": "node scripts/standardize-status.js",
+    "standardize:status:check": "node scripts/standardize-status.js --dry-run"
   },
   "dependencies": {
     "axios": "^1.12.2",
