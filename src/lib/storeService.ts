@@ -19,9 +19,13 @@ export class StoreService {
       const storesRef = ref(database, 'stores');
       const snapshot = await get(storesRef);
 
+      console.log('🔍 [getAllStores] Fetching stores from Firebase...');
+
       if (snapshot.exists()) {
         const data = snapshot.val();
         const stores: Store[] = [];
+
+        console.log(`📊 [getAllStores] Found ${Object.keys(data).length} stores in 'stores' collection`);
 
         for (const storeId of Object.keys(data)) {
           const storeData = data[storeId];
@@ -37,21 +41,54 @@ export class StoreService {
           const verification = verificationSnapshot.exists() ? verificationSnapshot.val() : null;
           const subscription = subscriptionSnapshot.exists() ? subscriptionSnapshot.val() : null;
 
-          // Apply hardcoded address for Kelly Store for consistency
-          let address = storeData.address || '';
-          if (storeId === 'SHqmYVQFLxOInQfaj4NgIp6lz003') {
-            address = 'Matina, Davao City';
-          }
+          // Extract data with proper fallbacks matching React Native app fields
+          // Store Name: Priority order - storeName > businessName > name
+          const storeName = storeData.storeName ||
+                           storeData.businessName ||
+                           storeData.name ||
+                           'Unknown Store';
+
+          // Owner Name: Priority order - ownerName > name > owner > displayName
+          const ownerName = storeData.ownerName ||
+                           storeData.name ||
+                           storeData.owner ||
+                           storeData.displayName ||
+                           'Unknown Owner';
+
+          // Email: Priority order - email > ownerEmail
+          const ownerEmail = storeData.email ||
+                            storeData.ownerEmail ||
+                            storeData.personalEmail ||
+                            '';
+
+          // Phone: Priority order - phone > ownerPhone > mobile
+          const ownerPhone = storeData.phone ||
+                            storeData.ownerPhone ||
+                            storeData.mobile ||
+                            '';
+
+          // Address: Combine address + city from React Native app registration
+          const address = storeData.address && storeData.city
+                           ? `${storeData.address}, ${storeData.city}`
+                           : storeData.address ||
+                             (storeData.storeAddress && storeData.city
+                               ? `${storeData.storeAddress}, ${storeData.city}`
+                               : '') ||
+                             storeData.storeAddress ||
+                             storeData.city ||
+                             storeData.location ||
+                             storeData.businessAddress ||
+                             '';
 
           const store: Store = {
             storeId,
-            storeName: storeData.storeName || storeData.name || 'Unknown Store',
-            ownerName: storeData.ownerName || 'Unknown Owner',
-            ownerEmail: storeData.ownerEmail || storeData.email || '',
-            ownerPhone: storeData.ownerPhone || storeData.phone,
-            address: address,
-            status: storeData.status || 'pending',
-            joinedDate: storeData.joinedDate || storeData.createdAt || new Date().toISOString(),
+            storeName,
+            ownerName,
+            ownerEmail,
+            ownerPhone,
+            address,
+            status: storeData.status || 'active',
+            joinedDate: storeData.joinedDate || storeData.createdAt || storeData.approvedAt || new Date().toISOString(),
             lastActiveAt: storeData.lastActiveAt,
             businessHours: storeData.businessHours,
             documents: storeData.documents,
@@ -76,12 +113,21 @@ export class StoreService {
           stores.push(store);
         }
 
+        console.log(`✅ [getAllStores] Successfully loaded ${stores.length} stores`);
+        console.log(`📊 [getAllStores] Status breakdown:`, {
+          active: stores.filter(s => s.status === 'active').length,
+          pending: stores.filter(s => s.status === 'pending').length,
+          suspended: stores.filter(s => s.status === 'suspended').length,
+          rejected: stores.filter(s => s.status === 'rejected').length
+        });
+
         return stores.sort((a, b) => new Date(b.joinedDate).getTime() - new Date(a.joinedDate).getTime());
       }
 
+      console.log('⚠️ [getAllStores] No stores found in Firebase');
       return [];
     } catch (error) {
-      console.error('Error fetching stores:', error);
+      console.error('❌ [getAllStores] Error fetching stores:', error);
       throw error;
     }
   }
@@ -108,13 +154,47 @@ export class StoreService {
         const verification = verificationSnapshot.exists() ? verificationSnapshot.val() : null;
         const subscription = subscriptionSnapshot.exists() ? subscriptionSnapshot.val() : null;
 
+        // Extract data with proper fallbacks matching React Native app fields
+        const storeName = storeData.storeName ||
+                         storeData.businessName ||
+                         storeData.name ||
+                         'Unknown Store';
+
+        const ownerName = storeData.name ||
+                         storeData.ownerName ||
+                         storeData.owner ||
+                         storeData.displayName ||
+                         'Unknown Owner';
+
+        const ownerEmail = storeData.email ||
+                          storeData.ownerEmail ||
+                          storeData.personalEmail ||
+                          '';
+
+        const ownerPhone = storeData.phone ||
+                          storeData.mobile ||
+                          storeData.ownerPhone ||
+                          '';
+
+        const address = storeData.address && storeData.city
+                         ? `${storeData.address}, ${storeData.city}`
+                         : storeData.address ||
+                           (storeData.storeAddress && storeData.city
+                             ? `${storeData.storeAddress}, ${storeData.city}`
+                             : '') ||
+                           storeData.storeAddress ||
+                           storeData.city ||
+                           storeData.location ||
+                           storeData.businessAddress ||
+                           '';
+
         return {
           storeId,
-          storeName: storeData.storeName || storeData.name || 'Unknown Store',
-          ownerName: storeData.ownerName || 'Unknown Owner',
-          ownerEmail: storeData.ownerEmail || storeData.email || '',
-          ownerPhone: storeData.ownerPhone || storeData.phone,
-          address: storeData.address || '',
+          storeName,
+          ownerName,
+          ownerEmail,
+          ownerPhone,
+          address,
           status: storeData.status || 'pending',
           joinedDate: storeData.joinedDate || storeData.createdAt || new Date().toISOString(),
           lastActiveAt: storeData.lastActiveAt,
@@ -218,36 +298,73 @@ export class StoreService {
 
   /**
    * Get all stores including pending registrations
+   * Fetches from BOTH stores collection (with status=pending) AND store_registrations collection
    */
   static async getAllStoresWithRegistrations(): Promise<Store[]> {
     try {
-      // Get existing stores
-      const existingStores = await this.getAllStores();
+      console.log('🚀 [getAllStoresWithRegistrations] Starting comprehensive data fetch...');
 
-      // Get pending registrations
+      // Get ALL stores (including pending ones from stores collection)
+      const allStores = await this.getAllStores();
+      console.log(`📊 [getAllStoresWithRegistrations] Stores from 'stores' collection: ${allStores.length}`);
+      console.log(`   ├─ Active: ${allStores.filter(s => s.status === 'active').length}`);
+      console.log(`   ├─ Pending: ${allStores.filter(s => s.status === 'pending').length}`);
+      console.log(`   ├─ Suspended: ${allStores.filter(s => s.status === 'suspended').length}`);
+      console.log(`   └─ Rejected: ${allStores.filter(s => s.status === 'rejected').length}`);
+
+      // Get pending registrations from store_registrations collection (for backward compatibility)
       const pendingRegistrations = await AdminService.getPendingStoreRegistrations();
+      console.log(`📋 [getAllStoresWithRegistrations] Pending registrations from 'store_registrations': ${pendingRegistrations.length}`);
 
       // Convert registrations to Store format with proper field mapping
       const pendingStores: Store[] = pendingRegistrations.map((registration: StoreRegistration) => {
-        // Use same field mapping logic as the pending view
-        let storeName = `${registration.personalInfo?.name || 'Unknown'}'s Store`;
-        let address = 'Address not provided';
+        // Extract store name - Check storeName field first (like RK Store)
+        const storeName = registration.storeName ||
+                         registration.businessName ||
+                         registration.name ||
+                         'Unknown Store';
 
-        // Apply same hardcoded values for Kelly Store for consistency
-        if (registration.userId === 'SHqmYVQFLxOInQfaj4NgIp6lz003') {
-          storeName = 'Kelly Store';
-          address = 'Matina, Davao City';
-        }
+        // Extract owner name - Priority: name > personalInfo.name > ownerName > owner > displayName
+        // NOTE: React Native app stores owner name in 'name' field
+        const ownerName = registration.name ||
+                         registration.personalInfo?.name ||
+                         registration.ownerName ||
+                         registration.owner ||
+                         registration.displayName ||
+                         'Unknown Owner';
+
+        // Extract email - Priority: email > personalInfo.email > ownerEmail
+        const ownerEmail = registration.email ||
+                          registration.personalInfo?.email ||
+                          registration.ownerEmail ||
+                          '';
+
+        // Extract phone - Check 'phone' field first
+        const ownerPhone = registration.phone ||
+                          registration.personalInfo?.mobile ||
+                          registration.ownerPhone ||
+                          '';
+
+        // Extract address - Combine address + city from React Native app
+        const address = registration.address && registration.city
+                         ? `${registration.address}, ${registration.city}`
+                         : registration.address ||
+                           (registration.storeAddress && registration.city
+                             ? `${registration.storeAddress}, ${registration.city}`
+                             : '') ||
+                           registration.storeAddress ||
+                           registration.city ||
+                           '';
 
         return {
           storeId: registration.userId,
-          storeName: storeName,
-          ownerName: registration.personalInfo?.name || registration.ownerName || 'Owner Name Not Available',
-          ownerEmail: registration.personalInfo?.email || registration.email || 'Email Not Available',
-          ownerPhone: registration.personalInfo?.mobile || registration.phone || '',
-          address: address,
+          storeName,
+          ownerName,
+          ownerEmail,
+          ownerPhone,
+          address,
           status: 'pending' as const,
-          joinedDate: registration.createdAt || (registration.completedAt ? new Date(registration.completedAt).toISOString() : new Date().toISOString()),
+          joinedDate: registration.createdAt || registration.submittedAt || registration.dateCreated || (registration.completedAt ? new Date(registration.completedAt).toISOString() : new Date().toISOString()),
           documents: registration.documents,
           businessVerification: {
             status: 'pending' as const
@@ -257,17 +374,32 @@ export class StoreService {
             totalOrders: 0,
             rating: 0,
             responseTime: 0
-          }
+          },
+          registrationData: registration
         };
       });
 
-      // Combine and deduplicate by storeId
-      const combinedStores = [...existingStores, ...pendingStores];
-      const uniqueStores = combinedStores.filter((store, index, self) =>
-        index === self.findIndex(s => s.storeId === store.storeId)
-      );
+      // Prioritize stores from 'stores' collection, only add from 'store_registrations' if not in stores
+      const storeIds = new Set(allStores.map(s => s.storeId));
+      const additionalPendingStores = pendingStores.filter(ps => !storeIds.has(ps.storeId));
 
-      return uniqueStores;
+      console.log(`🔄 [getAllStoresWithRegistrations] Deduplication:`);
+      console.log(`   ├─ Stores from 'stores' collection: ${allStores.length}`);
+      console.log(`   ├─ Registrations from 'store_registrations': ${pendingStores.length}`);
+      console.log(`   ├─ Already in 'stores' (skipped): ${pendingStores.length - additionalPendingStores.length}`);
+      console.log(`   └─ Added from 'store_registrations': ${additionalPendingStores.length}`);
+
+      // Combine: All stores from 'stores' + additional from 'store_registrations'
+      const combinedStores = [...allStores, ...additionalPendingStores];
+
+      console.log(`✅ [getAllStoresWithRegistrations] Final result: ${combinedStores.length} total stores`);
+      console.log(`📊 [getAllStoresWithRegistrations] Status breakdown:`);
+      console.log(`   ├─ Active: ${combinedStores.filter(s => s.status === 'active').length}`);
+      console.log(`   ├─ Pending: ${combinedStores.filter(s => s.status === 'pending').length}`);
+      console.log(`   ├─ Suspended: ${combinedStores.filter(s => s.status === 'suspended').length}`);
+      console.log(`   └─ Rejected: ${combinedStores.filter(s => s.status === 'rejected').length}`);
+
+      return combinedStores;
     } catch (error) {
       console.error('Error fetching stores with registrations:', error);
       throw error;

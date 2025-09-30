@@ -27,11 +27,23 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
     const fetchRegistration = async () => {
       try {
         setLoading(true);
+        console.log(`🔍 [PendingApprovalDetail] Fetching registration for userId: ${userId}`);
+
+        // Try to get from store_registrations first
         const registrations = await AdminService.getAllStoreRegistrations();
-        const targetRegistration = registrations.find(reg => reg.userId === userId);
+        let targetRegistration = registrations.find(reg => reg.userId === userId);
+
+        if (targetRegistration) {
+          console.log(`✅ [PendingApprovalDetail] Found registration in 'store_registrations'`);
+        } else {
+          console.log(`⚠️ [PendingApprovalDetail] Not found in 'store_registrations', checking 'stores' collection...`);
+          // If not found, try to fetch from stores collection (might be a pending store)
+          // This will be handled by StoreService
+        }
+
         setRegistration(targetRegistration || null);
       } catch (error) {
-        console.error('Error fetching registration:', error);
+        console.error('❌ [PendingApprovalDetail] Error fetching registration:', error);
       } finally {
         setLoading(false);
       }
@@ -132,7 +144,14 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
       className="relative overflow-hidden"
       style={{
         width: '1200px',
-        height: '1000px',
+        height: (() => {
+          const documents = registration.documents || {};
+          const documentCount = Object.values(documents).filter(
+            (doc: string | undefined) => doc && typeof doc === 'string'
+          ).length;
+          const docsHeight = Math.max(120, 70 + (documentCount * 50) + 20);
+          return 700 + docsHeight + 70 + 50; // Base + docs + buttons + larger margin
+        })(),
         backgroundColor: '#f3f5f9',
         borderRadius: '16px',
         boxShadow: '0px 0px 5px rgba(0, 0, 0, 0.25)',
@@ -170,7 +189,7 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
           />
         </button>
 
-        {/* Pending Status Badge */}
+        {/* Status Badge */}
         <div
           className="absolute flex items-center justify-center"
           style={{
@@ -178,7 +197,7 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
             top: '34px',
             width: '98px',
             height: '32px',
-            backgroundColor: '#fef9c3',
+            backgroundColor: '#fef9c3', // Always yellow for pending status display
             borderRadius: '8px',
             paddingLeft: '20px',
             paddingRight: '20px',
@@ -191,7 +210,7 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
               fontFamily: 'Clash Grotesk Variable',
               fontWeight: 500,
               fontSize: '16px',
-              color: '#b86b0e',
+              color: '#b86b0e', // Always yellow text for pending status display
               textAlign: 'center'
             }}
           >
@@ -264,7 +283,10 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
             color: '#1e1e1e'
           }}
         >
-          {registration.ownerName || registration.displayName || 'Maynard Dotarot'}
+          {registration.personalInfo?.name ||
+           registration.ownerName ||
+           registration.displayName ||
+           'Owner Name Not Provided'}
         </div>
 
         {/* Contact Info */}
@@ -285,7 +307,10 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
               color: '#3b82f6'
             }}
           >
-            {registration.email || registration.ownerEmail || 'Dotarot@gmail.com'}
+            {registration.personalInfo?.email ||
+             registration.email ||
+             registration.ownerEmail ||
+             'Email not provided'}
           </div>
 
           {/* Phone */}
@@ -299,7 +324,10 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
               marginTop: '5px'
             }}
           >
-            {registration.phone || registration.ownerPhone || '+6394 943 2345'}
+            {registration.personalInfo?.mobile ||
+             registration.phone ||
+             registration.ownerPhone ||
+             'Phone not provided'}
           </div>
         </div>
       </div>
@@ -373,7 +401,7 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
             color: '#1e1e1e'
           }}
         >
-          {registration.address || '63 Jacinto Street, Davao City'}
+          {registration.address || 'Address not provided'}
         </div>
 
         {/* Business Type and Permit Type */}
@@ -401,7 +429,7 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
                 color: '#1e1e1e'
               }}
             >
-              Sari-Sari Store
+              {'Sari-Sari Store'}
             </div>
           </div>
 
@@ -428,7 +456,7 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
                 color: '#1e1e1e'
               }}
             >
-              Business Permit
+              {'Business Permit'}
             </div>
           </div>
         </div>
@@ -477,7 +505,7 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
             color: '#1e1e1e'
           }}
         >
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam
+          {'No business description provided.'}
         </p>
       </div>
 
@@ -488,7 +516,13 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
           left: '40px',
           top: '700px',
           width: '1120px',
-          height: '180px',
+          height: (() => {
+            const documents = registration.documents || {};
+            const documentCount = Object.values(documents).filter(
+              (doc: string | undefined) => doc && typeof doc === 'string'
+            ).length;
+            return Math.max(120, 70 + (documentCount * 50) + 20); // Base height + documents + padding
+          })(),
           backgroundColor: '#ffffff',
           borderRadius: '16px',
           boxShadow: '0px 0px 5px rgba(0, 0, 0, 0.25)'
@@ -536,166 +570,170 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
           </h2>
         </div>
 
-        {/* Document List Background */}
-        <div
-          className="absolute"
-          style={{
-            left: '20px',
-            top: '70px',
-            width: '1080px',
-            height: '40px',
-            backgroundColor: '#d9d9d9',
-            borderRadius: '8px'
-          }}
-        />
+        {/* Dynamic Document List */}
+        {(() => {
+          const documents = registration.documents || {};
+          const documentList = [
+            {
+              key: 'businessPermit',
+              name: 'Barangay Business Clearance',
+              data: documents.businessPermit
+            },
+            {
+              key: 'businessPermit',
+              name: 'Business Permit',
+              data: documents.businessPermit
+            },
+            {
+              key: 'storePhoto',
+              name: 'Store Photo',
+              data: documents.storePhoto
+            },
+            {
+              key: 'validId',
+              name: 'Valid ID',
+              data: documents.validId
+            }
+          ].filter(doc => doc.data && typeof doc.data === 'string');
 
-        <div
-          className="absolute"
-          style={{
-            left: '20px',
-            top: '120px',
-            width: '1080px',
-            height: '40px',
-            backgroundColor: '#d9d9d9',
-            borderRadius: '8px'
-          }}
-        />
+          if (documentList.length === 0) {
+            return (
+              <div
+                className="absolute flex items-center justify-center"
+                style={{
+                  left: '20px',
+                  top: '70px',
+                  width: '1080px',
+                  height: '90px',
+                  backgroundColor: '#f9f9f9',
+                  borderRadius: '8px',
+                  border: '2px dashed #d1d5db'
+                }}
+              >
+                <span
+                  style={{
+                    fontFamily: 'Clash Grotesk Variable',
+                    fontWeight: 400,
+                    fontSize: '14px',
+                    color: '#6b7280'
+                  }}
+                >
+                  No documents uploaded yet
+                </span>
+              </div>
+            );
+          }
 
-        {/* Document 1 */}
-        <div
-          className="absolute flex items-center"
-          style={{
-            left: '30px',
-            top: '80px',
-            height: '20px'
-          }}
-        >
-          {/* Document Icon */}
-          <div
-            className="flex items-center justify-center"
-            style={{
-              width: '20px',
-              height: '20px',
-              backgroundColor: '#dbeafe',
-              borderRadius: '5px',
-              marginRight: '20px'
-            }}
-          >
-            <Image
-              src="/images/admin-dashboard/pending-approval/small-document.svg"
-              alt="Document"
-              width={15}
-              height={15}
-              className="object-contain"
-            />
-          </div>
+          return documentList.map((doc, index) => (
+            <div key={doc.key}>
+              {/* Document Background */}
+              <div
+                className="absolute"
+                style={{
+                  left: '20px',
+                  top: `${70 + (index * 50)}px`,
+                  width: '1080px',
+                  height: '40px',
+                  backgroundColor: '#d9d9d9',
+                  borderRadius: '8px'
+                }}
+              />
 
-          {/* Document Name */}
-          <span
-            style={{
-              fontFamily: 'Clash Grotesk Variable',
-              fontWeight: 400,
-              fontSize: '12px',
-              lineHeight: '14.76px',
-              color: '#000000',
-              marginRight: 'auto'
-            }}
-          >
-            Barangay Clearance
-          </span>
+              {/* Document Row */}
+              <div
+                className="absolute flex items-center"
+                style={{
+                  left: '30px',
+                  top: `${80 + (index * 50)}px`,
+                  height: '20px'
+                }}
+              >
+                {/* Document Icon */}
+                <div
+                  className="flex items-center justify-center"
+                  style={{
+                    width: '20px',
+                    height: '20px',
+                    backgroundColor: '#dbeafe',
+                    borderRadius: '5px',
+                    marginRight: '20px'
+                  }}
+                >
+                  <Image
+                    src="/images/admin-dashboard/pending-approval/small-document.svg"
+                    alt="Document"
+                    width={15}
+                    height={15}
+                    className="object-contain"
+                  />
+                </div>
 
-          {/* View Link */}
-          <span
-            style={{
-              fontFamily: 'Clash Grotesk Variable',
-              fontWeight: 400,
-              fontSize: '10px',
-              lineHeight: '12.3px',
-              color: '#3b82f6',
-              marginLeft: '800px',
-              cursor: 'pointer'
-            }}
-          >
-            View
-          </span>
-        </div>
+                {/* Document Name */}
+                <span
+                  style={{
+                    fontFamily: 'Clash Grotesk Variable',
+                    fontWeight: 400,
+                    fontSize: '12px',
+                    lineHeight: '14.76px',
+                    color: '#000000',
+                    marginRight: 'auto'
+                  }}
+                >
+                  {doc.name}
+                </span>
 
-        {/* Document 2 */}
-        <div
-          className="absolute flex items-center"
-          style={{
-            left: '30px',
-            top: '130px',
-            height: '20px'
-          }}
-        >
-          {/* Document Icon */}
-          <div
-            className="flex items-center justify-center"
-            style={{
-              width: '20px',
-              height: '20px',
-              backgroundColor: '#dbeafe',
-              borderRadius: '5px',
-              marginRight: '20px'
-            }}
-          >
-            <Image
-              src="/images/admin-dashboard/pending-approval/small-document.svg"
-              alt="Document"
-              width={15}
-              height={15}
-              className="object-contain"
-            />
-          </div>
-
-          {/* Document Name */}
-          <span
-            style={{
-              fontFamily: 'Clash Grotesk Variable',
-              fontWeight: 400,
-              fontSize: '12px',
-              lineHeight: '14.76px',
-              color: '#000000',
-              marginRight: 'auto'
-            }}
-          >
-            Business Permit
-          </span>
-
-          {/* View Link */}
-          <span
-            style={{
-              fontFamily: 'Clash Grotesk Variable',
-              fontWeight: 400,
-              fontSize: '10px',
-              lineHeight: '12.3px',
-              color: '#3b82f6',
-              marginLeft: '800px',
-              cursor: 'pointer'
-            }}
-          >
-            View
-          </span>
-        </div>
+                {/* View Link */}
+                <button
+                  onClick={() => {
+                    if (doc.data && typeof doc.data === 'string') {
+                      window.open(doc.data, '_blank');
+                    }
+                  }}
+                  style={{
+                    fontFamily: 'Clash Grotesk Variable',
+                    fontWeight: 400,
+                    fontSize: '10px',
+                    lineHeight: '12.3px',
+                    color: (doc.data && typeof doc.data === 'string') ? '#3b82f6' : '#9ca3af',
+                    marginLeft: '800px',
+                    cursor: (doc.data && typeof doc.data === 'string') ? 'pointer' : 'not-allowed',
+                    background: 'none',
+                    border: 'none',
+                    textDecoration: (doc.data && typeof doc.data === 'string') ? 'underline' : 'none'
+                  }}
+                  disabled={!doc.data || typeof doc.data !== 'string'}
+                >
+                  {(doc.data && typeof doc.data === 'string') ? 'View' : 'No file'}
+                </button>
+              </div>
+            </div>
+          ));
+        })()}
       </div>
 
       {/* Action Buttons */}
       {/* Approve Button */}
       <button
         onClick={handleApprove}
-        disabled={processing}
+        disabled={processing || registration.status === 'approved'}
         className="absolute flex items-center justify-center transition-all hover:scale-105 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed border-0"
         style={{
           left: '40px',
-          top: '900px',
+          top: (() => {
+            const documents = registration.documents || {};
+            const documentCount = Object.values(documents).filter(
+              (doc: string | undefined) => doc && typeof doc === 'string'
+            ).length;
+            const docsHeight = Math.max(120, 70 + (documentCount * 50) + 20);
+            return 700 + docsHeight + 50; // Documents section top + height + larger margin
+          })(),
           width: '540px',
           height: '50px',
-          backgroundColor: '#3bb77e',
+          backgroundColor: registration.status === 'approved' ? '#9ca3af' : '#3bb77e',
           borderRadius: '16px',
           boxShadow: '0px 4px 20px rgba(59, 183, 126, 0.25)',
           border: 'none',
-          cursor: processing ? 'not-allowed' : 'pointer',
+          cursor: (processing || registration.status === 'approved') ? 'not-allowed' : 'pointer',
           gap: '12px'
         }}
       >
@@ -716,25 +754,34 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
             textAlign: 'center'
           }}
         >
-          {processing ? 'Processing...' : 'Approve Application'}
+          {processing ? 'Processing...' :
+           registration.status === 'approved' ? 'Already Approved' :
+           'Approve Application'}
         </span>
       </button>
 
       {/* Reject Button */}
       <button
         onClick={() => setShowRejectModal(true)}
-        disabled={processing}
+        disabled={processing || registration.status === 'rejected'}
         className="absolute flex items-center justify-center transition-all hover:scale-105 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed border-0"
         style={{
           left: '620px',
-          top: '900px',
+          top: (() => {
+            const documents = registration.documents || {};
+            const documentCount = Object.values(documents).filter(
+              (doc: string | undefined) => doc && typeof doc === 'string'
+            ).length;
+            const docsHeight = Math.max(120, 70 + (documentCount * 50) + 20);
+            return 700 + docsHeight + 50; // Documents section top + height + larger margin
+          })(),
           width: '540px',
           height: '50px',
-          backgroundColor: '#ef4343',
+          backgroundColor: registration.status === 'rejected' ? '#9ca3af' : '#ef4343',
           borderRadius: '16px',
           boxShadow: '0px 4px 20px rgba(239, 67, 67, 0.25)',
           border: 'none',
-          cursor: processing ? 'not-allowed' : 'pointer',
+          cursor: (processing || registration.status === 'rejected') ? 'not-allowed' : 'pointer',
           gap: '12px'
         }}
       >
@@ -755,7 +802,7 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
             textAlign: 'center'
           }}
         >
-          Reject Application
+          {registration.status === 'rejected' ? 'Already Rejected' : 'Reject Application'}
         </span>
       </button>
 

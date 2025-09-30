@@ -68,50 +68,74 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
           break;
 
         case 'pending':
-          // Load pending registrations from store_registrations collection
+          // Load pending stores from BOTH 'stores' collection AND 'store_registrations' collection
+          console.log('🔍 PENDING DEBUG: Fetching pending stores from BOTH collections...');
+
+          // 1. Get pending stores from 'stores' collection (primary source)
+          const allStoresForPending = await StoreService.getAllStores();
+          const pendingFromStores = allStoresForPending.filter(store => store.status === 'pending');
+          console.log('🔍 Pending stores from stores collection:', pendingFromStores.length);
+          console.log('🔍 Pending stores data:', pendingFromStores);
+
+          // 2. Get pending registrations from 'store_registrations' collection (secondary source)
           const pendingRegistrations = await AdminService.getAllStoreRegistrations();
-          console.log('🔍 PENDING DEBUG: Loaded all store registrations:', pendingRegistrations.length);
-          console.log('🔍 PENDING DEBUG: All registrations:', pendingRegistrations);
+          const pendingStatuses = ['pending', 'completed_pending', 'pending_approval'];
+          const filteredRegs = pendingRegistrations.filter(reg =>
+            pendingStatuses.includes(reg.status) || !reg.status
+          );
+          console.log('🔍 Pending registrations from store_registrations collection:', filteredRegs.length);
 
-          // Look specifically for Kelly Store
-          const kellyRegistration = pendingRegistrations.find(reg => reg.userId === 'SHqmYVQFLxOInQfaj4NgIp6lz003');
-          console.log('🔍 PENDING DEBUG: Kelly Store registration found:', kellyRegistration);
+          // 3. Use stores collection data directly (already in Store format)
+          data = [...pendingFromStores];
 
-          // TEMPORARY: Show ALL registrations regardless of status to debug Kelly Store
-          const filteredRegs = pendingRegistrations.filter(reg => {
-            // Force include Kelly Store for debugging
-            if (reg.userId === 'SHqmYVQFLxOInQfaj4NgIp6lz003') {
-              console.log('🔍 FORCING KELLY STORE TO APPEAR:', reg);
-              return true;
-            }
+          // 4. Add stores from store_registrations that aren't in stores collection
+          const storeIds = new Set(pendingFromStores.map(s => s.storeId));
+          const additionalFromRegistrations = filteredRegs
+            .filter(reg => !storeIds.has(reg.userId))
+            .map(registration => {
+            // Extract store name - Check storeName field first (like RK Store)
+            const storeName = registration.storeName ||
+                             registration.businessName ||
+                             registration.name ||
+                             'Unknown Store';
 
-            // For other stores, check normal pending statuses
-            const pendingStatuses = ['pending', 'completed_pending', 'pending_approval'];
-            const hasValidStatus = pendingStatuses.includes(reg.status) || !reg.status;
-            console.log(`🔍 Status check for ${reg.userId}: status="${reg.status}", included=${hasValidStatus}`);
-            return hasValidStatus;
-          });
-          console.log('🔍 PENDING DEBUG: Filtered pending registrations:', filteredRegs.length);
-          console.log('🔍 PENDING DEBUG: Filtered registrations:', filteredRegs);
+            // Extract owner name - Check 'name' field first from React Native app
+            const ownerName = registration.name ||
+                             registration.personalInfo?.name ||
+                             registration.ownerName ||
+                             registration.owner ||
+                             registration.displayName ||
+                             'Owner Name Not Available';
 
-          // For now, let's simplify and just use static data for Kelly Store to test
-          data = filteredRegs.map(registration => {
-            // Temporary hardcoded address for Kelly Store to test
-            let fullAddress = 'Address not provided';
-            let storeName = `${registration.personalInfo?.name || 'Unknown'}'s Store`;
+            // Extract email - Check 'email' field first
+            const ownerEmail = registration.email ||
+                              registration.personalInfo?.email ||
+                              registration.ownerEmail ||
+                              'Email Not Available';
 
-            if (registration.userId === 'SHqmYVQFLxOInQfaj4NgIp6lz003') {
-              // Kelly Store - use hardcoded values to test
-              fullAddress = 'Matina, Davao City';
-              storeName = 'Kelly Store';
-            }
+            // Extract phone - Check 'phone' field first
+            const ownerPhone = registration.phone ||
+                              registration.personalInfo?.mobile ||
+                              registration.ownerPhone ||
+                              '';
+
+            // Extract address - Combine address + city from React Native app
+            const fullAddress = registration.address && registration.city
+                                 ? `${registration.address}, ${registration.city}`
+                                 : registration.address ||
+                                   (registration.storeAddress && registration.city
+                                     ? `${registration.storeAddress}, ${registration.city}`
+                                     : '') ||
+                                   registration.storeAddress ||
+                                   registration.city ||
+                                   'Address not provided';
 
             return {
               storeId: registration.userId,
               storeName: storeName,
-              ownerName: registration.personalInfo?.name || registration.ownerName || registration.owner || registration.displayName || 'Owner Name Not Available',
-              ownerEmail: registration.personalInfo?.email || registration.email || registration.ownerEmail || 'Email Not Available',
-              ownerPhone: registration.personalInfo?.mobile || registration.phone || registration.ownerPhone || '',
+              ownerName: ownerName,
+              ownerEmail: ownerEmail,
+              ownerPhone: ownerPhone,
               address: fullAddress,
               status: 'pending',
               joinedDate: registration.createdAt || registration.submittedAt || registration.dateCreated || (registration.completedAt ? new Date(registration.completedAt).toISOString() : new Date().toISOString()),
@@ -126,7 +150,13 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
               registrationData: registration
             };
           });
-          console.log('Pending registrations filtered and loaded:', data.length);
+
+          // 5. Combine data from both sources
+          data = [...data, ...additionalFromRegistrations];
+          console.log('✅ Total pending stores:', data.length, {
+            fromStoresCollection: pendingFromStores.length,
+            fromRegistrations: additionalFromRegistrations.length
+          });
           break;
 
         case 'rejected':
@@ -275,14 +305,6 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
 
       console.log('🔍 OVERVIEW DEBUG: Store data loaded successfully:', storeData.length, 'stores');
       console.log('🔍 OVERVIEW DEBUG: All stores:', storeData);
-
-      // Check for Kelly Store specifically
-      const kellyStore = storeData.find(store => store.storeId === 'SHqmYVQFLxOInQfaj4NgIp6lz003');
-      if (kellyStore) {
-        console.log('🔍 OVERVIEW DEBUG: Found Kelly Store:', kellyStore);
-      } else {
-        console.log('🔍 OVERVIEW DEBUG: Kelly Store NOT found in overview data');
-      }
 
       setStores(storeData);
     } catch (err) {

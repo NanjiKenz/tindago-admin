@@ -25,6 +25,14 @@ export interface StoreRegistration {
   displayName?: string;
   ownerEmail?: string;
   ownerPhone?: string;
+  // Address field variations
+  storeAddress?: string;
+  city?: string;
+  businessAddress?: string;
+  location?: string;
+  // Store name variations
+  businessName?: string;
+  name?: string;
   // Date fields variations
   submittedAt?: string;
   dateCreated?: string;
@@ -119,31 +127,57 @@ export class AdminService {
         approvedAt
       });
 
-      // Extract store data with proper fallbacks for different field names
+      // Extract store data with proper fallbacks matching React Native app fields
       const storeData = {
         userId,
+        // Store Name: Check storeName field first (like RK Store)
         storeName: registrationData.storeName ||
                   registrationData.businessName ||
                   registrationData.name ||
-                  `${registrationData.ownerName || registrationData.personalInfo?.name || 'Unknown'}'s Store`,
-        ownerName: registrationData.ownerName ||
+                  'Unknown Store',
+        // Owner Name: Check 'name' field first from React Native app
+        name: registrationData.name ||
+              registrationData.personalInfo?.name ||
+              registrationData.ownerName ||
+              registrationData.owner ||
+              registrationData.displayName ||
+              'Unknown Owner',
+        ownerName: registrationData.name ||
                   registrationData.personalInfo?.name ||
-                  registrationData.displayName ||
+                  registrationData.ownerName ||
                   registrationData.owner ||
+                  registrationData.displayName ||
                   'Unknown Owner',
+        // Address: Combine address + city from React Native app
         address: registrationData.address ||
-                registrationData.businessAddress ||
-                registrationData.location ||
-                'Address not provided',
+                registrationData.storeAddress ||
+                '',
+        city: registrationData.city || '',
+        // Store address + city for legacy support
+        storeAddress: registrationData.address ||
+                     registrationData.storeAddress ||
+                     registrationData.businessAddress ||
+                     '',
+        // Email: Check 'email' field first
+        email: registrationData.email ||
+              registrationData.personalInfo?.email ||
+              registrationData.ownerEmail ||
+              '',
+        ownerEmail: registrationData.email ||
+                   registrationData.personalInfo?.email ||
+                   registrationData.ownerEmail ||
+                   '',
+        // Phone: Check 'phone' field first
         phone: registrationData.phone ||
               registrationData.personalInfo?.mobile ||
               registrationData.ownerPhone ||
               registrationData.mobile ||
               '',
-        email: registrationData.email ||
-              registrationData.personalInfo?.email ||
-              registrationData.ownerEmail ||
-              '',
+        ownerPhone: registrationData.phone ||
+                   registrationData.personalInfo?.mobile ||
+                   registrationData.ownerPhone ||
+                   registrationData.mobile ||
+                   '',
         isActive: true,
         approvedAt,
         createdAt: registrationData.createdAt ||

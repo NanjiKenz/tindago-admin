@@ -24,6 +24,8 @@ TindaGo Admin is a Next.js web application designed for managing store registrat
 - `npm run migrate:usertype:dry-run` - Preview migration changes without applying them
 - `npm run migrate:usertype:backup` - Create backup of user data before migration
 - `npm run migrate:usertype:rollback` - Rollback migration if needed
+- `npm run standardize:status` - Standardize status fields across database collections
+- `npm run standardize:status:check` - Check status field inconsistencies without applying changes
 
 ### TypeScript & Code Quality
 - `npx tsc --noEmit` - Type checking without compilation
@@ -47,12 +49,14 @@ TindaGo Admin is a Next.js web application designed for managing store registrat
 - **`src/middleware.ts`** - Next.js middleware for authentication routing
 
 ### Key Components & Services
-- **AdminService** (`src/lib/adminService.ts`) - Firebase Realtime Database operations
+- **AdminService** (`src/lib/adminService.ts`) - Firebase Realtime Database operations for store registrations
+- **StoreService** (`src/lib/storeService.ts`) - Store management operations including status updates, verification, and real-time subscriptions
+- **CustomerService** (`src/lib/customerService.ts`) - Customer management operations with order history and statistics
 - **UserManagementService** (`src/lib/userManagementService.ts`) - Comprehensive user management operations for admin, customer, and store owner users
 - **UI Components** (`src/components/ui/`) - Button, Typography, and FormInput components
-- **Admin Components** (`src/components/admin/`) - UserManagement, UserCreateModal specialized admin components
+- **Admin Components** (`src/components/admin/`) - UserManagement, UserCreateModal, StoreManagement, PendingApprovalDetail specialized admin components
 - **Firebase Config** (`src/lib/firebase.js`) - Firebase Realtime Database setup
-- **Type Definitions** (`src/types/`) - TypeScript interfaces for admin operations, user management types
+- **Type Definitions** (`src/types/`) - TypeScript interfaces for admin operations, user management, store management, and customer management types
 - **Authentication Context** (`src/contexts/AuthContext.tsx`) - React context for authentication state
 - **Custom Hooks** (`src/hooks/`) - useNotifications, useResponsive hooks
 - **Middleware** (`src/middleware.ts`) - Authentication routing and protection
@@ -110,6 +114,18 @@ Comprehensive user management in `src/lib/userManagementService.ts`:
 - **`updateUserStatus()`** - Activate, deactivate, or suspend users
 - **`bulkUserActions()`** - Perform batch operations on multiple users
 - **Real-time user data** - Live synchronization across admin interfaces
+
+### StoreService Operations
+Store management operations in `src/lib/storeService.ts`:
+- **`getAllStores()`** - Fetch all stores from the stores collection
+- **`getAllStoresWithRegistrations()`** - Combines stores collection with pending store_registrations for unified view
+- **`getStoreById(storeId)`** - Get detailed store information with performance metrics
+- **`updateStoreStatus(storeId, status, reason?)`** - Update store status (active, pending, suspended, rejected)
+- **`updateStoreVerification(storeId, status, notes?)`** - Manage business verification status
+- **`getStoreStats()`** - Calculate comprehensive store statistics and analytics
+- **`searchStores(searchTerm, filters?)`** - Advanced store search with multiple filter options
+- **`subscribeToStores(callback)`** - Real-time store updates subscription
+- **`exportStoresToCSV()`** - Export store data for reporting
 
 ### Store Registration Data Model
 ```typescript
@@ -313,6 +329,7 @@ public/images/
 
 ### Additional Resources
 - **Database Schema**: `firebase-database-structure.md` - Firebase Realtime Database structure
+- **React Native Integration**: `REACT_NATIVE_FIREBASE_INTEGRATION.md` - Complete guide for React Native app developers on store registration structure
 - **Authentication Setup**: `AUTH_SETUP.md` - Admin authentication configuration
 
 # important-instruction-reminders
