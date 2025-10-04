@@ -57,12 +57,25 @@ export class UserManagementService {
             const ordersSnapshot = await get(ordersRef);
             const orders = ordersSnapshot.exists() ? Object.values(ordersSnapshot.val()) : [];
 
+            // Extract customer data with nested structure priority
+            // Email: Priority - personalInfo.email > email
+            const email = userData.personalInfo?.email || userData.email || '';
+
+            // Name: Priority - personalInfo.name > displayName > name
+            const displayName = userData.personalInfo?.name || userData.displayName || userData.name || 'Unknown User';
+
+            // Phone: Priority - personalInfo.mobile > phone
+            const phone = userData.personalInfo?.mobile || userData.phone || '';
+
+            // Address: Priority - personalInfo.address > address (customers might not have businessInfo)
+            const address = userData.personalInfo?.address || userData.address || '';
+
             const customer: CustomerUser = {
               userId,
-              email: userData.email,
-              displayName: userData.displayName || userData.name || 'Unknown User',
-              phone: userData.phone,
-              address: userData.address,
+              email,
+              displayName,
+              phone,
+              address,
               status: userData.status || 'active',
               createdAt: userData.createdAt,
               lastLoginAt: userData.lastLoginAt,
@@ -127,12 +140,31 @@ export class UserManagementService {
               responseTime: 0
             };
 
+            // Extract store owner data with nested structure priority
+            // Email: Priority - personalInfo.email > email
+            const email = ownerData.personalInfo?.email || ownerData.email || '';
+
+            // Name: Priority - personalInfo.name > displayName > name
+            const displayName = ownerData.personalInfo?.name || ownerData.displayName || ownerData.name || 'Unknown Owner';
+
+            // Phone: Priority - personalInfo.mobile > phone
+            const phone = ownerData.personalInfo?.mobile || ownerData.phone || '';
+
+            // Address: Priority - businessInfo (address + city) > legacy address
+            const businessAddress = ownerData.businessInfo?.address;
+            const businessCity = ownerData.businessInfo?.city;
+            const legacyAddress = ownerData.address;
+
+            const address = businessAddress && businessCity
+              ? `${businessAddress}, ${businessCity}`
+              : businessAddress || legacyAddress || '';
+
             const storeOwner: StoreOwnerUser = {
               userId,
-              email: ownerData.email,
-              displayName: ownerData.displayName || ownerData.name || 'Unknown Owner',
-              phone: ownerData.phone,
-              address: ownerData.address,
+              email,
+              displayName,
+              phone,
+              address,
               status: ownerData.status || 'active',
               createdAt: ownerData.createdAt,
               lastLoginAt: ownerData.lastLoginAt,

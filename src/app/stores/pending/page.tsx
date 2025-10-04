@@ -198,7 +198,7 @@ export default function PendingApprovalsPage() {
                             color: '#1E1E1E'
                           }}
                         >
-                          {registration.storeName || 'N/A'}
+                          {registration.businessInfo?.storeName || registration.storeName || 'N/A'}
                         </p>
                       </td>
                       <td className="py-4 px-2">
@@ -210,7 +210,7 @@ export default function PendingApprovalsPage() {
                             color: '#1E1E1E'
                           }}
                         >
-                          {registration.ownerName || registration.displayName || 'N/A'}
+                          {registration.personalInfo?.name || registration.name || registration.ownerName || registration.displayName || 'N/A'}
                         </p>
                       </td>
                       <td className="py-4 px-2">
@@ -222,7 +222,7 @@ export default function PendingApprovalsPage() {
                             color: 'rgba(30, 30, 30, 0.7)'
                           }}
                         >
-                          {registration.email || registration.ownerEmail || 'N/A'}
+                          {registration.personalInfo?.email || registration.email || registration.ownerEmail || 'N/A'}
                         </p>
                       </td>
                       <td className="py-4 px-2">

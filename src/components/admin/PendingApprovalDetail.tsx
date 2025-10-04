@@ -23,6 +23,66 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [rejectReason, setRejectReason] = useState('');
 
+  // Helper function to get submitted documents list
+  const getSubmittedDocuments = (registration: StoreRegistration | null) => {
+    if (!registration) return [];
+
+    const documents = registration.documents || {};
+
+    console.log('📄 [Document Retrieval] All documents from Firebase:', documents);
+
+    const documentList = [
+      {
+        key: 'businessPermit',
+        name: 'Business Permit',
+        data: documents.businessPermit
+      },
+      {
+        key: 'validId',
+        name: 'Valid ID',
+        data: documents.validId
+      },
+      {
+        key: 'barangayBusinessClearance',
+        name: 'Barangay Business Clearance',
+        data: documents.barangayBusinessClearance
+      },
+      {
+        key: 'dtiRegistration',
+        name: 'DTI Registration',
+        data: documents.dtiRegistration
+      },
+      {
+        key: 'storePhoto',
+        name: 'Store Photo',
+        data: documents.storePhoto
+      }
+    ].filter(doc => {
+      // Support both string (legacy) and object (new) format from React Native app
+      if (!doc.data) {
+        console.log(`❌ [${doc.key}] Not uploaded`);
+        return false;
+      }
+
+      // Check if it's a string (legacy base64 or URL)
+      if (typeof doc.data === 'string') {
+        console.log(`✅ [${doc.key}] Found (string format) - URI length: ${doc.data.length}`);
+        return true;
+      }
+
+      // Check if it's an object with uri property (React Native app format)
+      if (typeof doc.data === 'object' && 'uri' in doc.data) {
+        console.log(`✅ [${doc.key}] Found (object format) - URI length: ${doc.data.uri?.length || 0}`);
+        return true;
+      }
+
+      return false;
+    });
+
+    console.log(`📊 [Document Summary] ${documentList.length} documents retrieved from Firebase`);
+    return documentList;
+  };
+
   useEffect(() => {
     const fetchRegistration = async () => {
       try {
@@ -145,12 +205,10 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
       style={{
         width: '1200px',
         height: (() => {
-          const documents = registration.documents || {};
-          const documentCount = Object.values(documents).filter(
-            (doc: string | undefined) => doc && typeof doc === 'string'
-          ).length;
-          const docsHeight = Math.max(120, 70 + (documentCount * 50) + 20);
-          return 700 + docsHeight + 70 + 50; // Base + docs + buttons + larger margin
+          const submittedDocs = getSubmittedDocuments(registration);
+          const documentCount = submittedDocs.length;
+          const docsHeight = documentCount === 0 ? 140 : Math.max(140, 70 + (documentCount * 50) + 30);
+          return 700 + docsHeight + 70 + 80; // Base + docs + buttons + extra margin
         })(),
         backgroundColor: '#f3f5f9',
         borderRadius: '16px',
@@ -401,7 +459,19 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
             color: '#1e1e1e'
           }}
         >
-          {registration.address || 'Address not provided'}
+          {(() => {
+            const businessAddress = registration.businessInfo?.address;
+            const businessCity = registration.businessInfo?.city;
+            const legacyAddress = registration.address || registration.storeAddress;
+            const legacyCity = registration.city;
+
+            return businessAddress && businessCity
+              ? `${businessAddress}, ${businessCity}`
+              : businessAddress ||
+                (legacyAddress && legacyCity
+                  ? `${legacyAddress}, ${legacyCity}`
+                  : legacyAddress || legacyCity || 'Address not provided');
+          })()}
         </div>
 
         {/* Business Type and Permit Type */}
@@ -505,7 +575,7 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
             color: '#1e1e1e'
           }}
         >
-          {'No business description provided.'}
+          {registration.businessInfo?.description || 'No business description provided.'}
         </p>
       </div>
 
@@ -517,11 +587,9 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
           top: '700px',
           width: '1120px',
           height: (() => {
-            const documents = registration.documents || {};
-            const documentCount = Object.values(documents).filter(
-              (doc: string | undefined) => doc && typeof doc === 'string'
-            ).length;
-            return Math.max(120, 70 + (documentCount * 50) + 20); // Base height + documents + padding
+            const submittedDocs = getSubmittedDocuments(registration);
+            const documentCount = submittedDocs.length;
+            return documentCount === 0 ? 140 : Math.max(140, 70 + (documentCount * 50) + 30); // Base height + documents + padding
           })(),
           backgroundColor: '#ffffff',
           borderRadius: '16px',
@@ -572,29 +640,7 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
 
         {/* Dynamic Document List */}
         {(() => {
-          const documents = registration.documents || {};
-          const documentList = [
-            {
-              key: 'businessPermit',
-              name: 'Barangay Business Clearance',
-              data: documents.businessPermit
-            },
-            {
-              key: 'businessPermit',
-              name: 'Business Permit',
-              data: documents.businessPermit
-            },
-            {
-              key: 'storePhoto',
-              name: 'Store Photo',
-              data: documents.storePhoto
-            },
-            {
-              key: 'validId',
-              name: 'Valid ID',
-              data: documents.validId
-            }
-          ].filter(doc => doc.data && typeof doc.data === 'string');
+          const documentList = getSubmittedDocuments(registration);
 
           if (documentList.length === 0) {
             return (
@@ -641,52 +687,70 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
 
               {/* Document Row */}
               <div
-                className="absolute flex items-center"
+                className="absolute flex items-center justify-between"
                 style={{
                   left: '30px',
                   top: `${80 + (index * 50)}px`,
+                  width: '1060px',
                   height: '20px'
                 }}
               >
-                {/* Document Icon */}
-                <div
-                  className="flex items-center justify-center"
-                  style={{
-                    width: '20px',
-                    height: '20px',
-                    backgroundColor: '#dbeafe',
-                    borderRadius: '5px',
-                    marginRight: '20px'
-                  }}
-                >
-                  <Image
-                    src="/images/admin-dashboard/pending-approval/small-document.svg"
-                    alt="Document"
-                    width={15}
-                    height={15}
-                    className="object-contain"
-                  />
+                {/* Left side - Icon + Document Name */}
+                <div className="flex items-center">
+                  {/* Document Icon */}
+                  <div
+                    className="flex items-center justify-center"
+                    style={{
+                      width: '20px',
+                      height: '20px',
+                      backgroundColor: '#dbeafe',
+                      borderRadius: '5px',
+                      marginRight: '20px'
+                    }}
+                  >
+                    <Image
+                      src="/images/admin-dashboard/pending-approval/small-document.svg"
+                      alt="Document"
+                      width={15}
+                      height={15}
+                      className="object-contain"
+                    />
+                  </div>
+
+                  {/* Document Name */}
+                  <span
+                    style={{
+                      fontFamily: 'Clash Grotesk Variable',
+                      fontWeight: 400,
+                      fontSize: '12px',
+                      lineHeight: '14.76px',
+                      color: '#000000'
+                    }}
+                  >
+                    {doc.name}
+                  </span>
                 </div>
 
-                {/* Document Name */}
-                <span
-                  style={{
-                    fontFamily: 'Clash Grotesk Variable',
-                    fontWeight: 400,
-                    fontSize: '12px',
-                    lineHeight: '14.76px',
-                    color: '#000000',
-                    marginRight: 'auto'
-                  }}
-                >
-                  {doc.name}
-                </span>
-
-                {/* View Link */}
+                {/* Right side - View Link */}
                 <button
                   onClick={() => {
-                    if (doc.data && typeof doc.data === 'string') {
-                      window.open(doc.data, '_blank');
+                    if (!doc.data) return;
+
+                    // Support both string (legacy) and object (new) format from React Native app
+                    const uri = typeof doc.data === 'string' ? doc.data : doc.data.uri;
+
+                    console.log(`🖼️ [View Document] Opening ${doc.name}:`, {
+                      format: typeof doc.data === 'string' ? 'string' : 'object',
+                      uriLength: uri?.length || 0,
+                      isBase64: uri?.startsWith('data:') ? 'Yes (base64 data URL)' : 'No (regular URL)',
+                      documentType: typeof doc.data === 'object' ? doc.data.type : 'unknown'
+                    });
+
+                    if (uri) {
+                      // Open document in new tab (works for both base64 data URLs and regular URLs)
+                      window.open(uri, '_blank');
+                    } else {
+                      console.error(`❌ [View Document] No URI found for ${doc.name}`);
                     }
                   }}
                   style={{
@@ -694,16 +758,15 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
                     fontWeight: 400,
                     fontSize: '10px',
                     lineHeight: '12.3px',
-                    color: (doc.data && typeof doc.data === 'string') ? '#3b82f6' : '#9ca3af',
-                    marginLeft: '800px',
-                    cursor: (doc.data && typeof doc.data === 'string') ? 'pointer' : 'not-allowed',
+                    color: doc.data ? '#3b82f6' : '#9ca3af',
+                    cursor: doc.data ? 'pointer' : 'not-allowed',
                     background: 'none',
                     border: 'none',
-                    textDecoration: (doc.data && typeof doc.data === 'string') ? 'underline' : 'none'
+                    textDecoration: doc.data ? 'underline' : 'none'
                   }}
-                  disabled={!doc.data || typeof doc.data !== 'string'}
+                  disabled={!doc.data}
                 >
-                  {(doc.data && typeof doc.data === 'string') ? 'View' : 'No file'}
+                  {doc.data ? 'View' : 'No file'}
                 </button>
               </div>
             </div>
@@ -720,12 +783,10 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
         style={{
           left: '40px',
           top: (() => {
-            const documents = registration.documents || {};
-            const documentCount = Object.values(documents).filter(
-              (doc: string | undefined) => doc && typeof doc === 'string'
-            ).length;
-            const docsHeight = Math.max(120, 70 + (documentCount * 50) + 20);
-            return 700 + docsHeight + 50; // Documents section top + height + larger margin
+            const submittedDocs = getSubmittedDocuments(registration);
+            const documentCount = submittedDocs.length;
+            const docsHeight = documentCount === 0 ? 140 : Math.max(140, 70 + (documentCount * 50) + 30);
+            return 700 + docsHeight + 30; // Documents section top + height + spacing
           })(),
           width: '540px',
           height: '50px',
@@ -768,12 +829,10 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
         style={{
           left: '620px',
           top: (() => {
-            const documents = registration.documents || {};
-            const documentCount = Object.values(documents).filter(
-              (doc: string | undefined) => doc && typeof doc === 'string'
-            ).length;
-            const docsHeight = Math.max(120, 70 + (documentCount * 50) + 20);
-            return 700 + docsHeight + 50; // Documents section top + height + larger margin
+            const submittedDocs = getSubmittedDocuments(registration);
+            const documentCount = submittedDocs.length;
+            const docsHeight = documentCount === 0 ? 140 : Math.max(140, 70 + (documentCount * 50) + 30);
+            return 700 + docsHeight + 30; // Documents section top + height + spacing
           })(),
           width: '540px',
           height: '50px',

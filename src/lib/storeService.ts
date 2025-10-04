@@ -41,44 +41,48 @@ export class StoreService {
           const verification = verificationSnapshot.exists() ? verificationSnapshot.val() : null;
           const subscription = subscriptionSnapshot.exists() ? subscriptionSnapshot.val() : null;
 
-          // Extract data with proper fallbacks matching React Native app fields
-          // Store Name: Priority order - storeName > businessName > name
-          const storeName = storeData.storeName ||
+          // Extract data with proper fallbacks matching React Native app nested structure
+          // Store Name: Priority order - businessInfo.storeName > storeName > businessName > name
+          const storeName = storeData.businessInfo?.storeName ||
+                           storeData.storeName ||
                            storeData.businessName ||
                            storeData.name ||
                            'Unknown Store';
 
-          // Owner Name: Priority order - ownerName > name > owner > displayName
-          const ownerName = storeData.ownerName ||
+          // Owner Name: Priority order - personalInfo.name > name > ownerName > owner > displayName
+          const ownerName = storeData.personalInfo?.name ||
                            storeData.name ||
+                           storeData.ownerName ||
                            storeData.owner ||
                            storeData.displayName ||
                            'Unknown Owner';
 
-          // Email: Priority order - email > ownerEmail
-          const ownerEmail = storeData.email ||
+          // Email: Priority order - personalInfo.email > email > ownerEmail
+          const ownerEmail = storeData.personalInfo?.email ||
+                            storeData.email ||
                             storeData.ownerEmail ||
                             storeData.personalEmail ||
                             '';
 
-          // Phone: Priority order - phone > ownerPhone > mobile
-          const ownerPhone = storeData.phone ||
+          // Phone: Priority order - personalInfo.mobile > phone > ownerPhone > mobile
+          const ownerPhone = storeData.personalInfo?.mobile ||
+                            storeData.phone ||
                             storeData.ownerPhone ||
                             storeData.mobile ||
                             '';
 
-          // Address: Combine address + city from React Native app registration
-          const address = storeData.address && storeData.city
-                           ? `${storeData.address}, ${storeData.city}`
-                           : storeData.address ||
-                             (storeData.storeAddress && storeData.city
-                               ? `${storeData.storeAddress}, ${storeData.city}`
-                               : '') ||
-                             storeData.storeAddress ||
-                             storeData.city ||
-                             storeData.location ||
-                             storeData.businessAddress ||
-                             '';
+          // Address: Priority order - businessInfo (address + city) > legacy address + city
+          const businessAddress = storeData.businessInfo?.address;
+          const businessCity = storeData.businessInfo?.city;
+          const legacyAddress = storeData.address || storeData.storeAddress;
+          const legacyCity = storeData.city;
+
+          const address = businessAddress && businessCity
+                           ? `${businessAddress}, ${businessCity}`
+                           : businessAddress ||
+                             (legacyAddress && legacyCity
+                               ? `${legacyAddress}, ${legacyCity}`
+                               : legacyAddress || legacyCity || storeData.location || storeData.businessAddress || '');
 
           const store: Store = {
             storeId,
@@ -154,39 +158,48 @@ export class StoreService {
         const verification = verificationSnapshot.exists() ? verificationSnapshot.val() : null;
         const subscription = subscriptionSnapshot.exists() ? subscriptionSnapshot.val() : null;
 
-        // Extract data with proper fallbacks matching React Native app fields
-        const storeName = storeData.storeName ||
+        // Extract data with proper fallbacks matching React Native app nested structure
+        // Store Name: Priority order - businessInfo.storeName > storeName > businessName > name
+        const storeName = storeData.businessInfo?.storeName ||
+                         storeData.storeName ||
                          storeData.businessName ||
                          storeData.name ||
                          'Unknown Store';
 
-        const ownerName = storeData.name ||
+        // Owner Name: Priority order - personalInfo.name > name > ownerName > owner > displayName
+        const ownerName = storeData.personalInfo?.name ||
+                         storeData.name ||
                          storeData.ownerName ||
                          storeData.owner ||
                          storeData.displayName ||
                          'Unknown Owner';
 
-        const ownerEmail = storeData.email ||
+        // Owner Email: Priority order - personalInfo.email > email > ownerEmail > personalEmail
+        const ownerEmail = storeData.personalInfo?.email ||
+                          storeData.email ||
                           storeData.ownerEmail ||
                           storeData.personalEmail ||
                           '';
 
-        const ownerPhone = storeData.phone ||
+        // Owner Phone: Priority order - personalInfo.mobile > phone > mobile > ownerPhone
+        const ownerPhone = storeData.personalInfo?.mobile ||
+                          storeData.phone ||
                           storeData.mobile ||
                           storeData.ownerPhone ||
                           '';
 
-        const address = storeData.address && storeData.city
-                         ? `${storeData.address}, ${storeData.city}`
-                         : storeData.address ||
-                           (storeData.storeAddress && storeData.city
-                             ? `${storeData.storeAddress}, ${storeData.city}`
-                             : '') ||
-                           storeData.storeAddress ||
-                           storeData.city ||
-                           storeData.location ||
-                           storeData.businessAddress ||
-                           '';
+        // Address: Priority order - businessInfo (address + city) > legacy address + city
+        const businessAddress = storeData.businessInfo?.address;
+        const businessCity = storeData.businessInfo?.city;
+        const legacyAddress = storeData.address || storeData.storeAddress;
+        const legacyCity = storeData.city;
+
+        const address = businessAddress && businessCity
+                         ? `${businessAddress}, ${businessCity}`
+                         : businessAddress ||
+                           (legacyAddress && legacyCity
+                             ? `${legacyAddress}, ${legacyCity}`
+                             : legacyAddress || legacyCity || storeData.location || storeData.businessAddress || '');
 
         return {
           storeId,
@@ -316,45 +329,47 @@ export class StoreService {
       const pendingRegistrations = await AdminService.getPendingStoreRegistrations();
       console.log(`📋 [getAllStoresWithRegistrations] Pending registrations from 'store_registrations': ${pendingRegistrations.length}`);
 
-      // Convert registrations to Store format with proper field mapping
+      // Convert registrations to Store format with proper field mapping from nested structure
       const pendingStores: Store[] = pendingRegistrations.map((registration: StoreRegistration) => {
-        // Extract store name - Check storeName field first (like RK Store)
-        const storeName = registration.storeName ||
+        // Extract store name - Priority: businessInfo.storeName > storeName > businessName > name
+        const storeName = registration.businessInfo?.storeName ||
+                         registration.storeName ||
                          registration.businessName ||
                          registration.name ||
                          'Unknown Store';
 
-        // Extract owner name - Priority: name > personalInfo.name > ownerName > owner > displayName
-        // NOTE: React Native app stores owner name in 'name' field
-        const ownerName = registration.name ||
-                         registration.personalInfo?.name ||
+        // Extract owner name - Priority: personalInfo.name > name > ownerName > owner > displayName
+        const ownerName = registration.personalInfo?.name ||
+                         registration.name ||
                          registration.ownerName ||
                          registration.owner ||
                          registration.displayName ||
                          'Unknown Owner';
 
-        // Extract email - Priority: email > personalInfo.email > ownerEmail
-        const ownerEmail = registration.email ||
-                          registration.personalInfo?.email ||
+        // Extract email - Priority: personalInfo.email > email > ownerEmail
+        const ownerEmail = registration.personalInfo?.email ||
+                          registration.email ||
                           registration.ownerEmail ||
                           '';
 
-        // Extract phone - Check 'phone' field first
-        const ownerPhone = registration.phone ||
-                          registration.personalInfo?.mobile ||
+        // Extract phone - Priority: personalInfo.mobile > phone > ownerPhone
+        const ownerPhone = registration.personalInfo?.mobile ||
+                          registration.phone ||
                           registration.ownerPhone ||
                           '';
 
-        // Extract address - Combine address + city from React Native app
-        const address = registration.address && registration.city
-                         ? `${registration.address}, ${registration.city}`
-                         : registration.address ||
-                           (registration.storeAddress && registration.city
-                             ? `${registration.storeAddress}, ${registration.city}`
-                             : '') ||
-                           registration.storeAddress ||
-                           registration.city ||
-                           '';
+        // Extract address - Priority: businessInfo (address + city) > legacy address + city
+        const businessAddress = registration.businessInfo?.address;
+        const businessCity = registration.businessInfo?.city;
+        const legacyAddress = registration.address || registration.storeAddress;
+        const legacyCity = registration.city;
+
+        const address = businessAddress && businessCity
+                         ? `${businessAddress}, ${businessCity}`
+                         : businessAddress ||
+                           (legacyAddress && legacyCity
+                             ? `${legacyAddress}, ${legacyCity}`
+                             : legacyAddress || legacyCity || '');
 
         return {
           storeId: registration.userId,

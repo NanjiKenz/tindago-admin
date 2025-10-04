@@ -83,12 +83,25 @@ export class CustomerService {
             const orders = ordersSnapshot.exists() ? Object.values(ordersSnapshot.val()) : [];
             const verification = verificationSnapshot.exists() ? verificationSnapshot.val() : null;
 
+            // Extract customer data with nested structure priority
+            // Email: Priority - personalInfo.email > email
+            const email = userData.personalInfo?.email || userData.email || '';
+
+            // Name: Priority - personalInfo.name > displayName > name
+            const displayName = userData.personalInfo?.name || userData.displayName || userData.name || 'Unknown User';
+
+            // Phone: Priority - personalInfo.mobile > phone
+            const phone = userData.personalInfo?.mobile || userData.phone || '';
+
+            // Address: Priority - personalInfo.address > address (customers might not have businessInfo)
+            const address = userData.personalInfo?.address || userData.address || '';
+
             const customer: CustomerUser = {
               userId,
-              email: userData.email,
-              displayName: userData.displayName || userData.name || 'Unknown User',
-              phone: userData.phone,
-              address: userData.address,
+              email,
+              displayName,
+              phone,
+              address,
               status: userData.status || 'active',
               createdAt: userData.createdAt || new Date().toISOString(),
               lastLoginAt: userData.lastLoginAt,
@@ -136,12 +149,25 @@ export class CustomerService {
           const orders = ordersSnapshot.exists() ? Object.values(ordersSnapshot.val()) : [];
           const verification = verificationSnapshot.exists() ? verificationSnapshot.val() : null;
 
+          // Extract customer data with nested structure priority
+          // Email: Priority - personalInfo.email > email
+          const email = userData.personalInfo?.email || userData.email || '';
+
+          // Name: Priority - personalInfo.name > displayName > name
+          const displayName = userData.personalInfo?.name || userData.displayName || userData.name || 'Unknown User';
+
+          // Phone: Priority - personalInfo.mobile > phone
+          const phone = userData.personalInfo?.mobile || userData.phone || '';
+
+          // Address: Priority - personalInfo.address > address (customers might not have businessInfo)
+          const address = userData.personalInfo?.address || userData.address || '';
+
           return {
             userId: customerId,
-            email: userData.email,
-            displayName: userData.displayName || userData.name || 'Unknown User',
-            phone: userData.phone,
-            address: userData.address,
+            email,
+            displayName,
+            phone,
+            address,
             status: userData.status || 'active',
             createdAt: userData.createdAt || new Date().toISOString(),
             lastLoginAt: userData.lastLoginAt,

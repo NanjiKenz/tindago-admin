@@ -93,42 +93,45 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
           const additionalFromRegistrations = filteredRegs
             .filter(reg => !storeIds.has(reg.userId))
             .map(registration => {
-            // Extract store name - Check storeName field first (like RK Store)
-            const storeName = registration.storeName ||
+            // Extract store name - Priority: businessInfo.storeName > storeName > businessName > name
+            const storeName = registration.businessInfo?.storeName ||
+                             registration.storeName ||
                              registration.businessName ||
                              registration.name ||
                              'Unknown Store';
 
-            // Extract owner name - Check 'name' field first from React Native app
-            const ownerName = registration.name ||
-                             registration.personalInfo?.name ||
+            // Extract owner name - Priority: personalInfo.name > name > ownerName > owner > displayName
+            const ownerName = registration.personalInfo?.name ||
+                             registration.name ||
                              registration.ownerName ||
                              registration.owner ||
                              registration.displayName ||
                              'Owner Name Not Available';
 
-            // Extract email - Check 'email' field first
-            const ownerEmail = registration.email ||
-                              registration.personalInfo?.email ||
+            // Extract email - Priority: personalInfo.email > email > ownerEmail
+            const ownerEmail = registration.personalInfo?.email ||
+                              registration.email ||
                               registration.ownerEmail ||
                               'Email Not Available';
 
-            // Extract phone - Check 'phone' field first
-            const ownerPhone = registration.phone ||
-                              registration.personalInfo?.mobile ||
+            // Extract phone - Priority: personalInfo.mobile > phone > ownerPhone
+            const ownerPhone = registration.personalInfo?.mobile ||
+                              registration.phone ||
                               registration.ownerPhone ||
                               '';
 
-            // Extract address - Combine address + city from React Native app
-            const fullAddress = registration.address && registration.city
-                                 ? `${registration.address}, ${registration.city}`
-                                 : registration.address ||
-                                   (registration.storeAddress && registration.city
-                                     ? `${registration.storeAddress}, ${registration.city}`
-                                     : '') ||
-                                   registration.storeAddress ||
-                                   registration.city ||
-                                   'Address not provided';
+            // Extract address - Priority: businessInfo (address + city) > legacy address + city
+            const businessAddress = registration.businessInfo?.address;
+            const businessCity = registration.businessInfo?.city;
+            const legacyAddress = registration.address || registration.storeAddress;
+            const legacyCity = registration.city;
+
+            const fullAddress = businessAddress && businessCity
+                                 ? `${businessAddress}, ${businessCity}`
+                                 : businessAddress ||
+                                   (legacyAddress && legacyCity
+                                     ? `${legacyAddress}, ${legacyCity}`
+                                     : legacyAddress || legacyCity || 'Address not provided');
 
             return {
               storeId: registration.userId,

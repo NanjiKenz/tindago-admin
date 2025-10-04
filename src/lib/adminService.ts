@@ -1,39 +1,70 @@
 import { database } from './firebase.js';
 import { ref, get, set, update, onValue, off } from 'firebase/database';
 
+// Document interface matching React Native app structure
+export interface RegistrationDocument {
+  name: string;
+  uri: string;
+  type: string;
+  uploaded: boolean;
+  uploadedAt?: {
+    '.sv': string;
+  } | number;
+}
+
 export interface StoreRegistration {
   userId: string;
-  storeName: string;
-  ownerName: string;
-  email: string;
-  phone: string;
-  address: string;
-  status: 'pending' | 'approved' | 'rejected' | 'completed_pending' | 'pending_approval' | 'submitted' | 'awaiting_review';
-  createdAt: string;
-  documents?: {
-    businessPermit?: string;
-    validId?: string;
-    storePhoto?: string;
-  };
-  // Firebase data structure fields
+  // Nested structure from React Native app (primary)
   personalInfo?: {
-    name?: string;
-    email?: string;
-    mobile?: string;
+    name: string;
+    email: string;
+    mobile: string;
   };
+  businessInfo?: {
+    storeName: string;
+    description: string;
+    address: string;
+    city: string;
+    zipCode: string;
+    businessType: string;
+  };
+  documents?: {
+    barangayBusinessClearance?: RegistrationDocument;
+    businessPermit?: RegistrationDocument;
+    dtiRegistration?: RegistrationDocument;
+    validId?: RegistrationDocument;
+    // Legacy string format for backward compatibility
+    storePhoto?: string | RegistrationDocument;
+  };
+  paymentInfo?: {
+    method: 'gcash' | 'paymaya' | 'bank_transfer';
+    accountName: string;
+    accountNumber: string;
+    verified: boolean;
+    addedAt?: {
+      '.sv': string;
+    } | number;
+  };
+  status: 'pending_documents' | 'pending' | 'approved' | 'rejected' | 'active' | 'completed_pending' | 'pending_approval' | 'submitted' | 'awaiting_review';
+  createdAt: string;
+  updatedAt?: string;
+
+  // Legacy flat structure (for backward compatibility)
+  storeName?: string;
+  ownerName?: string;
+  email?: string;
+  phone?: string;
+  address?: string;
   owner?: string;
   displayName?: string;
   ownerEmail?: string;
   ownerPhone?: string;
-  // Address field variations
   storeAddress?: string;
   city?: string;
   businessAddress?: string;
   location?: string;
-  // Store name variations
   businessName?: string;
   name?: string;
-  // Date fields variations
   submittedAt?: string;
   dateCreated?: string;
   completedAt?: string;
@@ -127,66 +158,68 @@ export class AdminService {
         approvedAt
       });
 
-      // Extract store data with proper fallbacks matching React Native app fields
+      // Extract store data with proper fallbacks matching React Native app nested structure
       const storeData = {
         userId,
-        // Store Name: Check storeName field first (like RK Store)
-        storeName: registrationData.storeName ||
+        // Preserve full nested structure from React Native app
+        personalInfo: registrationData.personalInfo || {
+          name: registrationData.name || registrationData.ownerName || registrationData.displayName || 'Unknown Owner',
+          email: registrationData.email || registrationData.ownerEmail || '',
+          mobile: registrationData.phone || registrationData.ownerPhone || ''
+        },
+        businessInfo: registrationData.businessInfo || {
+          storeName: registrationData.storeName || registrationData.businessName || 'Unknown Store',
+          description: registrationData.description || '',
+          address: registrationData.address || registrationData.storeAddress || '',
+          city: registrationData.city || '',
+          zipCode: registrationData.zipCode || '',
+          businessType: registrationData.businessType || 'Sari-Sari Store'
+        },
+        documents: registrationData.documents || {},
+        paymentInfo: registrationData.paymentInfo,
+
+        // Legacy flat fields for backward compatibility
+        storeName: registrationData.businessInfo?.storeName ||
+                  registrationData.storeName ||
                   registrationData.businessName ||
-                  registrationData.name ||
                   'Unknown Store',
-        // Owner Name: Check 'name' field first from React Native app
-        name: registrationData.name ||
-              registrationData.personalInfo?.name ||
+        name: registrationData.personalInfo?.name ||
+              registrationData.name ||
               registrationData.ownerName ||
-              registrationData.owner ||
-              registrationData.displayName ||
               'Unknown Owner',
-        ownerName: registrationData.name ||
-                  registrationData.personalInfo?.name ||
+        ownerName: registrationData.personalInfo?.name ||
+                  registrationData.name ||
                   registrationData.ownerName ||
-                  registrationData.owner ||
-                  registrationData.displayName ||
                   'Unknown Owner',
-        // Address: Combine address + city from React Native app
-        address: registrationData.address ||
-                registrationData.storeAddress ||
+        address: registrationData.businessInfo?.address ||
+                registrationData.address ||
                 '',
-        city: registrationData.city || '',
-        // Store address + city for legacy support
-        storeAddress: registrationData.address ||
-                     registrationData.storeAddress ||
-                     registrationData.businessAddress ||
+        city: registrationData.businessInfo?.city ||
+              registrationData.city ||
+              '',
+        storeAddress: registrationData.businessInfo?.address ||
+                     registrationData.address ||
                      '',
-        // Email: Check 'email' field first
-        email: registrationData.email ||
-              registrationData.personalInfo?.email ||
-              registrationData.ownerEmail ||
+        email: registrationData.personalInfo?.email ||
+              registrationData.email ||
               '',
-        ownerEmail: registrationData.email ||
-                   registrationData.personalInfo?.email ||
-                   registrationData.ownerEmail ||
+        ownerEmail: registrationData.personalInfo?.email ||
+                   registrationData.email ||
                    '',
-        // Phone: Check 'phone' field first
-        phone: registrationData.phone ||
-              registrationData.personalInfo?.mobile ||
-              registrationData.ownerPhone ||
-              registrationData.mobile ||
+        phone: registrationData.personalInfo?.mobile ||
+              registrationData.phone ||
               '',
-        ownerPhone: registrationData.phone ||
-                   registrationData.personalInfo?.mobile ||
-                   registrationData.ownerPhone ||
-                   registrationData.mobile ||
+        ownerPhone: registrationData.personalInfo?.mobile ||
+                   registrationData.phone ||
                    '',
         isActive: true,
         approvedAt,
         createdAt: registrationData.createdAt ||
                   registrationData.submittedAt ||
-                  registrationData.dateCreated ||
                   new Date().toISOString(),
-        businessType: registrationData.businessType || 'Sari-Sari Store',
-        permitType: registrationData.permitType || 'Business Permit',
-        documents: registrationData.documents || {},
+        businessType: registrationData.businessInfo?.businessType ||
+                     registrationData.businessType ||
+                     'Sari-Sari Store',
         status: 'active'
       };
 
