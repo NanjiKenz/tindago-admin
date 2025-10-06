@@ -12,26 +12,22 @@ export default function PendingApprovalDetailPage() {
   const returnTo = searchParams.get('returnTo');
 
   const handleApprove = (userId: string) => {
-    console.log('Store registration approved for user:', userId);
-    // Show success notification
-    alert(`Store registration approved for user: ${userId}`);
-    // Navigate back based on returnTo parameter
+    console.log('✅ Store registration approved for user:', userId);
+    // Navigate to Active view after approval
     if (returnTo === 'storeManagement') {
-      router.push('/stores?view=pending');
+      router.push('/stores?view=active');
     } else {
-      router.push('/stores/pending');
+      router.push('/stores');
     }
   };
 
   const handleReject = (userId: string, reason?: string) => {
-    console.log('Store registration rejected for user:', userId, 'Reason:', reason);
-    // Show success notification
-    alert(`Store registration rejected for user: ${userId}${reason ? `\nReason: ${reason}` : ''}`);
-    // Navigate back based on returnTo parameter
+    console.log('❌ Store registration rejected for user:', userId, 'Reason:', reason);
+    // Navigate to Rejected view after rejection
     if (returnTo === 'storeManagement') {
-      router.push('/stores?view=pending');
+      router.push('/stores?view=rejected');
     } else {
-      router.push('/stores/pending');
+      router.push('/stores');
     }
   };
 

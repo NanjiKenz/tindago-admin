@@ -29,3 +29,4 @@ export { CustomerManagement } from './CustomerManagement';
 // Store management components
 export { StoreManagement } from './StoreManagement';
 export { PendingApprovalDetail } from './PendingApprovalDetail';
+export { ActiveStoreDetail } from './ActiveStoreDetail';

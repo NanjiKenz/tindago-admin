@@ -5,6 +5,8 @@
  * Extends existing AdminService patterns for consistency with store-specific operations
  */
 
+import { RegistrationDocument } from '@/lib/adminService';
+
 export interface Store {
   storeId: string;
   storeName: string;
@@ -13,6 +15,7 @@ export interface Store {
   ownerPhone?: string;
   address: string;
   status: 'active' | 'pending' | 'suspended' | 'rejected';
+  statusReason?: string;
   joinedDate: string;
   lastActiveAt?: string;
   businessHours?: {
@@ -21,10 +24,13 @@ export interface Store {
     days: string[];
   };
   documents?: {
-    businessPermit?: string;
-    validId?: string;
-    storePhoto?: string;
+    barangayBusinessClearance?: RegistrationDocument;
+    businessPermit?: RegistrationDocument;
+    dtiRegistration?: RegistrationDocument;
+    validId?: RegistrationDocument;
+    storePhoto?: string | RegistrationDocument;
   };
+  registrationData?: any;
   businessVerification?: {
     status: 'verified' | 'pending' | 'rejected';
     verifiedAt?: string;
@@ -116,9 +122,11 @@ export interface StoreRegistration {
   status: 'pending' | 'approved' | 'rejected';
   createdAt: string;
   documents?: {
-    businessPermit?: string;
-    validId?: string;
-    storePhoto?: string;
+    barangayBusinessClearance?: RegistrationDocument;
+    businessPermit?: RegistrationDocument;
+    dtiRegistration?: RegistrationDocument;
+    validId?: RegistrationDocument;
+    storePhoto?: string | RegistrationDocument;
   };
   rejectionReason?: string;
 }

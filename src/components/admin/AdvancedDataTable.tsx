@@ -49,10 +49,10 @@ export const AdvancedDataTable: React.FC<AdvancedDataTableProps> = ({
     if (searchTerm) {
       const searchLower = searchTerm.toLowerCase();
       filtered = filtered.filter(reg =>
-        reg.storeName.toLowerCase().includes(searchLower) ||
-        reg.ownerName.toLowerCase().includes(searchLower) ||
-        reg.email.toLowerCase().includes(searchLower) ||
-        reg.address.toLowerCase().includes(searchLower)
+        (reg.storeName || '').toLowerCase().includes(searchLower) ||
+        (reg.ownerName || '').toLowerCase().includes(searchLower) ||
+        (reg.email || '').toLowerCase().includes(searchLower) ||
+        (reg.address || '').toLowerCase().includes(searchLower)
       );
     }
 

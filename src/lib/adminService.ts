@@ -294,4 +294,39 @@ export class AdminService {
 
     return () => off(registrationsRef, 'value', unsubscribe);
   }
+
+  static async reReviewStoreRegistration(userId: string): Promise<void> {
+    try {
+      const registrationRef = ref(database, `store_registrations/${userId}`);
+
+      await update(registrationRef, {
+        status: 'pending',
+        reReviewedAt: new Date().toISOString(),
+        rejectionReason: null,
+        rejectedAt: null
+      });
+
+      console.log(`Store registration moved back to pending for re-review: ${userId}`);
+    } catch (error) {
+      console.error('Error re-reviewing registration:', error);
+      throw error;
+    }
+  }
+
+  static async deleteStoreRegistration(userId: string): Promise<void> {
+    try {
+      const registrationRef = ref(database, `store_registrations/${userId}`);
+
+      // Soft delete by updating status to 'deleted'
+      await update(registrationRef, {
+        status: 'deleted',
+        deletedAt: new Date().toISOString()
+      });
+
+      console.log(`Store registration marked as deleted: ${userId}`);
+    } catch (error) {
+      console.error('Error deleting registration:', error);
+      throw error;
+    }
+  }
 }

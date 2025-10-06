@@ -140,10 +140,10 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
               ownerEmail: ownerEmail,
               ownerPhone: ownerPhone,
               address: fullAddress,
-              status: 'pending',
+              status: 'pending' as const,
               joinedDate: registration.createdAt || registration.submittedAt || registration.dateCreated || (registration.completedAt ? new Date(registration.completedAt).toISOString() : new Date().toISOString()),
               documents: registration.documents,
-              businessVerification: { status: 'pending' },
+              businessVerification: { status: 'pending' as const },
               performanceMetrics: {
                 totalSales: 0,
                 totalOrders: 0,
@@ -169,15 +169,15 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
             .filter(reg => reg.status === 'rejected')
             .map(registration => ({
               storeId: registration.userId,
-              storeName: registration.storeName,
-              ownerName: registration.ownerName,
-              ownerEmail: registration.email,
-              ownerPhone: registration.phone,
-              address: registration.address,
-              status: 'rejected',
-              joinedDate: registration.createdAt,
+              storeName: registration.businessInfo?.storeName || registration.storeName || 'Unknown Store',
+              ownerName: registration.personalInfo?.name || registration.ownerName || 'Unknown Owner',
+              ownerEmail: registration.personalInfo?.email || registration.email || '',
+              ownerPhone: registration.personalInfo?.mobile || registration.phone || '',
+              address: registration.businessInfo?.address || registration.address || '',
+              status: 'rejected' as const,
+              joinedDate: registration.createdAt || '',
               documents: registration.documents,
-              businessVerification: { status: 'rejected' },
+              businessVerification: { status: 'rejected' as const },
               performanceMetrics: {
                 totalSales: 0,
                 totalOrders: 0,
@@ -264,15 +264,15 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
         const filteredData = filteredRegistrations
           .map(registration => ({
             storeId: registration.userId,
-            storeName: registration.storeName,
-            ownerName: registration.ownerName,
-            ownerEmail: registration.email,
-            ownerPhone: registration.phone,
-            address: registration.address,
-            status: viewMode,
-            joinedDate: registration.createdAt,
+            storeName: registration.businessInfo?.storeName || registration.storeName || 'Unknown Store',
+            ownerName: registration.personalInfo?.name || registration.ownerName || 'Unknown Owner',
+            ownerEmail: registration.personalInfo?.email || registration.email || '',
+            ownerPhone: registration.personalInfo?.mobile || registration.phone || '',
+            address: registration.businessInfo?.address || registration.address || '',
+            status: viewMode as 'pending' | 'rejected',
+            joinedDate: registration.createdAt || '',
             documents: registration.documents,
-            businessVerification: { status: viewMode },
+            businessVerification: { status: viewMode as 'pending' | 'rejected' },
             performanceMetrics: {
               totalSales: 0,
               totalOrders: 0,
@@ -402,11 +402,11 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
         color: '#FFFFFF'
       },
       suspended: {
-        backgroundColor: '#EF4444', // Red for suspended
+        backgroundColor: '#F97316', // Orange for suspended
         color: '#FFFFFF'
       },
       rejected: {
-        backgroundColor: '#6B7280', // Gray for rejected
+        backgroundColor: '#EF4444', // Red for rejected
         color: '#FFFFFF'
       }
     };
@@ -473,6 +473,19 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
   const handlePendingRowClick = (storeId: string) => {
     console.log('Navigating to pending approval detail for store:', storeId);
     router.push(`/stores/pending/${storeId}?returnTo=storeManagement`);
+  };
+
+  const handleRowClick = (storeId: string, status: string) => {
+    console.log('Navigating to detail page for store:', storeId, 'status:', status);
+    if (status === 'active') {
+      router.push(`/stores/active/${storeId}?returnTo=storeManagement`);
+    } else if (status === 'pending') {
+      router.push(`/stores/pending/${storeId}?returnTo=storeManagement`);
+    } else if (status === 'rejected') {
+      router.push(`/stores/rejected/${storeId}?returnTo=storeManagement`);
+    } else if (status === 'suspended') {
+      router.push(`/stores/suspended/${storeId}?returnTo=storeManagement`);
+    }
   };
 
   const handleEdit = async (storeId: string) => {
@@ -1335,11 +1348,13 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
                           style={{
                             borderBottom: index < categoryData.length - 1 ? '1px solid #E2E8F0' : 'none',
                             transition: 'background-color 0.2s ease',
-                            cursor: viewMode === 'pending' ? 'pointer' : 'default'
+                            cursor: viewMode !== 'overview' ? 'pointer' : 'default'
                           }}
-                          onClick={viewMode === 'pending' ? () => handlePendingRowClick(item.storeId) : undefined}
+                          onClick={viewMode !== 'overview' ? () => handleRowClick(item.storeId, item.status) : undefined}
                           onMouseEnter={(e) => {
-                            e.currentTarget.style.backgroundColor = '#F8FAFC';
+                            if (viewMode !== 'overview') {
+                              e.currentTarget.style.backgroundColor = '#F8FAFC';
+                            }
                           }}
                           onMouseLeave={(e) => {
                             e.currentTarget.style.backgroundColor = 'transparent';
@@ -1773,12 +1788,16 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
                     {currentData.map((store, index) => (
                       <tr
                         key={store.storeId}
+                        onClick={viewMode !== 'overview' ? () => handleRowClick(store.storeId, store.status) : undefined}
                         style={{
                           borderBottom: index < currentData.length - 1 ? '1px solid #E2E8F0' : 'none',
-                          transition: 'background-color 0.2s ease'
+                          transition: 'background-color 0.2s ease',
+                          cursor: viewMode !== 'overview' ? 'pointer' : 'default'
                         }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = '#F8FAFC';
+                          if (viewMode !== 'overview') {
+                            e.currentTarget.style.backgroundColor = '#F8FAFC';
+                          }
                         }}
                         onMouseLeave={(e) => {
                           e.currentTarget.style.backgroundColor = 'transparent';

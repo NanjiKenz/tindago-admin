@@ -4,29 +4,28 @@ import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { AdminService, StoreRegistration } from '@/lib/adminService';
 
-interface PendingApprovalDetailProps {
+interface RejectedStoreDetailProps {
   userId: string;
-  onApprove?: (userId: string) => void;
-  onReject?: (userId: string, reason?: string) => void;
+  onReReview?: (userId: string) => void;
+  onDelete?: (userId: string) => void;
   onBack?: () => void;
 }
 
-export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
+export const RejectedStoreDetail: React.FC<RejectedStoreDetailProps> = ({
   userId,
-  onApprove,
-  onReject,
+  onReReview,
+  onDelete,
   onBack
 }) => {
   const [registration, setRegistration] = useState<StoreRegistration | null>(null);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
-  const [showRejectModal, setShowRejectModal] = useState(false);
-  const [rejectReason, setRejectReason] = useState('');
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showReReviewModal, setShowReReviewModal] = useState(false);
 
   // Helper function to convert base64 data URL to Blob URL
   const convertBase64ToBlob = (dataUrl: string): string => {
     try {
-      // Split the data URL to get mime type and base64 data
       const arr = dataUrl.split(',');
       const mimeMatch = arr[0].match(/:(.*?);/);
       const mime = mimeMatch ? mimeMatch[1] : 'image/jpeg';
@@ -55,7 +54,7 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
   };
 
   // Helper function to check if document has valid URI
-  const hasValidUri = (docData: any): boolean => {
+  const hasValidUri = (docData: unknown): boolean => {
     if (!docData) return false;
 
     // String format (legacy)
@@ -64,8 +63,9 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
     }
 
     // Object format (React Native app)
-    if (typeof docData === 'object' && 'uri' in docData) {
-      return !!(docData.uri && docData.uri.trim().length > 0);
+    if (typeof docData === 'object' && docData !== null && 'uri' in docData) {
+      const doc = docData as { uri?: string };
+      return !!(doc.uri && doc.uri.trim().length > 0);
     }
 
     return false;
@@ -142,14 +142,14 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
     const fetchRegistration = async () => {
       try {
         setLoading(true);
-        console.log(`🔍 [PendingApprovalDetail] Fetching registration for userId: ${userId}`);
+        console.log(`🔍 [RejectedStoreDetail] Fetching registration for userId: ${userId}`);
 
-        // Try to get from store_registrations first
+        // Get from store_registrations
         const registrations = await AdminService.getAllStoreRegistrations();
-        let targetRegistration = registrations.find(reg => reg.userId === userId);
+        const targetRegistration = registrations.find(reg => reg.userId === userId);
 
         if (targetRegistration) {
-          console.log(`✅ [PendingApprovalDetail] Found registration in 'store_registrations'`);
+          console.log(`✅ [RejectedStoreDetail] Found registration in 'store_registrations'`);
           console.log(`📋 [Registration Data]`, {
             userId: targetRegistration.userId,
             status: targetRegistration.status,
@@ -157,42 +157,13 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
             documentKeys: targetRegistration.documents ? Object.keys(targetRegistration.documents) : [],
             documents: targetRegistration.documents
           });
-
-          // Test if documents have valid image data
-          if (targetRegistration.documents) {
-            console.log('\n🧪 [Document Validation Test]');
-            Object.entries(targetRegistration.documents).forEach(([key, value]) => {
-              if (value && typeof value === 'object' && 'uri' in value) {
-                const uri = value.uri;
-                console.log(`  ${key}:`, {
-                  hasUri: !!uri,
-                  uriLength: uri?.length || 0,
-                  isBase64Image: uri?.startsWith('data:image/') || false,
-                  imageFormat: uri?.substring(5, 15) || 'unknown',
-                  canOpen: !!(uri && uri.length > 0)
-                });
-              } else if (typeof value === 'string') {
-                console.log(`  ${key}:`, {
-                  hasUri: !!value,
-                  uriLength: value?.length || 0,
-                  isBase64Image: value?.startsWith('data:image/') || false,
-                  imageFormat: value?.substring(5, 15) || 'unknown',
-                  canOpen: !!(value && value.length > 0)
-                });
-              } else {
-                console.log(`  ${key}: Not uploaded or invalid format`);
-              }
-            });
-          }
         } else {
-          console.log(`⚠️ [PendingApprovalDetail] Not found in 'store_registrations', checking 'stores' collection...`);
-          // If not found, try to fetch from stores collection (might be a pending store)
-          // This will be handled by StoreService
+          console.log(`⚠️ [RejectedStoreDetail] Registration not found for userId: ${userId}`);
         }
 
         setRegistration(targetRegistration || null);
       } catch (error) {
-        console.error('❌ [PendingApprovalDetail] Error fetching registration:', error);
+        console.error('❌ [RejectedStoreDetail] Error fetching registration:', error);
       } finally {
         setLoading(false);
       }
@@ -201,30 +172,30 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
     fetchRegistration();
   }, [userId]);
 
-  const handleApprove = async () => {
+  const handleReReview = async () => {
     if (!registration) return;
 
     try {
       setProcessing(true);
-      await AdminService.approveStoreRegistration(userId);
-      onApprove?.(userId);
+      // Trigger re-review action
+      onReReview?.(userId);
+      setShowReReviewModal(false);
     } catch (error) {
-      console.error('Error approving registration:', error);
+      console.error('Error re-reviewing registration:', error);
     } finally {
       setProcessing(false);
     }
   };
 
-  const handleReject = async () => {
+  const handleDelete = async () => {
     if (!registration) return;
 
     try {
       setProcessing(true);
-      await AdminService.rejectStoreRegistration(userId, rejectReason);
-      onReject?.(userId, rejectReason);
-      setShowRejectModal(false);
+      onDelete?.(userId);
+      setShowDeleteModal(false);
     } catch (error) {
-      console.error('Error rejecting registration:', error);
+      console.error('Error deleting registration:', error);
     } finally {
       setProcessing(false);
     }
@@ -297,7 +268,8 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
           const uploadedDocs = getUploadedDocumentsList(registration);
           const documentCount = uploadedDocs.length;
           const docsHeight = documentCount === 0 ? 140 : Math.max(140, 70 + (documentCount * 50) + 30);
-          return 700 + docsHeight + 70 + 80; // Base + docs + buttons + extra margin
+          // Add height for rejection reason section (120px)
+          return 700 + 120 + docsHeight + 70 + 80; // Base + rejection + docs + buttons + extra margin
         })(),
         backgroundColor: '#f3f5f9',
         borderRadius: '16px',
@@ -336,7 +308,7 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
           />
         </button>
 
-        {/* Status Badge */}
+        {/* Status Badge - Rejected (Red) */}
         <div
           className="absolute flex items-center justify-center"
           style={{
@@ -344,7 +316,7 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
             top: '34px',
             width: '98px',
             height: '32px',
-            backgroundColor: '#fef9c3', // Always yellow for pending status display
+            backgroundColor: '#fee2e2',
             borderRadius: '8px',
             paddingLeft: '20px',
             paddingRight: '20px',
@@ -357,13 +329,92 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
               fontFamily: 'Clash Grotesk Variable',
               fontWeight: 500,
               fontSize: '16px',
-              color: '#b86b0e', // Always yellow text for pending status display
+              color: '#dc2626',
               textAlign: 'center'
             }}
           >
-            Pending
+            Rejected
           </span>
         </div>
+      </div>
+
+      {/* Rejection Reason Section */}
+      <div
+        className="absolute"
+        style={{
+          left: '40px',
+          top: '220px',
+          width: '1120px',
+          height: '100px',
+          backgroundColor: '#fef2f2',
+          borderRadius: '16px',
+          boxShadow: '0px 0px 5px rgba(220, 38, 38, 0.15)',
+          border: '1px solid #fecaca'
+        }}
+      >
+        {/* Warning Icon */}
+        <div
+          className="absolute flex items-center justify-center"
+          style={{
+            left: '20px',
+            top: '20px',
+            width: '40px',
+            height: '40px',
+            backgroundColor: '#fee2e2',
+            borderRadius: '50%'
+          }}
+        >
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            style={{ color: '#dc2626' }}
+          >
+            <path
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </div>
+
+        {/* Rejection Reason Title */}
+        <h2
+          className="absolute"
+          style={{
+            left: '80px',
+            top: '20px',
+            fontFamily: 'Clash Grotesk Variable',
+            fontWeight: 600,
+            fontSize: '16px',
+            lineHeight: '19.68px',
+            color: '#dc2626',
+            textAlign: 'left'
+          }}
+        >
+          Rejection Reason
+        </h2>
+
+        {/* Rejection Reason Text */}
+        <p
+          className="absolute"
+          style={{
+            left: '80px',
+            top: '50px',
+            width: '1000px',
+            fontFamily: 'Clash Grotesk Variable',
+            fontWeight: 400,
+            fontSize: '14px',
+            lineHeight: '17.22px',
+            color: '#991b1b'
+          }}
+        >
+          {(registration as StoreRegistration & { rejectionReason?: string }).rejectionReason || 'No rejection reason provided'}
+        </p>
       </div>
 
       {/* Business Owner Section */}
@@ -371,7 +422,7 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
         className="absolute"
         style={{
           left: '40px',
-          top: '220px',
+          top: '340px',
           width: '1120px',
           height: '150px',
           backgroundColor: '#ffffff',
@@ -484,7 +535,7 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
         className="absolute"
         style={{
           left: '40px',
-          top: '390px',
+          top: '510px',
           width: '1120px',
           height: '180px',
           backgroundColor: '#ffffff',
@@ -626,7 +677,7 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
         className="absolute"
         style={{
           left: '40px',
-          top: '590px',
+          top: '710px',
           width: '1120px',
           height: '90px',
           backgroundColor: '#ffffff',
@@ -673,12 +724,12 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
         className="absolute"
         style={{
           left: '40px',
-          top: '700px',
+          top: '820px',
           width: '1120px',
           height: (() => {
             const uploadedDocs = getUploadedDocumentsList(registration);
             const documentCount = uploadedDocs.length;
-            return documentCount === 0 ? 140 : Math.max(140, 70 + (documentCount * 50) + 30); // Base height + documents + padding
+            return documentCount === 0 ? 140 : Math.max(140, 70 + (documentCount * 50) + 30);
           })(),
           backgroundColor: '#ffffff',
           borderRadius: '16px',
@@ -760,7 +811,6 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
           }
 
           return documentList.map((doc, index) => {
-            // All documents in this list are already validated as uploaded (have valid URIs)
             return (
               <div key={doc.key}>
                 {/* Document Background */}
@@ -822,63 +872,35 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
                     </span>
                   </div>
 
-                  {/* Right side - View Link (all documents in list are uploaded) */}
+                  {/* Right side - View Link */}
                   <button
                     onClick={() => {
                       try {
-                        // Support both string (legacy) and object (new) format from React Native app
                         let uri: string | undefined;
 
                         if (typeof doc.data === 'string') {
                           uri = (doc.data as string).trim();
                         } else if (typeof doc.data === 'object' && doc.data && 'uri' in doc.data) {
-                          uri = (doc.data as any).uri?.trim();
+                          const docData = doc.data as { uri?: string };
+                          uri = docData.uri?.trim();
                         }
-
-                        console.log(`🖼️ [View Document] Attempting to open ${doc.name}`);
-                        console.log('📋 Full document data:', doc.data);
-                        console.log('🔍 URI details:', {
-                          format: typeof doc.data === 'string' ? 'string' : 'object',
-                          hasUri: !!uri,
-                          uriLength: uri?.length || 0,
-                          isDataURL: uri?.startsWith('data:') ? 'Yes ✅' : 'No',
-                          isStorageURL: uri?.startsWith('http') ? 'Yes ✅' : 'No',
-                          uriPrefix: uri?.substring(0, 50) + '...',
-                          documentType: typeof doc.data === 'object' && 'type' in doc.data ? doc.data.type || '(empty)' : 'unknown',
-                          uploaded: typeof doc.data === 'object' && 'uploaded' in doc.data ? doc.data.uploaded : 'unknown'
-                        });
 
                         if (uri && uri.length > 0) {
                           let urlToOpen = uri;
 
-                          // Check if it's a base64 data URL (needs conversion)
                           if (uri.startsWith('data:')) {
-                            console.log('🔄 [Converting] Base64 data URL detected, converting to Blob URL...');
                             urlToOpen = convertBase64ToBlob(uri);
-                            console.log('✅ [Converted] Blob URL created:', urlToOpen);
-                          } else if (uri.startsWith('http')) {
-                            console.log('✅ [Direct URL] Firebase Storage URL detected, opening directly...');
                           }
 
-                          console.log(`✅ Opening document in new tab...`);
                           const newWindow = window.open(urlToOpen, '_blank');
 
                           if (!newWindow) {
-                            console.error('❌ Pop-up blocked! Please allow pop-ups for this site.');
-                            alert('Pop-up blocked! Please allow pop-ups to view documents.\n\nThe image data is valid but your browser blocked the new tab.');
-                          } else {
-                            console.log('✅ Document opened successfully!');
+                            alert('Pop-up blocked! Please allow pop-ups to view documents.');
                           }
-                        } else {
-                          console.error(`❌ [View Document] No valid URI found for ${doc.name}`, {
-                            dataType: typeof doc.data,
-                            data: doc.data
-                          });
-                          alert(`Cannot open ${doc.name}: Document URI is empty or invalid.\n\nCheck browser console (F12) for details.`);
                         }
                       } catch (error) {
                         console.error('❌ [View Document] Error:', error);
-                        alert(`Error opening document: ${error}\n\nCheck browser console (F12) for details.`);
+                        alert(`Error opening document: ${error}`);
                       }
                     }}
                     style={{
@@ -903,10 +925,10 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
       </div>
 
       {/* Action Buttons */}
-      {/* Approve Button */}
+      {/* Re-Review Application Button */}
       <button
-        onClick={handleApprove}
-        disabled={processing || registration.status === 'approved'}
+        onClick={() => setShowReReviewModal(true)}
+        disabled={processing}
         className="absolute flex items-center justify-center transition-all hover:scale-105 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed border-0"
         style={{
           left: '40px',
@@ -914,25 +936,50 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
             const uploadedDocs = getUploadedDocumentsList(registration);
             const documentCount = uploadedDocs.length;
             const docsHeight = documentCount === 0 ? 140 : Math.max(140, 70 + (documentCount * 50) + 30);
-            return 700 + docsHeight + 30; // Documents section top + height + spacing
+            return 820 + docsHeight + 30;
           })(),
           width: '540px',
           height: '50px',
-          backgroundColor: registration.status === 'approved' ? '#9ca3af' : '#3bb77e',
+          backgroundColor: '#3b82f6',
           borderRadius: '16px',
-          boxShadow: '0px 4px 20px rgba(59, 183, 126, 0.25)',
+          boxShadow: '0px 4px 20px rgba(59, 130, 246, 0.25)',
           border: 'none',
-          cursor: (processing || registration.status === 'approved') ? 'not-allowed' : 'pointer',
+          cursor: processing ? 'not-allowed' : 'pointer',
           gap: '12px'
         }}
       >
-        <Image
-          src="/images/admin-dashboard/pending-approval/check-icon.svg"
-          alt="Approve"
-          width={25}
-          height={25}
-          className="object-contain"
-        />
+        {/* Document with checkmark icon - more relevant for re-review */}
+        <svg
+          width="25"
+          height="25"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V8L14 2Z"
+            stroke="white"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            fill="none"
+          />
+          <path
+            d="M14 2V8H20"
+            stroke="white"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            fill="none"
+          />
+          <path
+            d="M9 13L11 15L15 11"
+            stroke="white"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
         <span
           style={{
             fontFamily: 'Clash Grotesk Variable',
@@ -943,16 +990,14 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
             textAlign: 'center'
           }}
         >
-          {processing ? 'Processing...' :
-           registration.status === 'approved' ? 'Already Approved' :
-           'Approve Application'}
+          Re-Review Application
         </span>
       </button>
 
-      {/* Reject Button */}
+      {/* Delete Registration Button */}
       <button
-        onClick={() => setShowRejectModal(true)}
-        disabled={processing || registration.status === 'rejected'}
+        onClick={() => setShowDeleteModal(true)}
+        disabled={processing}
         className="absolute flex items-center justify-center transition-all hover:scale-105 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed border-0"
         style={{
           left: '620px',
@@ -960,21 +1005,21 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
             const uploadedDocs = getUploadedDocumentsList(registration);
             const documentCount = uploadedDocs.length;
             const docsHeight = documentCount === 0 ? 140 : Math.max(140, 70 + (documentCount * 50) + 30);
-            return 700 + docsHeight + 30; // Documents section top + height + spacing
+            return 820 + docsHeight + 30;
           })(),
           width: '540px',
           height: '50px',
-          backgroundColor: registration.status === 'rejected' ? '#9ca3af' : '#ef4343',
+          backgroundColor: '#ef4343',
           borderRadius: '16px',
           boxShadow: '0px 4px 20px rgba(239, 67, 67, 0.25)',
           border: 'none',
-          cursor: (processing || registration.status === 'rejected') ? 'not-allowed' : 'pointer',
+          cursor: processing ? 'not-allowed' : 'pointer',
           gap: '12px'
         }}
       >
         <Image
           src="/images/admin-dashboard/pending-approval/close-icon.svg"
-          alt="Reject"
+          alt="Delete"
           width={25}
           height={25}
           className="object-contain"
@@ -989,12 +1034,12 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
             textAlign: 'center'
           }}
         >
-          {registration.status === 'rejected' ? 'Already Rejected' : 'Reject Application'}
+          Delete Registration
         </span>
       </button>
 
-      {/* Reject Modal */}
-      {showRejectModal && (
+      {/* Re-Review Confirmation Modal */}
+      {showReReviewModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div
             className="bg-white rounded-2xl shadow-xl"
@@ -1012,7 +1057,7 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
                 marginBottom: '16px'
               }}
             >
-              Reject Application
+              Re-Review Application
             </h3>
 
             <p
@@ -1025,25 +1070,12 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
                 lineHeight: '1.5em'
               }}
             >
-              Please provide a reason for rejecting this store registration application. This will help the applicant understand what needs to be improved.
+              Are you sure you want to move this registration back to pending review? The admin team will review the application again and the store owner can resubmit updated documents if needed.
             </p>
-
-            <textarea
-              value={rejectReason}
-              onChange={(e) => setRejectReason(e.target.value)}
-              placeholder="Enter rejection reason..."
-              className="w-full border border-gray-200 rounded-lg p-3 resize-none"
-              style={{
-                height: '120px',
-                fontFamily: 'Clash Grotesk Variable',
-                fontSize: '14px',
-                marginBottom: '24px'
-              }}
-            />
 
             <div className="flex gap-3">
               <button
-                onClick={() => setShowRejectModal(false)}
+                onClick={() => setShowReReviewModal(false)}
                 className="flex-1 py-3 px-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
                 style={{
                   fontFamily: 'Clash Grotesk Variable',
@@ -1055,8 +1087,73 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
                 Cancel
               </button>
               <button
-                onClick={handleReject}
-                disabled={!rejectReason.trim() || processing}
+                onClick={handleReReview}
+                disabled={processing}
+                className="flex-1 py-3 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50"
+                style={{
+                  fontFamily: 'Clash Grotesk Variable',
+                  fontWeight: 500,
+                  fontSize: '14px'
+                }}
+              >
+                {processing ? 'Processing...' : 'Re-Review Application'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div
+            className="bg-white rounded-2xl shadow-xl"
+            style={{
+              width: '500px',
+              padding: '32px'
+            }}
+          >
+            <h3
+              style={{
+                fontFamily: 'Clash Grotesk Variable',
+                fontWeight: 600,
+                fontSize: '24px',
+                color: '#1E1E1E',
+                marginBottom: '16px'
+              }}
+            >
+              Delete Registration
+            </h3>
+
+            <p
+              style={{
+                fontFamily: 'Clash Grotesk Variable',
+                fontWeight: 400,
+                fontSize: '14px',
+                color: 'rgba(30, 30, 30, 0.7)',
+                marginBottom: '24px',
+                lineHeight: '1.5em'
+              }}
+            >
+              Are you sure you want to permanently delete this rejected store registration? This action cannot be undone.
+            </p>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className="flex-1 py-3 px-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                style={{
+                  fontFamily: 'Clash Grotesk Variable',
+                  fontWeight: 500,
+                  fontSize: '14px',
+                  color: '#6B7280'
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={processing}
                 className="flex-1 py-3 px-4 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50"
                 style={{
                   fontFamily: 'Clash Grotesk Variable',
@@ -1064,7 +1161,7 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
                   fontSize: '14px'
                 }}
               >
-                {processing ? 'Rejecting...' : 'Reject Application'}
+                {processing ? 'Deleting...' : 'Delete Permanently'}
               </button>
             </div>
           </div>
@@ -1074,4 +1171,4 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
   );
 };
 
-export default PendingApprovalDetail;
+export default RejectedStoreDetail;

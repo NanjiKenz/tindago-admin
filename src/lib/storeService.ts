@@ -92,6 +92,7 @@ export class StoreService {
             ownerPhone,
             address,
             status: storeData.status || 'active',
+            statusReason: storeData.statusReason,
             joinedDate: storeData.joinedDate || storeData.createdAt || storeData.approvedAt || new Date().toISOString(),
             lastActiveAt: storeData.lastActiveAt,
             businessHours: storeData.businessHours,
@@ -209,6 +210,7 @@ export class StoreService {
           ownerPhone,
           address,
           status: storeData.status || 'pending',
+          statusReason: storeData.statusReason,
           joinedDate: storeData.joinedDate || storeData.createdAt || new Date().toISOString(),
           lastActiveAt: storeData.lastActiveAt,
           businessHours: storeData.businessHours,
@@ -310,8 +312,8 @@ export class StoreService {
   }
 
   /**
-   * Get all stores including pending registrations
-   * Fetches from BOTH stores collection (with status=pending) AND store_registrations collection
+   * Get all stores including pending and rejected registrations
+   * Fetches from BOTH stores collection AND store_registrations collection
    */
   static async getAllStoresWithRegistrations(): Promise<Store[]> {
     try {
@@ -325,9 +327,16 @@ export class StoreService {
       console.log(`   ├─ Suspended: ${allStores.filter(s => s.status === 'suspended').length}`);
       console.log(`   └─ Rejected: ${allStores.filter(s => s.status === 'rejected').length}`);
 
-      // Get pending registrations from store_registrations collection (for backward compatibility)
-      const pendingRegistrations = await AdminService.getPendingStoreRegistrations();
-      console.log(`📋 [getAllStoresWithRegistrations] Pending registrations from 'store_registrations': ${pendingRegistrations.length}`);
+      // Get ALL registrations from store_registrations collection (pending and rejected)
+      const allRegistrations = await AdminService.getAllStoreRegistrations();
+      const pendingRegistrations = allRegistrations.filter(reg =>
+        reg.status === 'pending' || reg.status === 'completed_pending' || reg.status === 'pending_approval' || !reg.status
+      );
+      const rejectedRegistrations = allRegistrations.filter(reg => reg.status === 'rejected');
+
+      console.log(`📋 [getAllStoresWithRegistrations] Registrations from 'store_registrations':`);
+      console.log(`   ├─ Pending: ${pendingRegistrations.length}`);
+      console.log(`   └─ Rejected: ${rejectedRegistrations.length}`);
 
       // Convert registrations to Store format with proper field mapping from nested structure
       const pendingStores: Store[] = pendingRegistrations.map((registration: StoreRegistration) => {
@@ -394,18 +403,84 @@ export class StoreService {
         };
       });
 
+      // Convert rejected registrations to Store format
+      const rejectedStores: Store[] = rejectedRegistrations.map((registration: StoreRegistration) => {
+        // Extract store name - Priority: businessInfo.storeName > storeName > businessName > name
+        const storeName = registration.businessInfo?.storeName ||
+                         registration.storeName ||
+                         registration.businessName ||
+                         registration.name ||
+                         'Unknown Store';
+
+        // Extract owner name - Priority: personalInfo.name > name > ownerName > owner > displayName
+        const ownerName = registration.personalInfo?.name ||
+                         registration.name ||
+                         registration.ownerName ||
+                         registration.owner ||
+                         registration.displayName ||
+                         'Unknown Owner';
+
+        // Extract email - Priority: personalInfo.email > email > ownerEmail
+        const ownerEmail = registration.personalInfo?.email ||
+                          registration.email ||
+                          registration.ownerEmail ||
+                          '';
+
+        // Extract phone - Priority: personalInfo.mobile > phone > ownerPhone
+        const ownerPhone = registration.personalInfo?.mobile ||
+                          registration.phone ||
+                          registration.ownerPhone ||
+                          '';
+
+        // Extract address - Priority: businessInfo (address + city) > legacy address + city
+        const businessAddress = registration.businessInfo?.address;
+        const businessCity = registration.businessInfo?.city;
+        const legacyAddress = registration.address || registration.storeAddress;
+        const legacyCity = registration.city;
+
+        const address = businessAddress && businessCity
+                         ? `${businessAddress}, ${businessCity}`
+                         : businessAddress ||
+                           (legacyAddress && legacyCity
+                             ? `${legacyAddress}, ${legacyCity}`
+                             : legacyAddress || legacyCity || '');
+
+        return {
+          storeId: registration.userId,
+          storeName,
+          ownerName,
+          ownerEmail,
+          ownerPhone,
+          address,
+          status: 'rejected' as const,
+          joinedDate: registration.createdAt || registration.submittedAt || registration.dateCreated || new Date().toISOString(),
+          documents: registration.documents,
+          businessVerification: {
+            status: 'rejected' as const
+          },
+          performanceMetrics: {
+            totalSales: 0,
+            totalOrders: 0,
+            rating: 0,
+            responseTime: 0
+          },
+          registrationData: registration
+        };
+      });
+
       // Prioritize stores from 'stores' collection, only add from 'store_registrations' if not in stores
       const storeIds = new Set(allStores.map(s => s.storeId));
       const additionalPendingStores = pendingStores.filter(ps => !storeIds.has(ps.storeId));
+      const additionalRejectedStores = rejectedStores.filter(rs => !storeIds.has(rs.storeId));
 
       console.log(`🔄 [getAllStoresWithRegistrations] Deduplication:`);
       console.log(`   ├─ Stores from 'stores' collection: ${allStores.length}`);
-      console.log(`   ├─ Registrations from 'store_registrations': ${pendingStores.length}`);
-      console.log(`   ├─ Already in 'stores' (skipped): ${pendingStores.length - additionalPendingStores.length}`);
-      console.log(`   └─ Added from 'store_registrations': ${additionalPendingStores.length}`);
+      console.log(`   ├─ Pending from 'store_registrations': ${pendingStores.length} (${additionalPendingStores.length} new)`);
+      console.log(`   ├─ Rejected from 'store_registrations': ${rejectedStores.length} (${additionalRejectedStores.length} new)`);
+      console.log(`   └─ Total additions from registrations: ${additionalPendingStores.length + additionalRejectedStores.length}`);
 
-      // Combine: All stores from 'stores' + additional from 'store_registrations'
-      const combinedStores = [...allStores, ...additionalPendingStores];
+      // Combine: All stores from 'stores' + additional pending + additional rejected from 'store_registrations'
+      const combinedStores = [...allStores, ...additionalPendingStores, ...additionalRejectedStores];
 
       console.log(`✅ [getAllStoresWithRegistrations] Final result: ${combinedStores.length} total stores`);
       console.log(`📊 [getAllStoresWithRegistrations] Status breakdown:`);
@@ -569,6 +644,69 @@ export class StoreService {
   }
 
   /**
+   * Reactivate a suspended store (change status from suspended to active)
+   */
+  static async reactivateStore(storeId: string): Promise<void> {
+    try {
+      const storeRef = ref(database, `stores/${storeId}`);
+
+      const updateData: Record<string, unknown> = {
+        status: 'active',
+        statusUpdatedAt: new Date().toISOString(),
+        reactivatedAt: new Date().toISOString(),
+        statusReason: '' // Clear the suspension reason
+      };
+
+      await update(storeRef, updateData);
+
+      // Log the reactivation
+      const logRef = ref(database, `store_status_logs/${storeId}/${Date.now()}`);
+      await set(logRef, {
+        oldStatus: 'suspended',
+        newStatus: 'active',
+        reason: 'Store reactivated by admin',
+        updatedAt: new Date().toISOString(),
+        updatedBy: 'admin'
+      });
+
+      console.log(`Store ${storeId} reactivated successfully`);
+    } catch (error) {
+      console.error('Error reactivating store:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Permanently delete a store (hard delete from Firebase)
+   * WARNING: This action is irreversible
+   */
+  static async permanentlyDeleteStore(storeId: string): Promise<void> {
+    try {
+      // Log the permanent deletion first
+      const logRef = ref(database, `store_permanent_deletion_logs/${storeId}`);
+      await set(logRef, {
+        deletedAt: new Date().toISOString(),
+        deletedBy: 'admin',
+        storeId
+      });
+
+      // Delete the store record
+      const storeRef = ref(database, `stores/${storeId}`);
+      await set(storeRef, null);
+
+      // Optionally delete related data (uncomment if needed)
+      // await set(ref(database, `store_orders/${storeId}`), null);
+      // await set(ref(database, `store_verifications/${storeId}`), null);
+      // await set(ref(database, `store_subscriptions/${storeId}`), null);
+
+      console.log(`Store ${storeId} permanently deleted successfully`);
+    } catch (error) {
+      console.error('Error permanently deleting store:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Subscribe to real-time store updates
    */
   static subscribeToStores(
@@ -721,6 +859,34 @@ export class StoreService {
       console.log(`Store ${storeId} updated successfully`);
     } catch (error) {
       console.error('Error updating store:', error);
+      throw error;
+    }
+  }
+
+  static async updateStoreDetails(
+    storeId: string,
+    details: {
+      storeName?: string;
+      ownerName?: string;
+      ownerEmail?: string;
+      ownerPhone?: string;
+      address?: string;
+      storeDescription?: string;
+    }
+  ): Promise<void> {
+    try {
+      const storeRef = ref(database, `stores/${storeId}`);
+
+      const updateData: Record<string, unknown> = {
+        ...details,
+        updatedAt: new Date().toISOString()
+      };
+
+      await update(storeRef, updateData);
+
+      console.log(`Store details updated successfully for store: ${storeId}`);
+    } catch (error) {
+      console.error('Error updating store details:', error);
       throw error;
     }
   }
