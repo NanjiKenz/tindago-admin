@@ -8,7 +8,16 @@
       "outputPath": "view-pending-585-3060",
       "folderName": "view-pending-585-3060",
       "assetCount": 9
+    },
+    {
+      "nodeId": "585:1608",
+      "nodeName": "Landing Page",
+      "componentName": "LandingPage",
+      "extractedAt": "2025-10-07T05:54:06.216Z",
+      "outputPath": "landing-page-585-1608",
+      "folderName": "landing-page-585-1608",
+      "assetCount": 6
     }
   ],
-  "lastUpdated": "2025-09-28T08:25:04.895Z"
+  "lastUpdated": "2025-10-07T05:54:06.216Z"
 }

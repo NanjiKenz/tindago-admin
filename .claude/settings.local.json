@@ -41,7 +41,9 @@
       "Read(//c/**)",
       "Bash(jq:*)",
       "Bash(timeout 30 npm run build)",
-      "Bash(timeout 10s npm run dev)"
+      "Bash(timeout 10s npm run dev)",
+      "Bash(test:*)",
+      "Bash(dir \"C:\\Users\\Toph\\Desktop\\Github\\Projects\\React Native Projects\\tindago-admin\\figma-extracted-design\\landing-page-585-1608\\assets\\702\")"
     ],
     "deny": [],
     "ask": []

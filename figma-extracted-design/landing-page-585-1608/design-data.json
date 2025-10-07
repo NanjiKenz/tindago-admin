@@ -1,0 +1,786 @@
+{
+  "meta": {
+    "extractedAt": "2025-10-07T05:54:06.190Z",
+    "nodeId": "585:1608",
+    "nodeName": "Landing Page",
+    "nodeType": "FRAME",
+    "componentName": "LandingPage",
+    "figmaFileId": "8I1Nr3vQZllDDknSevstvH",
+    "outputPath": "landing-page-585-1608"
+  },
+  "design": {
+    "id": "585:1608",
+    "name": "Landing Page",
+    "type": "FRAME",
+    "visible": true,
+    "layout": {
+      "width": 1440,
+      "height": 1024,
+      "x": 1480,
+      "y": 0,
+      "constraints": {
+        "vertical": "TOP",
+        "horizontal": "LEFT"
+      }
+    },
+    "effects": [],
+    "fills": [
+      {
+        "type": "GRADIENT_LINEAR",
+        "color": null,
+        "gradientStops": [
+          {
+            "position": 0.30000001192092896,
+            "color": "#ebf4f5"
+          },
+          {
+            "position": 1,
+            "color": "#b5c6e0"
+          }
+        ]
+      }
+    ],
+    "strokes": [],
+    "strokeWeight": 1,
+    "strokeAlign": "INSIDE",
+    "children": [
+      {
+        "id": "585:1609",
+        "name": "Label",
+        "type": "GROUP",
+        "visible": true,
+        "layout": {
+          "width": 1777,
+          "height": 937,
+          "x": 1394,
+          "y": 43,
+          "constraints": {
+            "vertical": "CENTER",
+            "horizontal": "LEFT"
+          },
+          "rectangleCornerRadii": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "effects": [],
+        "fills": [],
+        "strokes": [],
+        "strokeWeight": 1,
+        "strokeAlign": "INSIDE",
+        "children": [
+          {
+            "id": "585:1610",
+            "name": "pink-empty-shopping-basket-online-shopping-concept-pink-background-3d-rendering-removebg-preview",
+            "type": "RECTANGLE",
+            "visible": true,
+            "layout": {
+              "width": 268,
+              "height": 192,
+              "x": 1394,
+              "y": 385,
+              "constraints": {
+                "vertical": "TOP",
+                "horizontal": "LEFT"
+              }
+            },
+            "effects": [],
+            "fills": [
+              {
+                "type": "IMAGE",
+                "color": null
+              }
+            ],
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeAlign": "INSIDE",
+            "children": []
+          },
+          {
+            "id": "585:1611",
+            "name": "ef13b18d-e7d7-46b1-bc1e-d503cdb1716e-removebg-preview",
+            "type": "RECTANGLE",
+            "visible": true,
+            "layout": {
+              "width": 277,
+              "height": 245,
+              "x": 1815,
+              "y": 207,
+              "constraints": {
+                "vertical": "TOP",
+                "horizontal": "LEFT"
+              }
+            },
+            "effects": [],
+            "fills": [
+              {
+                "type": "IMAGE",
+                "color": null
+              }
+            ],
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeAlign": "INSIDE",
+            "children": []
+          },
+          {
+            "id": "585:1612",
+            "name": "Bili kahit saan kuha kahit kailan!",
+            "type": "TEXT",
+            "visible": true,
+            "layout": {
+              "width": 649,
+              "height": 186,
+              "x": 1520,
+              "y": 320,
+              "constraints": {
+                "vertical": "TOP",
+                "horizontal": "LEFT"
+              }
+            },
+            "effects": [],
+            "fills": [
+              {
+                "type": "SOLID",
+                "color": "#000000"
+              }
+            ],
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeAlign": "OUTSIDE",
+            "children": [],
+            "text": {
+              "characters": "Bili kahit saan\nkuha kahit kailan!",
+              "style": {
+                "fontFamily": "Clash Grotesk Variable",
+                "fontWeight": 600,
+                "fontSize": 64,
+                "lineHeight": 78.72000122070312,
+                "letterSpacing": 0,
+                "textAlign": "LEFT",
+                "textColor": "#000000"
+              }
+            }
+          },
+          {
+            "id": "585:1613",
+            "name": "Delve into your neighborhood's shopping needs with comprehensive insights in one app",
+            "type": "TEXT",
+            "visible": true,
+            "layout": {
+              "width": 422,
+              "height": 50,
+              "x": 1520,
+              "y": 516,
+              "constraints": {
+                "vertical": "TOP",
+                "horizontal": "CENTER"
+              }
+            },
+            "effects": [],
+            "fills": [
+              {
+                "type": "SOLID",
+                "color": "#1e1e1e"
+              }
+            ],
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeAlign": "OUTSIDE",
+            "children": [],
+            "text": {
+              "characters": "Delve into your neighborhood's shopping needs \nwith comprehensive insights in one app",
+              "style": {
+                "fontFamily": "Clash Grotesk Variable",
+                "fontWeight": 500,
+                "fontSize": 20,
+                "lineHeight": 24.600000381469727,
+                "letterSpacing": 0,
+                "textAlign": "LEFT",
+                "textColor": "#1e1e1e"
+              }
+            }
+          },
+          {
+            "id": "702:203",
+            "name": "341shots_so 1",
+            "type": "RECTANGLE",
+            "visible": true,
+            "layout": {
+              "width": 1250,
+              "height": 937,
+              "x": 1921,
+              "y": 43,
+              "constraints": {
+                "vertical": "TOP",
+                "horizontal": "LEFT"
+              }
+            },
+            "effects": [],
+            "fills": [
+              {
+                "type": "IMAGE",
+                "color": null
+              }
+            ],
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeAlign": "INSIDE",
+            "children": []
+          },
+          {
+            "id": "585:1615",
+            "name": "Apple",
+            "type": "GROUP",
+            "visible": true,
+            "layout": {
+              "width": 170,
+              "height": 50,
+              "x": 1520,
+              "y": 606,
+              "constraints": {
+                "vertical": "TOP",
+                "horizontal": "LEFT"
+              },
+              "rectangleCornerRadii": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            "effects": [],
+            "fills": [],
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeAlign": "INSIDE",
+            "children": [
+              {
+                "id": "585:1616",
+                "name": "Rectangle 50",
+                "type": "RECTANGLE",
+                "visible": true,
+                "layout": {
+                  "width": 170,
+                  "height": 50,
+                  "x": 1520,
+                  "y": 606,
+                  "constraints": {
+                    "vertical": "TOP",
+                    "horizontal": "LEFT"
+                  },
+                  "cornerRadius": 20
+                },
+                "effects": [],
+                "fills": [],
+                "strokes": [
+                  {
+                    "type": "SOLID",
+                    "color": "#1e1e1e"
+                  }
+                ],
+                "strokeWeight": 2,
+                "strokeAlign": "INSIDE",
+                "children": []
+              },
+              {
+                "id": "585:1617",
+                "name": "Group",
+                "type": "GROUP",
+                "visible": true,
+                "layout": {
+                  "width": 114,
+                  "height": 32,
+                  "x": 1548,
+                  "y": 615,
+                  "constraints": {
+                    "vertical": "CENTER",
+                    "horizontal": "CENTER"
+                  }
+                },
+                "effects": [],
+                "fills": [],
+                "strokes": [],
+                "strokeWeight": 1,
+                "strokeAlign": "INSIDE",
+                "children": [
+                  {
+                    "id": "585:1618",
+                    "name": "Apple Inc",
+                    "type": "RECTANGLE",
+                    "visible": true,
+                    "layout": {
+                      "width": 30,
+                      "height": 30,
+                      "x": 1548,
+                      "y": 615,
+                      "constraints": {
+                        "vertical": "TOP",
+                        "horizontal": "LEFT"
+                      }
+                    },
+                    "effects": [],
+                    "fills": [
+                      {
+                        "type": "IMAGE",
+                        "color": null
+                      }
+                    ],
+                    "strokes": [],
+                    "strokeWeight": 1,
+                    "strokeAlign": "INSIDE",
+                    "children": []
+                  },
+                  {
+                    "id": "585:1619",
+                    "name": "Download on the",
+                    "type": "TEXT",
+                    "visible": true,
+                    "layout": {
+                      "width": 74,
+                      "height": 12,
+                      "x": 1588,
+                      "y": 615,
+                      "constraints": {
+                        "vertical": "TOP",
+                        "horizontal": "LEFT"
+                      }
+                    },
+                    "effects": [],
+                    "fills": [
+                      {
+                        "type": "SOLID",
+                        "color": "#000000"
+                      }
+                    ],
+                    "strokes": [],
+                    "strokeWeight": 1,
+                    "strokeAlign": "OUTSIDE",
+                    "children": [],
+                    "text": {
+                      "characters": "Download on the",
+                      "style": {
+                        "fontFamily": "Clash Grotesk Variable",
+                        "fontWeight": 500,
+                        "fontSize": 10,
+                        "lineHeight": 12.300000190734863,
+                        "letterSpacing": 0,
+                        "textAlign": "CENTER",
+                        "textColor": "#000000"
+                      }
+                    }
+                  },
+                  {
+                    "id": "585:1620",
+                    "name": "App Store",
+                    "type": "TEXT",
+                    "visible": true,
+                    "layout": {
+                      "width": 73,
+                      "height": 20,
+                      "x": 1588,
+                      "y": 627,
+                      "constraints": {
+                        "vertical": "TOP",
+                        "horizontal": "LEFT"
+                      }
+                    },
+                    "effects": [],
+                    "fills": [
+                      {
+                        "type": "SOLID",
+                        "color": "#000000"
+                      }
+                    ],
+                    "strokes": [],
+                    "strokeWeight": 1,
+                    "strokeAlign": "OUTSIDE",
+                    "children": [],
+                    "text": {
+                      "characters": "App Store",
+                      "style": {
+                        "fontFamily": "Clash Grotesk Variable",
+                        "fontWeight": 500,
+                        "fontSize": 16,
+                        "lineHeight": 19.68000030517578,
+                        "letterSpacing": 0,
+                        "textAlign": "CENTER",
+                        "textColor": "#000000"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "585:1621",
+            "name": "Google play",
+            "type": "GROUP",
+            "visible": true,
+            "layout": {
+              "width": 170,
+              "height": 50,
+              "x": 1710,
+              "y": 606,
+              "constraints": {
+                "vertical": "TOP",
+                "horizontal": "LEFT"
+              },
+              "rectangleCornerRadii": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            "effects": [],
+            "fills": [],
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeAlign": "INSIDE",
+            "children": [
+              {
+                "id": "585:1622",
+                "name": "Rectangle 50",
+                "type": "RECTANGLE",
+                "visible": true,
+                "layout": {
+                  "width": 170,
+                  "height": 50,
+                  "x": 1710,
+                  "y": 606,
+                  "constraints": {
+                    "vertical": "TOP",
+                    "horizontal": "LEFT"
+                  },
+                  "cornerRadius": 20
+                },
+                "effects": [],
+                "fills": [],
+                "strokes": [
+                  {
+                    "type": "SOLID",
+                    "color": "#1e1e1e"
+                  }
+                ],
+                "strokeWeight": 2,
+                "strokeAlign": "INSIDE",
+                "children": []
+              },
+              {
+                "id": "585:1623",
+                "name": "Group",
+                "type": "GROUP",
+                "visible": true,
+                "layout": {
+                  "width": 123,
+                  "height": 32,
+                  "x": 1734,
+                  "y": 615,
+                  "constraints": {
+                    "vertical": "CENTER",
+                    "horizontal": "CENTER"
+                  }
+                },
+                "effects": [],
+                "fills": [],
+                "strokes": [],
+                "strokeWeight": 1,
+                "strokeAlign": "INSIDE",
+                "children": [
+                  {
+                    "id": "585:1624",
+                    "name": "GET IT ON",
+                    "type": "TEXT",
+                    "visible": true,
+                    "layout": {
+                      "width": 44,
+                      "height": 12,
+                      "x": 1774,
+                      "y": 615,
+                      "constraints": {
+                        "vertical": "TOP",
+                        "horizontal": "LEFT"
+                      }
+                    },
+                    "effects": [],
+                    "fills": [
+                      {
+                        "type": "SOLID",
+                        "color": "#000000"
+                      }
+                    ],
+                    "strokes": [],
+                    "strokeWeight": 1,
+                    "strokeAlign": "OUTSIDE",
+                    "children": [],
+                    "text": {
+                      "characters": "GET IT ON",
+                      "style": {
+                        "fontFamily": "Clash Grotesk Variable",
+                        "fontWeight": 500,
+                        "fontSize": 10,
+                        "lineHeight": 12.300000190734863,
+                        "letterSpacing": 0,
+                        "textAlign": "LEFT",
+                        "textColor": "#000000"
+                      }
+                    }
+                  },
+                  {
+                    "id": "585:1625",
+                    "name": "Google Play",
+                    "type": "TEXT",
+                    "visible": true,
+                    "layout": {
+                      "width": 83,
+                      "height": 20,
+                      "x": 1774,
+                      "y": 627,
+                      "constraints": {
+                        "vertical": "TOP",
+                        "horizontal": "LEFT"
+                      }
+                    },
+                    "effects": [],
+                    "fills": [
+                      {
+                        "type": "SOLID",
+                        "color": "#000000"
+                      }
+                    ],
+                    "strokes": [],
+                    "strokeWeight": 1,
+                    "strokeAlign": "OUTSIDE",
+                    "children": [],
+                    "text": {
+                      "characters": "Google Play",
+                      "style": {
+                        "fontFamily": "Clash Grotesk Variable",
+                        "fontWeight": 500,
+                        "fontSize": 16,
+                        "lineHeight": 19.68000030517578,
+                        "letterSpacing": 0,
+                        "textAlign": "LEFT",
+                        "textColor": "#000000"
+                      }
+                    }
+                  },
+                  {
+                    "id": "585:1626",
+                    "name": "Google Play",
+                    "type": "RECTANGLE",
+                    "visible": true,
+                    "layout": {
+                      "width": 30,
+                      "height": 30,
+                      "x": 1734,
+                      "y": 615,
+                      "constraints": {
+                        "vertical": "TOP",
+                        "horizontal": "LEFT"
+                      }
+                    },
+                    "effects": [],
+                    "fills": [
+                      {
+                        "type": "IMAGE",
+                        "color": null
+                      }
+                    ],
+                    "strokes": [],
+                    "strokeWeight": 1,
+                    "strokeAlign": "INSIDE",
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "585:1627",
+        "name": "Cart",
+        "type": "FRAME",
+        "visible": false,
+        "layout": {
+          "width": 1000,
+          "height": 650,
+          "x": 1700,
+          "y": 187,
+          "constraints": {
+            "vertical": "CENTER",
+            "horizontal": "CENTER"
+          }
+        },
+        "effects": [],
+        "fills": [
+          {
+            "type": "SOLID",
+            "color": "#ffffff"
+          }
+        ],
+        "strokes": [],
+        "strokeWeight": 1,
+        "strokeAlign": "INSIDE",
+        "children": []
+      },
+      {
+        "id": "585:1628",
+        "name": "nav bar",
+        "type": "FRAME",
+        "visible": true,
+        "layout": {
+          "width": 1440,
+          "height": 100,
+          "x": 1480,
+          "y": 0,
+          "constraints": {
+            "vertical": "TOP",
+            "horizontal": "LEFT"
+          }
+        },
+        "effects": [],
+        "fills": [],
+        "strokes": [],
+        "strokeWeight": 1,
+        "strokeAlign": "INSIDE",
+        "children": [
+          {
+            "id": "585:1629",
+            "name": "2-removebg-preview 3",
+            "type": "RECTANGLE",
+            "visible": true,
+            "layout": {
+              "width": 500,
+              "height": 500,
+              "x": 1389,
+              "y": -165,
+              "constraints": {
+                "vertical": "TOP",
+                "horizontal": "LEFT"
+              }
+            },
+            "effects": [],
+            "fills": [
+              {
+                "type": "IMAGE",
+                "color": null
+              }
+            ],
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeAlign": "INSIDE",
+            "children": []
+          },
+          {
+            "id": "585:1630",
+            "name": "Singup",
+            "type": "FRAME",
+            "visible": true,
+            "layout": {
+              "width": 150,
+              "height": 50,
+              "x": 2730,
+              "y": 27,
+              "constraints": {
+                "vertical": "CENTER",
+                "horizontal": "LEFT"
+              },
+              "layoutMode": "HORIZONTAL",
+              "primaryAxisSizingMode": "FIXED",
+              "counterAxisSizingMode": "FIXED",
+              "primaryAxisAlignItems": "CENTER",
+              "counterAxisAlignItems": "CENTER",
+              "paddingLeft": 10,
+              "paddingRight": 10,
+              "paddingTop": 10,
+              "paddingBottom": 10,
+              "itemSpacing": 10,
+              "cornerRadius": 30
+            },
+            "effects": [
+              {
+                "type": "DROP_SHADOW",
+                "visible": true,
+                "radius": 5,
+                "color": "rgba(0, 0, 0, 0.25)",
+                "offset": {
+                  "x": 0,
+                  "y": 0
+                },
+                "blendMode": "NORMAL"
+              }
+            ],
+            "fills": [
+              {
+                "type": "SOLID",
+                "color": "#0077be"
+              }
+            ],
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeAlign": "INSIDE",
+            "children": [
+              {
+                "id": "585:1631",
+                "name": "Log in",
+                "type": "TEXT",
+                "visible": true,
+                "layout": {
+                  "width": 52,
+                  "height": 25,
+                  "x": 2779,
+                  "y": 39.5,
+                  "constraints": {
+                    "vertical": "TOP",
+                    "horizontal": "LEFT"
+                  }
+                },
+                "effects": [],
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": "#ffffff"
+                  }
+                ],
+                "strokes": [],
+                "strokeWeight": 1,
+                "strokeAlign": "OUTSIDE",
+                "children": [],
+                "text": {
+                  "characters": "Log in",
+                  "style": {
+                    "fontFamily": "Clash Grotesk Variable",
+                    "fontWeight": 500,
+                    "fontSize": 20,
+                    "lineHeight": 24.600000381469727,
+                    "letterSpacing": 0,
+                    "textAlign": "CENTER",
+                    "textColor": "#ffffff"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "assets": {
+    "585:1610": "585:1610.png",
+    "585:1611": "585:1611.png",
+    "702:203": "702:203.png",
+    "585:1618": "585:1618.png",
+    "585:1626": "585:1626.png",
+    "585:1629": "585:1629.png"
+  },
+  "implementation": {
+    "reactComponent": "import React from 'react';\n\nconst LandingPage = () => {\n  return (\n    <div className=\"w-[1440px] h-[1024px]\">\n      <div className=\"w-[1777px] h-[937px]\">\n        <div className=\"w-[268px] h-[192px]\">\n        </div>\n        <div className=\"w-[277px] h-[245px]\">\n        </div>\n        <div className=\"w-[649px] h-[186px] bg-[#000000] text-[64px] font-[600] text-[#000000] text-left\">\n          Bili kahit saan\nkuha kahit kailan!\n        </div>\n        <div className=\"w-[422px] h-[50px] bg-[#1e1e1e] text-[20px] font-[500] text-[#1e1e1e] text-left\">\n          Delve into your neighborhood's shopping needs \nwith comprehensive insights in one app\n        </div>\n        <div className=\"w-[1250px] h-[937px]\">\n        </div>\n        <div className=\"w-[170px] h-[50px]\">\n          <div className=\"w-[170px] h-[50px] rounded-[20px]\">\n          </div>\n          <div className=\"w-[114px] h-[32px]\">\n            <div className=\"w-[30px] h-[30px]\">\n            </div>\n            <div className=\"w-[74px] h-[12px] bg-[#000000] text-[10px] font-[500] text-[#000000] text-center\">\n              Download on the\n            </div>\n            <div className=\"w-[73px] h-[20px] bg-[#000000] text-[16px] font-[500] text-[#000000] text-center\">\n              App Store\n            </div>\n          </div>\n        </div>\n        <div className=\"w-[170px] h-[50px]\">\n          <div className=\"w-[170px] h-[50px] rounded-[20px]\">\n          </div>\n          <div className=\"w-[123px] h-[32px]\">\n            <div className=\"w-[44px] h-[12px] bg-[#000000] text-[10px] font-[500] text-[#000000] text-left\">\n              GET IT ON\n            </div>\n            <div className=\"w-[83px] h-[20px] bg-[#000000] text-[16px] font-[500] text-[#000000] text-left\">\n              Google Play\n            </div>\n            <div className=\"w-[30px] h-[30px]\">\n            </div>\n          </div>\n        </div>\n      </div>\n      <div className=\"w-[1000px] h-[650px] bg-[#ffffff]\">\n      </div>\n      <div className=\"w-[1440px] h-[100px]\">\n        <div className=\"w-[500px] h-[500px]\">\n        </div>\n        <div className=\"w-[150px] h-[50px] bg-[#0077be] rounded-[30px]\">\n          <div className=\"w-[52px] h-[25px] bg-[#ffffff] text-[20px] font-[500] text-[#ffffff] text-center\">\n            Log in\n          </div>\n        </div>\n      </div>\n    </div>\n  );\n};\n\nexport default LandingPage;",
+    "tailwindClasses": "w-[1440px] h-[1024px]"
+  }
+}
