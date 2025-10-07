@@ -152,11 +152,11 @@ export default function LandingPage() {
           />
         </div>
 
-        {/* Main Hero Heading - Moved right: 649x186px at (80, 277) */}
+        {/* Main Hero Heading - Moved further right: 649x186px at (120, 277) */}
         <div
           className="absolute"
           style={{
-            left: '80px',
+            left: '120px',
             top: '277px',
             width: '649px',
             height: '186px',
@@ -179,11 +179,11 @@ export default function LandingPage() {
           </h1>
         </div>
 
-        {/* Subheading Text - Moved right: 422x50px at (80, 473) */}
+        {/* Subheading Text - Moved further right: 422x50px at (120, 473) */}
         <div
           className="absolute"
           style={{
-            left: '80px',
+            left: '120px',
             top: '473px',
             width: '422px',
             height: '50px',
@@ -206,11 +206,11 @@ export default function LandingPage() {
           </p>
         </div>
 
-        {/* Main Hero Image - Exact from Figma node 702:203: 1250x937px at (441, 0) */}
+        {/* Main Hero Image - Moved right: 1250x937px at (481, 0) */}
         <div
           className="absolute"
           style={{
-            left: '441px',
+            left: '481px',
             top: '0px',
             width: '1250px',
             height: '937px',
@@ -227,11 +227,11 @@ export default function LandingPage() {
           />
         </div>
 
-        {/* App Store Buttons Container - Moved right to (80, 563) */}
+        {/* App Store Buttons Container - Moved further right to (120, 563) */}
         <div
           className="absolute"
           style={{
-            left: '80px',
+            left: '120px',
             top: '563px',
             zIndex: 10
           }}
