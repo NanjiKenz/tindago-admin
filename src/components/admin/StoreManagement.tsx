@@ -1348,13 +1348,11 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
                           style={{
                             borderBottom: index < categoryData.length - 1 ? '1px solid #E2E8F0' : 'none',
                             transition: 'background-color 0.2s ease',
-                            cursor: viewMode !== 'overview' ? 'pointer' : 'default'
+                            cursor: 'pointer'
                           }}
-                          onClick={viewMode !== 'overview' ? () => handleRowClick(item.storeId, item.status) : undefined}
+                          onClick={() => handleRowClick(item.storeId, item.status)}
                           onMouseEnter={(e) => {
-                            if (viewMode !== 'overview') {
-                              e.currentTarget.style.backgroundColor = '#F8FAFC';
-                            }
+                            e.currentTarget.style.backgroundColor = '#F8FAFC';
                           }}
                           onMouseLeave={(e) => {
                             e.currentTarget.style.backgroundColor = 'transparent';

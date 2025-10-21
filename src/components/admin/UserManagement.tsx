@@ -97,7 +97,7 @@ export const UserManagement: React.FC<UserManagementProps> = () => {
             email: user.email,
             displayName: user.displayName,
             role,
-            status: user.status as 'active' | 'inactive' | 'pending' | 'suspended' | 'banned',
+            status: (user.status || 'inactive') as 'active' | 'inactive' | 'pending' | 'suspended' | 'banned',
             createdAt: user.createdAt,
             lastLoginAt: user.lastLoginAt,
             phone: user.phone,
@@ -157,7 +157,7 @@ export const UserManagement: React.FC<UserManagementProps> = () => {
           email: user.email,
           displayName: user.displayName,
           role,
-          status: user.status as 'active' | 'inactive' | 'pending' | 'suspended' | 'banned',
+          status: (user.status || 'inactive') as 'active' | 'inactive' | 'pending' | 'suspended' | 'banned',
           createdAt: user.createdAt,
           lastLoginAt: user.lastLoginAt,
           phone: user.phone,
@@ -1364,8 +1364,8 @@ export const UserManagement: React.FC<UserManagementProps> = () => {
 
                         {/* Status Column */}
                         <td style={{ padding: '25px 20px' }}>
-                          <span style={getStatusBadge(user.status)}>
-                            {user.status.charAt(0).toUpperCase() + user.status.slice(1)}
+                          <span style={getStatusBadge(user.status || 'inactive')}>
+                            {user.status ? user.status.charAt(0).toUpperCase() + user.status.slice(1) : 'Inactive'}
                           </span>
                         </td>
 

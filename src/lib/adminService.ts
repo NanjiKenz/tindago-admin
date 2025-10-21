@@ -167,13 +167,15 @@ export class AdminService {
           email: registrationData.email || registrationData.ownerEmail || '',
           mobile: registrationData.phone || registrationData.ownerPhone || ''
         },
-        businessInfo: registrationData.businessInfo || {
-          storeName: registrationData.storeName || registrationData.businessName || 'Unknown Store',
-          description: registrationData.description || '',
-          address: registrationData.address || registrationData.storeAddress || '',
-          city: registrationData.city || '',
-          zipCode: registrationData.zipCode || '',
-          businessType: registrationData.businessType || 'Sari-Sari Store'
+        businessInfo: {
+          storeName: registrationData.businessInfo?.storeName || registrationData.storeName || registrationData.businessName || 'Unknown Store',
+          description: registrationData.businessInfo?.description || registrationData.description || '',
+          address: registrationData.businessInfo?.address || registrationData.address || registrationData.storeAddress || '',
+          city: registrationData.businessInfo?.city || registrationData.city || '',
+          zipCode: registrationData.businessInfo?.zipCode || registrationData.zipCode || '',
+          businessType: registrationData.businessInfo?.businessType || registrationData.businessType || 'Sari-Sari Store',
+          logo: registrationData.businessInfo?.logo || null,
+          coverImage: registrationData.businessInfo?.coverImage || null
         },
         documents: registrationData.documents || {},
         paymentInfo: registrationData.paymentInfo,
@@ -220,6 +222,9 @@ export class AdminService {
         businessType: registrationData.businessInfo?.businessType ||
                      registrationData.businessType ||
                      'Sari-Sari Store',
+        // Store images
+        logo: registrationData.businessInfo?.logo || null,
+        coverImage: registrationData.businessInfo?.coverImage || null,
         status: 'active'
       };
 
