@@ -2,6 +2,7 @@
 
 import React, { useMemo, useState } from 'react';
 import { Button } from '@/components/ui/Button';
+import { processRefund } from '@/lib/transactionService';
 
 export type TxStatus = 'PENDING' | 'PAID' | 'SETTLED' | 'EXPIRED' | 'VOIDED' | string;
 
@@ -38,6 +39,7 @@ export const TransactionsTable: React.FC<Props> = ({ rows, loading = false, onEx
   const [dateFrom, setDateFrom] = useState<string>('');
   const [dateTo, setDateTo] = useState<string>('');
   const [selected, setSelected] = useState<LedgerTxn | null>(null);
+  const [refunding, setRefunding] = useState(false);
 
   const filtered = useMemo(() => {
     const needle = search.toLowerCase();
@@ -67,6 +69,30 @@ export const TransactionsTable: React.FC<Props> = ({ rows, loading = false, onEx
   const exportCSV = () => {
     if (!onExport) return;
     onExport(filtered);
+  };
+
+  const handleRefund = async () => {
+    if (!selected) return;
+
+    const reason = prompt('Reason for refund:');
+    if (!reason) return;
+
+    if (!confirm(`Are you sure you want to refund this transaction?\n\nInvoice: ${selected.invoiceId}\nAmount: ₱${selected.amount.toFixed(2)}\n\nThis action cannot be undone.`)) {
+      return;
+    }
+
+    setRefunding(true);
+    try {
+      await processRefund(selected.invoiceId, selected.storeId, reason);
+      alert('Transaction refunded successfully!');
+      setSelected(null);
+      // Reload the page to reflect changes
+      window.location.reload();
+    } catch (error: any) {
+      alert(`Error: ${error.message}`);
+    } finally {
+      setRefunding(false);
+    }
   };
 
   return (
@@ -247,6 +273,30 @@ export const TransactionsTable: React.FC<Props> = ({ rows, loading = false, onEx
               {selected.invoiceUrl && (
                 <div className="pt-2">
                   <a className="text-tindago-700 underline" href={selected.invoiceUrl} target="_blank" rel="noopener noreferrer">Open invoice on Xendit</a>
+                </div>
+              )}
+
+              {/* Refund Button - Only show for PAID/SETTLED transactions */}
+              {(selected.status === 'PAID' || selected.status === 'SETTLED') && (
+                <div className="pt-4 border-t border-secondary-200">
+                  <Button
+                    variant="outline"
+                    onClick={handleRefund}
+                    disabled={refunding}
+                    className="w-full bg-red-50 text-red-700 border-red-300 hover:bg-red-100"
+                  >
+                    {refunding ? 'Processing Refund...' : 'Process Refund'}
+                  </Button>
+                  <div className="text-xs text-secondary-500 mt-2">
+                    This will mark the transaction as refunded. Make sure to process the actual refund in your payment gateway.
+                  </div>
+                </div>
+              )}
+
+              {selected.status === 'REFUNDED' && (
+                <div className="pt-4 border-t border-secondary-200 bg-red-50 p-3 rounded-lg">
+                  <div className="text-sm font-medium text-red-700">Transaction Refunded</div>
+                  <div className="text-xs text-red-600 mt-1">This transaction has already been refunded.</div>
                 </div>
               )}
             </div>

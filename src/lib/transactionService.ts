@@ -192,7 +192,7 @@ export function filterTransactions(
   }
 
   if (filters.method) {
-    filtered = filtered.filter(t => t.method.toLowerCase() === filters.method.toLowerCase());
+    filtered = filtered.filter(t => t.method.toLowerCase() === filters.method!.toLowerCase());
   }
 
   if (filters.startDate) {
@@ -253,6 +253,51 @@ export function formatDate(dateString: string): string {
     hour: '2-digit',
     minute: '2-digit',
   });
+}
+
+/**
+ * Process refund for a transaction
+ */
+export async function processRefund(invoiceId: string, storeId: string, reason: string): Promise<void> {
+  try {
+    const { database } = await import('./firebase.js');
+    const { ref, update, get } = await import('firebase/database');
+
+    const txnRef = ref(database, `ledgers/stores/${storeId}/transactions/${invoiceId}`);
+    const snapshot = await get(txnRef);
+
+    if (!snapshot.exists()) {
+      throw new Error('Transaction not found');
+    }
+
+    const txn = snapshot.val();
+
+    if (txn.status === 'REFUNDED') {
+      throw new Error('Transaction already refunded');
+    }
+
+    if (txn.status !== 'PAID' && txn.status !== 'SETTLED') {
+      throw new Error('Only paid transactions can be refunded');
+    }
+
+    // Update transaction status to REFUNDED
+    await update(txnRef, {
+      status: 'REFUNDED',
+      refundedAt: new Date().toISOString(),
+      refundReason: reason,
+    });
+
+    // Note: You may want to also:
+    // 1. Debit the store wallet
+    // 2. Create a refund record
+    // 3. Notify the store owner
+    // 4. Update Xendit if needed
+
+    console.log(`Transaction ${invoiceId} refunded successfully`);
+  } catch (error) {
+    console.error('Error processing refund:', error);
+    throw error;
+  }
 }
 
 /**

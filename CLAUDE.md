@@ -34,29 +34,56 @@ TindaGo Admin is a Next.js web application designed for managing store registrat
 ## Architecture & Structure
 
 ### Next.js App Router Architecture
+
+**Core Pages:**
 - **`src/app/layout.tsx`** - Root layout with Geist font configuration
 - **`src/app/page.tsx`** - Main landing page
 - **`src/app/dashboard/page.tsx`** - Admin dashboard for managing store registrations
 - **`src/app/analytics/page.tsx`** - Analytics dashboard for metrics and reporting
 - **`src/app/auth/`** - Authentication pages (login, signup, forgot-password)
 - **`src/app/landing/page.tsx`** - Landing page component
-- **`src/app/reports/page.tsx`** - Reports section for admin analysis
+- **`src/app/contact/page.tsx`** - Contact information and support page
+
+**Management Pages:**
 - **`src/app/users/page.tsx`** - User management section for admin operations
 - **`src/app/customers/page.tsx`** - Customer management section for admin operations
 - **`src/app/stores/page.tsx`** - Store management section for admin operations
-- **`src/app/contact/page.tsx`** - Contact information and support page
+- **`src/app/reports/page.tsx`** - Reports section for admin analysis
+
+**Financial Management Pages:**
+- **`src/app/transactions/page.tsx`** - Transaction records synchronized with TindaGo app with refund management
+- **`src/app/payouts/page.tsx`** - Payout request management and approval with bulk operations
+- **`src/app/stores/[storeId]/payments/page.tsx`** - Per-store commission rate settings (admin only)
+
+**Store Detail Pages:**
+- **`src/app/stores/pending/[userId]/page.tsx`** - Pending registration details
+- **`src/app/stores/active/[storeId]/page.tsx`** - Active store details
+- **`src/app/stores/suspended/[storeId]/page.tsx`** - Suspended store details
+- **`src/app/stores/rejected/[userId]/page.tsx`** - Rejected registration details
+
+**Global Styles & Routing:**
 - **`src/app/globals.css`** - Tailwind CSS global styles
 - **`src/middleware.ts`** - Next.js middleware for authentication routing
 
 ### Key Components & Services
+
+**Core Administrative Services:**
 - **AdminService** (`src/lib/adminService.ts`) - Firebase Realtime Database operations for store registrations
 - **StoreService** (`src/lib/storeService.ts`) - Store management operations including status updates, verification, and real-time subscriptions
 - **CustomerService** (`src/lib/customerService.ts`) - Customer management operations with order history and statistics
 - **UserManagementService** (`src/lib/userManagementService.ts`) - Comprehensive user management operations for admin, customer, and store owner users
+
+**Financial & Transaction Services:**
+- **TransactionService** (`src/lib/transactionService.ts`) - Payment transaction management and ledger operations synchronized with TindaGo app
+- **WalletService** (`src/lib/walletService.ts`) - Store wallet balance management with credit/debit operations
+- **PayoutService** (`src/lib/payoutService.ts`) - Store payout request management with approval workflow
+- **XenditService** (`src/lib/xenditService.ts`) - Xendit payment gateway integration for invoice management
+
+**UI & Component Architecture:**
 - **UI Components** (`src/components/ui/`) - Button, Typography, and FormInput components
-- **Admin Components** (`src/components/admin/`) - UserManagement, UserCreateModal, StoreManagement, PendingApprovalDetail specialized admin components
+- **Admin Components** (`src/components/admin/`) - UserManagement, UserCreateModal, StoreManagement, PendingApprovalDetail, TransactionsTable specialized admin components
 - **Firebase Config** (`src/lib/firebase.js`) - Firebase Realtime Database setup
-- **Type Definitions** (`src/types/`) - TypeScript interfaces for admin operations, user management, store management, and customer management types
+- **Type Definitions** (`src/types/`) - TypeScript interfaces for admin operations, user management, store management, customer management, and transaction types
 - **Authentication Context** (`src/contexts/AuthContext.tsx`) - React context for authentication state
 - **Custom Hooks** (`src/hooks/`) - useNotifications, useResponsive hooks
 - **Middleware** (`src/middleware.ts`) - Authentication routing and protection
@@ -97,6 +124,9 @@ The admin dashboard uses Firebase for both authentication and data storage:
 - **`stores`** - Active store records after approval
 - **`users`** - User profiles linked to Firebase Auth (customers and store owners)
 - **`admins`** - Admin user roles and permissions with role-based access control
+- **`ledgers/stores`** - Transaction ledger synchronized with TindaGo React Native app
+- **`wallets`** - Store wallet balances with transaction history
+- **`payouts`** - Payout requests from store owners with approval workflow
 
 ### AdminService Operations
 Core administrative functions in `src/lib/adminService.ts`:
@@ -126,6 +156,96 @@ Store management operations in `src/lib/storeService.ts`:
 - **`searchStores(searchTerm, filters?)`** - Advanced store search with multiple filter options
 - **`subscribeToStores(callback)`** - Real-time store updates subscription
 - **`exportStoresToCSV()`** - Export store data for reporting
+
+### TransactionService Operations
+Transaction and ledger management synchronized with TindaGo React Native app in `src/lib/transactionService.ts`:
+- **`getAllTransactions()`** - Fetch all transactions across all stores from `ledgers/stores` database path
+- **`getStoreTransactions(storeId)`** - Get transactions for specific store
+- **`getTransactionSummary(transactions)`** - Calculate total revenue, commission, and store earnings
+- **`filterTransactions(transactions, filters)`** - Filter by store, status, method, date range, and search term
+- **`exportToCSV(transactions)`** - Export transaction data to CSV format
+- **Real-time synchronization** - Transactions automatically sync from TindaGo React Native app when payments are processed
+
+**Transaction Data Model:**
+```typescript
+interface Transaction {
+  invoiceId: string;
+  orderNumber: string;
+  storeId: string;
+  storeName: string;
+  amount: number;
+  commission: number;
+  commissionRate: number;
+  storeAmount: number;
+  status: 'PENDING' | 'PAID' | 'SETTLED' | 'REFUNDED';
+  method: 'gcash' | 'paymaya' | 'online';
+  paymentStatus: 'pending' | 'paid' | 'refunded';
+  createdAt: string;
+  paidAt?: string;
+  invoiceUrl?: string;
+}
+```
+
+### WalletService Operations
+Store wallet balance management in `src/lib/walletService.ts`:
+- **`getWalletBalance(storeId)`** - Get available and pending balance for store
+- **`getWalletTransactions(storeId)`** - Fetch wallet transaction history
+- **`creditWallet(params)`** - Add funds to wallet from order payments
+- **`debitWallet(params)`** - Deduct funds when payout is approved
+- **`calculateStoreEarnings(storeId)`** - Calculate total, paid, and pending earnings from ledger
+- **`syncWalletFromLedger(storeId)`** - Reconcile wallet balance with transaction ledger
+- **Real-time balance updates** - Wallet balances update automatically when transactions are processed
+
+**Wallet Data Model:**
+```typescript
+interface WalletBalance {
+  storeId: string;
+  storeName: string;
+  available: number;   // Can be withdrawn
+  pending: number;     // From unpaid orders
+  total: number;       // available + pending
+  lastUpdated: string;
+}
+```
+
+### PayoutService Operations
+Payout request management with admin approval workflow in `src/lib/payoutService.ts`:
+- **`createPayoutRequest(params)`** - Store owner creates payout request
+- **`getAllPayoutRequests()`** - Admin fetches all payout requests across stores
+- **`getStorePayoutRequests(storeId)`** - Get payout history for specific store
+- **`approvePayoutRequest(params)`** - Admin approves payout and debits wallet
+- **`rejectPayoutRequest(params)`** - Admin rejects payout with reason
+- **`completePayoutRequest(payoutId)`** - Mark payout as completed after money transfer
+- **`getPayoutStats()`** - Calculate pending, approved, and completed payout statistics
+- **Real-time approval workflow** - Admin actions update store wallets immediately
+
+**Payout Data Model:**
+```typescript
+interface PayoutRequest {
+  id: string;
+  storeId: string;
+  storeName: string;
+  amount: number;
+  status: 'pending' | 'approved' | 'rejected' | 'completed';
+  requestedAt: string;
+  processedAt?: string;
+  processedBy?: string;  // Admin user ID
+  paymentMethod: 'bank' | 'gcash' | 'paymaya';
+  accountDetails: string;
+  notes?: string;
+  adminNotes?: string;
+}
+```
+
+### XenditService Operations
+Xendit payment gateway integration in `src/lib/xenditService.ts`:
+- **`createInvoice(params)`** - Create Xendit invoice for customer payment
+- **`getInvoice(invoiceId)`** - Fetch invoice details by ID
+- **`expireInvoice(invoiceId)`** - Manually expire unpaid invoice
+- **`isInvoicePaid(invoiceId)`** - Check if invoice has been paid
+- **`validateWebhookToken(token, expectedToken)`** - Verify Xendit webhook authenticity
+- **Payment methods supported** - GCash, PayMaya, Credit Card, Debit Card
+- **Webhook integration** - Real-time payment status updates from Xendit to Firebase ledger
 
 ### Store Registration Data Model
 ```typescript
@@ -168,6 +288,102 @@ The admin dashboard (`src/app/dashboard/page.tsx`) provides comprehensive store 
 - Owner name and contact information
 - Submission date and current status
 - Document verification status (business permits, valid ID, store photos)
+
+### Transaction Records Management
+Real-time transaction monitoring synchronized with TindaGo React Native app (`src/app/transactions/page.tsx`):
+
+**Transaction Tracking:**
+- View all transactions across all stores from `ledgers/stores` Firebase path
+- Real-time updates when payments are processed in TindaGo app
+- Advanced filtering: status (paid, pending, refunded), payment method (GCash, PayMaya, online, card), store, and date range
+- Quick date filters: Last 7 days, last 30 days, this month, or custom range
+- Search by invoice ID, order number, or store name
+- Pagination with customizable page size (10/20/50 per page)
+- Export transaction data to CSV for accounting
+
+**Transaction Analytics:**
+- Total transaction count with status breakdown (paid, pending, refunded)
+- Total revenue across all stores
+- Platform commission earnings
+- Store earnings to be paid out
+- Payment method distribution
+
+**Refund Management (NEW):**
+- Process refunds directly from transaction details
+- Admin can refund PAID/SETTLED transactions with reason tracking
+- Updates transaction status to REFUNDED with timestamp
+- Transaction detail drawer shows refund button for eligible transactions
+- Visual indicators for already-refunded transactions
+
+**Synchronization with TindaGo App:**
+- When a customer completes payment in TindaGo React Native app, transaction is written to `ledgers/stores/{storeId}/transactions/{invoiceId}`
+- Admin dashboard automatically reflects new transactions in real-time
+- Commission is calculated based on configurable rate (default 10%, per-store override available)
+- Store earnings are credited to wallet when payment status changes to PAID/SETTLED
+
+### Wallet Management System
+Store wallet balance tracking with real-time updates:
+
+**Wallet Features:**
+- Available balance (can be withdrawn)
+- Pending balance (from unpaid orders)
+- Transaction history with credit/debit operations
+- Automatic synchronization with transaction ledger
+- Real-time balance updates when transactions are processed
+
+**Wallet Operations:**
+- Credit wallet when order payment is confirmed
+- Debit wallet when payout is approved
+- Reconcile wallet balance from ledger data
+- View complete wallet transaction history per store
+
+### Payout Request Management
+Admin approval workflow for store owner payout requests (`src/app/payouts/page.tsx`):
+
+**Payout Workflow:**
+1. Store owner creates payout request with payment method (bank, GCash, PayMaya)
+2. Admin reviews pending payout requests in admin dashboard
+3. Admin approves or rejects with notes (individual or bulk)
+4. On approval, amount is automatically debited from store wallet
+5. Payout status tracked through completion
+
+**Payout Dashboard Features:**
+- View all pending, approved, rejected, and completed payouts
+- Filter by status with count badges (all, pending, approved)
+- Statistics cards: Pending count & amount, approved, completed, rejected
+- Shows store name, amount, payment method, account details per request
+- Real-time updates when new requests are created
+
+**Bulk Payout Operations (NEW):**
+- Select multiple pending payouts with checkboxes
+- "Select All" checkbox for all pending payouts on current view
+- Bulk approve button processes multiple payouts at once
+- Shows total amount and count before approval
+- Success/failure tracking for batch operations
+- Highlighted rows for selected payouts
+- Clear selection button
+
+**Individual Payout Actions:**
+- Approve button for individual pending payouts
+- Reject button with reason input
+- Admin notes field for approval/rejection context
+- Displays processed timestamp and admin user ID
+
+### User Management System
+Comprehensive user administration for admins, customers, and store owners (`src/app/users/page.tsx`):
+
+**User Types:**
+- **Admins** - Super admin, admin, moderator, viewer roles with permissions
+- **Customers** - Order history, total spent, verification status
+- **Store Owners** - Business verification, store associations, performance metrics
+
+**User Management Features:**
+- Create new admin users with role assignment
+- Update user status (active, inactive, suspended, banned)
+- Bulk user actions for multiple users
+- Search and filter by user type, status, or search term
+- Export user data to CSV
+- Real-time user statistics and activity tracking
 
 ### TindaGo Screen Component
 Pixel-perfect implementation of TindaGo design system:
@@ -243,11 +459,111 @@ Required environment variables:
 ### Business Requirements Focus
 This admin dashboard specifically addresses:
 
-**Focus: Admin Management System**
-- Store registration review and approval workflow
-- User management (admins, customers, store owners)
-- Document verification and business compliance tracking
-- Analytics dashboard for marketplace insights
+**Focus: Comprehensive Admin Management System**
+- **Store Management** - Registration review, approval workflow, status management
+- **User Management** - Admins, customers, store owners with role-based access
+- **Financial Operations** - Transaction monitoring, wallet management, payout approvals
+- **Payment Integration** - Xendit payment gateway with real-time synchronization
+- **Document Verification** - Business permits, valid IDs, compliance tracking
+- **Analytics & Reporting** - Dashboard metrics, transaction reports, CSV exports
+- **Real-time Synchronization** - Instant updates from TindaGo React Native app
+
+## System Architecture & Data Flow
+
+### Transaction Flow (TindaGo App → Admin Dashboard)
+1. **Customer Places Order** in TindaGo React Native app
+2. **Xendit Invoice Created** via XenditService with order details
+3. **Customer Completes Payment** through GCash, PayMaya, or card
+4. **Xendit Webhook Fires** to update payment status
+5. **Transaction Written** to `ledgers/stores/{storeId}/transactions/{invoiceId}` in Firebase
+6. **Admin Dashboard Updates** in real-time via Firebase listeners
+7. **Wallet Credited** when payment status changes to PAID/SETTLED
+8. **Commission Calculated** and separated from store earnings
+
+### Payout Flow (Store Owner → Admin → Bank Transfer)
+1. **Store Owner Views Wallet** with available balance
+2. **Payout Request Created** with payment method and account details
+3. **Admin Reviews Request** in payout management dashboard
+4. **Admin Approves/Rejects** with optional notes
+5. **Wallet Debited** automatically on approval
+6. **Money Transferred** by admin to store owner bank/GCash/PayMaya
+7. **Payout Marked Complete** with confirmation
+
+### User Management Flow
+1. **User Registers** in TindaGo app (customer or store owner)
+2. **Profile Created** in Firebase `users` collection with `userType` field
+3. **Admin Views Users** filtered by type (customer, store_owner)
+4. **Admin Manages Status** (active, inactive, suspended, banned)
+5. **Changes Sync** immediately to TindaGo app via Firebase listeners
+
+## Recommendations for Improvement
+
+### Priority 1: Essential Features (Remaining)
+1. **Admin Profile Settings** - Allow admins to update their profile, password, and notification preferences
+2. **Activity Logs** - Track all admin actions (approvals, rejections, status changes) with timestamps and audit trail
+3. **Notification System** - Real-time alerts for new registrations, payout requests, and failed transactions
+4. **Dashboard Widgets** - Customizable dashboard with drag-and-drop widgets for key metrics
+
+### Priority 2: Financial Management Enhancements (Remaining)
+1. **Commission Rate Configuration UI** - Web interface at `/settings/commission` to manage global and per-store rates
+2. **Financial Reports** - Monthly revenue reports, commission breakdowns, payout summaries
+3. **CSV Export for Payouts** - Export payout history to CSV for accounting
+4. **Wallet Management UI** - Admin view of all store wallets with balance reconciliation tools
+
+### Priority 3: Store & User Management
+1. **Store Performance Analytics** - Sales trends, customer ratings, response times
+2. **Document Upload Portal** - Allow admins to request additional documents from stores
+3. **User Communication** - In-app messaging between admins and store owners
+4. **Verification Workflow** - Multi-step verification process with checklist
+
+### Priority 4: Advanced Features
+1. **Role-Based Permissions** - Granular permissions for different admin roles (already has basic role structure)
+2. **API Integration** - REST API for third-party integrations
+3. **Mobile Admin App** - React Native admin app for on-the-go management
+4. **Automated Fraud Detection** - Flag suspicious transactions or payout requests
+
+### ✅ Recently Implemented Features
+1. **Refund Management** - Admin can process refunds directly from transaction details with reason tracking
+2. **Bulk Payout Processing** - Approve multiple payouts at once with checkbox selection and batch operations
+3. **Payouts Navigation** - Payouts page now accessible from admin sidebar navigation
+4. **Advanced Transaction Filters** - Date range filters, pagination, and improved search functionality
+
+### Recommended Database Structure Additions
+```typescript
+// Activity logs for audit trail
+interface AdminActivityLog {
+  logId: string;
+  adminId: string;
+  action: 'approve' | 'reject' | 'suspend' | 'payout_approve' | 'status_change';
+  targetType: 'store' | 'user' | 'transaction' | 'payout';
+  targetId: string;
+  details: Record<string, any>;
+  timestamp: string;
+  ipAddress?: string;
+}
+
+// Notification system
+interface AdminNotification {
+  notificationId: string;
+  type: 'new_registration' | 'payout_request' | 'failed_transaction' | 'document_update';
+  title: string;
+  message: string;
+  read: boolean;
+  actionUrl?: string;
+  createdAt: string;
+  priority: 'low' | 'medium' | 'high';
+}
+
+// Commission configuration
+interface CommissionConfig {
+  configId: string;
+  storeId?: string;  // null for default rate
+  category?: string; // category-specific rate
+  commissionRate: number;
+  effectiveFrom: string;
+  createdBy: string;
+}
+```
 
 ## Important Conventions
 

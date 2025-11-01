@@ -1,10 +1,13 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { AdminSidebar } from '@/components/admin/AdminSidebar';
+import { AdminHeader } from '@/components/admin/AdminHeader';
 import { getAllPayoutRequests, approvePayoutRequest, rejectPayoutRequest, getPayoutStats } from '@/lib/payoutService';
 import type { PayoutRequest } from '@/lib/payoutService';
 
 export default function PayoutsPage() {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [payouts, setPayouts] = useState<PayoutRequest[]>([]);
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -12,6 +15,8 @@ export default function PayoutsPage() {
   const [filter, setFilter] = useState<string>('all');
   const [selectedPayout, setSelectedPayout] = useState<PayoutRequest | null>(null);
   const [adminNotes, setAdminNotes] = useState('');
+  const [selectedPayouts, setSelectedPayouts] = useState<Set<string>>(new Set());
+  const [bulkProcessing, setBulkProcessing] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -72,13 +77,111 @@ export default function PayoutsPage() {
     return p.status === filter;
   });
 
-  if (loading) {
-    return <div style={{ padding: '20px' }}>Loading...</div>;
-  }
+  const pendingPayouts = filteredPayouts.filter(p => p.status === 'pending');
+  const allPendingSelected = pendingPayouts.length > 0 && pendingPayouts.every(p => selectedPayouts.has(p.id));
+
+  const togglePayout = (id: string) => {
+    const newSelected = new Set(selectedPayouts);
+    if (newSelected.has(id)) {
+      newSelected.delete(id);
+    } else {
+      newSelected.add(id);
+    }
+    setSelectedPayouts(newSelected);
+  };
+
+  const toggleAllPending = () => {
+    if (allPendingSelected) {
+      setSelectedPayouts(new Set());
+    } else {
+      setSelectedPayouts(new Set(pendingPayouts.map(p => p.id)));
+    }
+  };
+
+  const handleBulkApprove = async () => {
+    const selectedCount = selectedPayouts.size;
+    const totalAmount = payouts
+      .filter(p => selectedPayouts.has(p.id))
+      .reduce((sum, p) => sum + p.amount, 0);
+
+    if (!confirm(`Approve ${selectedCount} payout requests?\n\nTotal amount: ₱${totalAmount.toFixed(2)}\n\nThis will debit the store wallets.`)) {
+      return;
+    }
+
+    setBulkProcessing(true);
+    let successCount = 0;
+    let failCount = 0;
+
+    for (const payoutId of Array.from(selectedPayouts)) {
+      try {
+        await approvePayoutRequest({
+          payoutId,
+          adminUserId: 'admin',
+          adminNotes: 'Bulk approved',
+        });
+        successCount++;
+      } catch (error: any) {
+        console.error(`Failed to approve payout ${payoutId}:`, error);
+        failCount++;
+      }
+    }
+
+    alert(`Bulk approval complete!\n\nApproved: ${successCount}\nFailed: ${failCount}`);
+    setSelectedPayouts(new Set());
+    await loadData();
+    setBulkProcessing(false);
+  };
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h1>Payout Management</h1>
+    <div
+      className="min-h-screen relative overflow-hidden lg:overflow-visible"
+      style={{
+        width: '100vw',
+        maxWidth: '1440px',
+        minHeight: '1024px',
+        backgroundColor: '#F3F5F9',
+        margin: '0 auto'
+      }}
+    >
+      {/* Sidebar */}
+      <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} currentPage="payouts" />
+
+      {/* Main Container */}
+      <div
+        className="absolute lg:left-[273px] left-0 lg:w-[1167px] w-full"
+        style={{
+          top: '0px',
+          minHeight: '1024px'
+        }}
+      >
+        {/* Header */}
+        <div
+          className="absolute w-full"
+          style={{
+            left: '0px',
+            top: '0px',
+            height: '80px',
+            zIndex: 10
+          }}
+        >
+          <AdminHeader onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
+        </div>
+
+        {/* Content Area */}
+        <div
+          className="absolute w-full lg:px-5 px-4"
+          style={{
+            left: '0px',
+            top: '80px',
+            minHeight: '944px',
+            paddingTop: '40px'
+          }}
+        >
+          {loading ? (
+            <div style={{ padding: '20px' }}>Loading...</div>
+          ) : (
+            <>
+      <h1 style={{ fontFamily: 'Clash Grotesk Variable', fontSize: '48px', fontWeight: 500, marginBottom: '20px' }}>Payout Management</h1>
 
       {/* Stats */}
       {stats && (
@@ -100,6 +203,48 @@ export default function PayoutsPage() {
           <div style={{ border: '1px solid #ddd', padding: '15px', borderRadius: '8px' }}>
             <div style={{ fontSize: '14px', color: '#666' }}>Rejected</div>
             <div style={{ fontSize: '24px', fontWeight: 'bold', color: 'red' }}>{stats.rejectedCount}</div>
+          </div>
+        </div>
+      )}
+
+      {/* Bulk Actions */}
+      {selectedPayouts.size > 0 && (
+        <div style={{ marginBottom: '20px', padding: '15px', background: '#E3F2FD', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div>
+            <strong>{selectedPayouts.size}</strong> payout{selectedPayouts.size > 1 ? 's' : ''} selected
+            <span style={{ marginLeft: '20px', color: '#666' }}>
+              Total: ₱{payouts.filter(p => selectedPayouts.has(p.id)).reduce((sum, p) => sum + p.amount, 0).toFixed(2)}
+            </span>
+          </div>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button
+              onClick={handleBulkApprove}
+              disabled={bulkProcessing}
+              style={{
+                padding: '10px 20px',
+                background: '#28a745',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: bulkProcessing ? 'not-allowed' : 'pointer',
+                fontWeight: 'bold',
+              }}
+            >
+              {bulkProcessing ? 'Processing...' : `Approve Selected (${selectedPayouts.size})`}
+            </button>
+            <button
+              onClick={() => setSelectedPayouts(new Set())}
+              style={{
+                padding: '10px 20px',
+                background: '#6c757d',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+              }}
+            >
+              Clear Selection
+            </button>
           </div>
         </div>
       )}
@@ -154,6 +299,17 @@ export default function PayoutsPage() {
       <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid #ddd' }}>
         <thead style={{ background: '#f5f5f5' }}>
           <tr>
+            <th style={{ padding: '10px', textAlign: 'center', borderBottom: '1px solid #ddd', width: '50px' }}>
+              {pendingPayouts.length > 0 && (
+                <input
+                  type="checkbox"
+                  checked={allPendingSelected}
+                  onChange={toggleAllPending}
+                  style={{ cursor: 'pointer', width: '18px', height: '18px' }}
+                  title="Select all pending payouts"
+                />
+              )}
+            </th>
             <th style={{ padding: '10px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>Store</th>
             <th style={{ padding: '10px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>Requested</th>
             <th style={{ padding: '10px', textAlign: 'right', borderBottom: '1px solid #ddd' }}>Amount</th>
@@ -166,13 +322,23 @@ export default function PayoutsPage() {
         <tbody>
           {filteredPayouts.length === 0 ? (
             <tr>
-              <td colSpan={7} style={{ padding: '20px', textAlign: 'center', color: '#999' }}>
+              <td colSpan={8} style={{ padding: '20px', textAlign: 'center', color: '#999' }}>
                 No payout requests
               </td>
             </tr>
           ) : (
             filteredPayouts.map((payout) => (
-              <tr key={payout.id} style={{ borderBottom: '1px solid #eee' }}>
+              <tr key={payout.id} style={{ borderBottom: '1px solid #eee', background: selectedPayouts.has(payout.id) ? '#F3F4F6' : 'transparent' }}>
+                <td style={{ padding: '10px', textAlign: 'center' }}>
+                  {payout.status === 'pending' && (
+                    <input
+                      type="checkbox"
+                      checked={selectedPayouts.has(payout.id)}
+                      onChange={() => togglePayout(payout.id)}
+                      style={{ cursor: 'pointer', width: '18px', height: '18px' }}
+                    />
+                  )}
+                </td>
                 <td style={{ padding: '10px' }}>
                   <div style={{ fontWeight: 'bold' }}>{payout.storeName}</div>
                   <div style={{ fontSize: '12px', color: '#666' }}>{payout.storeId.slice(0, 8)}...</div>
@@ -244,6 +410,18 @@ export default function PayoutsPage() {
           )}
         </tbody>
       </table>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Mobile Sidebar Overlay */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-30 bg-black bg-opacity-50 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
     </div>
   );
 }

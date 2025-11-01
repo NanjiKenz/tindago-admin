@@ -59,14 +59,31 @@ export async function POST(req: NextRequest) {
       const storeAmount = roundCurrency(metadata.store_amount || (amount - (metadata.commission || 0)));
       const walletRef = ref(database, `wallets/${storeId}`);
       const walletSnap = await get(walletRef);
-      const currentBalance = walletSnap.exists() ? (walletSnap.val().available || 0) : 0;
-      const newBalance = roundCurrency(currentBalance + storeAmount);
+      
+      const currentAvailable = walletSnap.exists() ? (walletSnap.val().available || 0) : 0;
+      const currentPending = walletSnap.exists() ? (walletSnap.val().pending || 0) : 0;
+      const currentTotal = walletSnap.exists() ? (walletSnap.val().total || 0) : 0;
+      
+      const newAvailable = roundCurrency(currentAvailable + storeAmount);
+      const newTotal = roundCurrency(currentTotal + storeAmount);
 
-      // Update wallet available balance
-      await update(walletRef, {
-        available: newBalance,
-        updatedAt: new Date().toISOString(),
-      });
+      // Create or update wallet document
+      if (!walletSnap.exists()) {
+        // Create new wallet with initial structure
+        await set(walletRef, {
+          available: newAvailable,
+          pending: 0,
+          total: newTotal,
+          lastUpdated: new Date().toISOString(),
+        });
+      } else {
+        // Update existing wallet
+        await update(walletRef, {
+          available: newAvailable,
+          total: newTotal,
+          lastUpdated: new Date().toISOString(),
+        });
+      }
 
       // Record wallet transaction
       const txnId = `WALLET-${invoiceId}`;
