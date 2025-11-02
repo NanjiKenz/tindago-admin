@@ -1,15 +1,14 @@
 /**
- * User Create Modal Component - Pixel Perfect Implementation
+ * User Create Modal Component - Pixel Perfect Figma Implementation
  *
- * Modal for creating new admin users in TindaGo Admin Dashboard
- * Follows exact design patterns from existing admin components
+ * Simple Add Admin modal with Name, Email, and Password fields
+ * Figma Design: node-id=1283-1669
+ * 500x500px modal with clean, minimal design
  */
 
 'use client';
 
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/Button';
-import { UserFormData, UserPermission } from '@/types/userManagement';
 import { UserManagementService } from '@/lib/userManagementService';
 
 interface UserCreateModalProps {
@@ -23,103 +22,67 @@ export const UserCreateModal: React.FC<UserCreateModalProps> = ({
   onClose,
   onUserCreated
 }) => {
-  const [formData, setFormData] = useState<UserFormData>({
+  const [formData, setFormData] = useState({
+    name: '',
     email: '',
-    displayName: '',
-    role: 'admin',
-    phone: '',
-    department: '',
-    permissions: [],
-    status: 'active',
-    notes: ''
+    password: ''
   });
 
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [error, setError] = useState('');
 
-  const availablePermissions: UserPermission[] = [
-    { resource: 'users', actions: ['create', 'read', 'update', 'delete'] },
-    { resource: 'stores', actions: ['read', 'update'] },
-    { resource: 'registrations', actions: ['read', 'update'] },
-    { resource: 'analytics', actions: ['read'] },
-    { resource: 'settings', actions: ['read', 'update'] }
-  ];
-
-  const handleInputChange = (field: keyof UserFormData, value: string) => {
+  const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: '' }));
-    }
-  };
-
-  const validateForm = (): boolean => {
-    const newErrors: Record<string, string> = {};
-
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email address';
-    }
-
-    if (!formData.displayName.trim()) {
-      newErrors.displayName = 'Display name is required';
-    }
-
-    if (!formData.role) {
-      newErrors.role = 'Role is required';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    if (error) setError('');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validateForm()) {
+    // Validation
+    if (!formData.name.trim()) {
+      setError('Name is required');
+      return;
+    }
+    if (!formData.email.trim()) {
+      setError('Email is required');
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      setError('Please enter a valid email address');
+      return;
+    }
+    if (!formData.password || formData.password.length < 6) {
+      setError('Password must be at least 6 characters');
       return;
     }
 
     setLoading(true);
 
     try {
-      await UserManagementService.createAdminUser(formData);
+      await UserManagementService.createAdminUser({
+        email: formData.email,
+        displayName: formData.name,
+        role: 'admin',
+        status: 'active',
+        permissions: []
+      });
 
       // Reset form
       setFormData({
+        name: '',
         email: '',
-        displayName: '',
-        role: 'admin',
-        phone: '',
-        department: '',
-        permissions: [],
-        status: 'active',
-        notes: ''
+        password: ''
       });
 
       onUserCreated();
       onClose();
     } catch (error) {
-      console.error('Error creating user:', error);
-      setErrors({ submit: 'Failed to create user. Please try again.' });
+      console.error('Error creating admin:', error);
+      setError('Failed to create admin. Please try again.');
     } finally {
       setLoading(false);
     }
-  };
-
-  const handlePermissionToggle = (permission: UserPermission) => {
-    setFormData(prev => {
-      const existingIndex = prev.permissions?.findIndex(p => p.resource === permission.resource) || -1;
-      const newPermissions = [...(prev.permissions || [])];
-
-      if (existingIndex >= 0) {
-        newPermissions.splice(existingIndex, 1);
-      } else {
-        newPermissions.push(permission);
-      }
-
-      return { ...prev, permissions: newPermissions };
-    });
   };
 
   if (!isOpen) return null;
@@ -132,393 +95,262 @@ export const UserCreateModal: React.FC<UserCreateModalProps> = ({
         onClick={onClose}
       />
 
-      {/* Modal Container */}
+      {/* Modal Container - Pixel Perfect 500x500 from Figma */}
       <div className="flex min-h-full items-center justify-center p-4">
         <div
-          className="relative bg-white rounded-xl shadow-xl transform transition-all"
+          className="relative transform transition-all"
           style={{
-            width: '600px',
-            maxHeight: '90vh',
-            maxWidth: '90vw'
+            width: '500px',
+            backgroundColor: '#F3F5F9',
+            borderRadius: '16px',
+            boxShadow: '0px 0px 5px rgba(0, 0, 0, 0.25)',
+            padding: '40px'
           }}
         >
-          {/* Header */}
-          <div
-            className="border-b border-gray-200"
+          {/* Title - "Add New Admin" */}
+          <h2
             style={{
-              padding: '24px 32px 20px 32px',
-              borderBottom: '1px solid rgba(0, 0, 0, 0.05)'
+              fontFamily: 'Clash Grotesk Variable',
+              fontWeight: 500,
+              fontSize: '24px',
+              lineHeight: '29.52px',
+              color: '#1E1E1E',
+              textAlign: 'center',
+              margin: '0 0 30px 0'
             }}
           >
-            <div className="flex items-center justify-between">
-              <div>
-                <h2
-                  style={{
-                    fontFamily: 'Clash Grotesk Variable',
-                    fontWeight: 500,
-                    fontSize: '24px',
-                    lineHeight: '1.2em',
-                    color: '#1E1E1E',
-                    margin: 0
-                  }}
-                >
-                  Create New Admin User
-                </h2>
-                <p
-                  style={{
-                    fontFamily: 'Clash Grotesk Variable',
-                    fontWeight: 400,
-                    fontSize: '14px',
-                    lineHeight: '1.23em',
-                    color: 'rgba(30, 30, 30, 0.6)',
-                    margin: '4px 0 0 0'
-                  }}
-                >
-                  Add a new administrator to the TindaGo platform
-                </p>
-              </div>
-              <button
-                onClick={onClose}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
-                style={{ width: '24px', height: '24px' }}
+            Add New Admin
+          </h2>
+
+          {/* Error Message */}
+          {error && (
+            <div
+              style={{
+                marginBottom: '20px',
+                padding: '12px',
+                backgroundColor: '#FEE2E2',
+                borderRadius: '8px',
+                color: '#DC2626',
+                fontSize: '14px',
+                fontFamily: 'Clash Grotesk Variable'
+              }}
+            >
+              {error}
+            </div>
+          )}
+
+          {/* Form */}
+          <form onSubmit={handleSubmit}>
+            {/* Name Field */}
+            <div style={{ marginBottom: '20px' }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontFamily: 'Clash Grotesk Variable',
+                  fontWeight: 500,
+                  fontSize: '16px',
+                  lineHeight: '19.68px',
+                  color: '#1E1E1E',
+                  marginBottom: '5px'
+                }}
               >
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
+                Name
+              </label>
+              <input
+                type="text"
+                placeholder="Enter admin name"
+                value={formData.name}
+                onChange={(e) => handleInputChange('name', e.target.value)}
+                style={{
+                  width: '420px',
+                  height: '50px',
+                  backgroundColor: '#FFFFFF',
+                  borderRadius: '16px',
+                  border: 'none',
+                  padding: '0 20px',
+                  fontFamily: 'Clash Grotesk Variable',
+                  fontWeight: 500,
+                  fontSize: '18px',
+                  lineHeight: '22.14px',
+                  color: '#1E1E1E',
+                  boxShadow: '0px 0px 5px rgba(0, 0, 0, 0.25)',
+                  outline: 'none'
+                }}
+                onFocus={(e) => {
+                  e.currentTarget.style.boxShadow = '0px 0px 8px rgba(59, 130, 246, 0.5)';
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.boxShadow = '0px 0px 5px rgba(0, 0, 0, 0.25)';
+                }}
+              />
+            </div>
+
+            {/* Email Field */}
+            <div style={{ marginBottom: '20px' }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontFamily: 'Clash Grotesk Variable',
+                  fontWeight: 500,
+                  fontSize: '16px',
+                  lineHeight: '19.68px',
+                  color: '#1E1E1E',
+                  marginBottom: '5px'
+                }}
+              >
+                Email
+              </label>
+              <input
+                type="email"
+                placeholder="admin@gmail.com"
+                value={formData.email}
+                onChange={(e) => handleInputChange('email', e.target.value)}
+                style={{
+                  width: '420px',
+                  height: '50px',
+                  backgroundColor: '#FFFFFF',
+                  borderRadius: '16px',
+                  border: 'none',
+                  padding: '0 20px',
+                  fontFamily: 'Clash Grotesk Variable',
+                  fontWeight: 500,
+                  fontSize: '18px',
+                  lineHeight: '22.14px',
+                  color: '#1E1E1E',
+                  boxShadow: '0px 0px 5px rgba(0, 0, 0, 0.25)',
+                  outline: 'none'
+                }}
+                onFocus={(e) => {
+                  e.currentTarget.style.boxShadow = '0px 0px 8px rgba(59, 130, 246, 0.5)';
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.boxShadow = '0px 0px 5px rgba(0, 0, 0, 0.25)';
+                }}
+              />
+            </div>
+
+            {/* Password Field */}
+            <div style={{ marginBottom: '40px' }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontFamily: 'Clash Grotesk Variable',
+                  fontWeight: 500,
+                  fontSize: '16px',
+                  lineHeight: '19.68px',
+                  color: '#1E1E1E',
+                  marginBottom: '5px'
+                }}
+              >
+                Password
+              </label>
+              <input
+                type="password"
+                placeholder="*************"
+                value={formData.password}
+                onChange={(e) => handleInputChange('password', e.target.value)}
+                style={{
+                  width: '420px',
+                  height: '50px',
+                  backgroundColor: '#FFFFFF',
+                  borderRadius: '16px',
+                  border: 'none',
+                  padding: '0 20px',
+                  fontFamily: 'Clash Grotesk Variable',
+                  fontWeight: 500,
+                  fontSize: '18px',
+                  lineHeight: '22.14px',
+                  color: '#1E1E1E',
+                  boxShadow: '0px 0px 5px rgba(0, 0, 0, 0.25)',
+                  outline: 'none'
+                }}
+                onFocus={(e) => {
+                  e.currentTarget.style.boxShadow = '0px 0px 8px rgba(59, 130, 246, 0.5)';
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.boxShadow = '0px 0px 5px rgba(0, 0, 0, 0.25)';
+                }}
+              />
+            </div>
+
+            {/* Action Buttons */}
+            <div
+              style={{
+                display: 'flex',
+                gap: '30px',
+                justifyContent: 'space-between'
+              }}
+            >
+              {/* Cancel Button */}
+              <button
+                type="button"
+                onClick={onClose}
+                disabled={loading}
+                style={{
+                  width: '195px',
+                  height: '42px',
+                  backgroundColor: '#E5E7EB',
+                  borderRadius: '16px',
+                  border: 'none',
+                  fontFamily: 'Clash Grotesk Variable',
+                  fontWeight: 500,
+                  fontSize: '18px',
+                  lineHeight: '22.14px',
+                  color: '#8F8F8F',
+                  cursor: loading ? 'not-allowed' : 'pointer',
+                  boxShadow: '0px 0px 5px rgba(0, 0, 0, 0.25)',
+                  transition: 'all 0.2s ease',
+                  opacity: loading ? 0.6 : 1
+                }}
+                onMouseEnter={(e) => {
+                  if (!loading) {
+                    e.currentTarget.style.backgroundColor = '#D1D5DB';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!loading) {
+                    e.currentTarget.style.backgroundColor = '#E5E7EB';
+                  }
+                }}
+              >
+                Cancel
+              </button>
+
+              {/* Add Admin Button */}
+              <button
+                type="submit"
+                disabled={loading}
+                style={{
+                  width: '195px',
+                  height: '42px',
+                  backgroundColor: '#3B82F6',
+                  borderRadius: '16px',
+                  border: 'none',
+                  fontFamily: 'Clash Grotesk Variable',
+                  fontWeight: 500,
+                  fontSize: '18px',
+                  lineHeight: '22.14px',
+                  color: '#FFFFFF',
+                  cursor: loading ? 'not-allowed' : 'pointer',
+                  boxShadow: '0px 0px 5px rgba(0, 0, 0, 0.25)',
+                  transition: 'all 0.2s ease',
+                  opacity: loading ? 0.6 : 1
+                }}
+                onMouseEnter={(e) => {
+                  if (!loading) {
+                    e.currentTarget.style.backgroundColor = '#2563EB';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!loading) {
+                    e.currentTarget.style.backgroundColor = '#3B82F6';
+                  }
+                }}
+              >
+                {loading ? 'Creating...' : 'Add Admin'}
               </button>
             </div>
-          </div>
-
-          {/* Form Content */}
-          <div style={{ padding: '32px', maxHeight: '70vh', overflowY: 'auto' }}>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Email */}
-              <div>
-                <label
-                  className="block mb-2"
-                  style={{
-                    fontFamily: 'Clash Grotesk Variable',
-                    fontWeight: 500,
-                    fontSize: '14px',
-                    color: '#1E1E1E'
-                  }}
-                >
-                  Email Address *
-                </label>
-                <input
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => handleInputChange('email', e.target.value)}
-                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-tindago-500 focus:border-transparent transition-all ${
-                    errors.email ? 'border-red-500 bg-red-50' : 'border-gray-300'
-                  }`}
-                  style={{
-                    fontFamily: 'Clash Grotesk Variable',
-                    fontWeight: 400,
-                    fontSize: '14px'
-                  }}
-                  placeholder="admin@tindago.com"
-                />
-                {errors.email && (
-                  <p
-                    style={{
-                      fontFamily: 'Clash Grotesk Variable',
-                      fontWeight: 400,
-                      fontSize: '12px',
-                      color: '#EF4444',
-                      margin: '4px 0 0 0'
-                    }}
-                  >
-                    {errors.email}
-                  </p>
-                )}
-              </div>
-
-              {/* Display Name */}
-              <div>
-                <label
-                  className="block mb-2"
-                  style={{
-                    fontFamily: 'Clash Grotesk Variable',
-                    fontWeight: 500,
-                    fontSize: '14px',
-                    color: '#1E1E1E'
-                  }}
-                >
-                  Full Name *
-                </label>
-                <input
-                  type="text"
-                  value={formData.displayName}
-                  onChange={(e) => handleInputChange('displayName', e.target.value)}
-                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-tindago-500 focus:border-transparent transition-all ${
-                    errors.displayName ? 'border-red-500 bg-red-50' : 'border-gray-300'
-                  }`}
-                  style={{
-                    fontFamily: 'Clash Grotesk Variable',
-                    fontWeight: 400,
-                    fontSize: '14px'
-                  }}
-                  placeholder="John Administrator"
-                />
-                {errors.displayName && (
-                  <p
-                    style={{
-                      fontFamily: 'Clash Grotesk Variable',
-                      fontWeight: 400,
-                      fontSize: '12px',
-                      color: '#EF4444',
-                      margin: '4px 0 0 0'
-                    }}
-                  >
-                    {errors.displayName}
-                  </p>
-                )}
-              </div>
-
-              {/* Role and Status Row */}
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label
-                    className="block mb-2"
-                    style={{
-                      fontFamily: 'Clash Grotesk Variable',
-                      fontWeight: 500,
-                      fontSize: '14px',
-                      color: '#1E1E1E'
-                    }}
-                  >
-                    Role *
-                  </label>
-                  <select
-                    value={formData.role}
-                    onChange={(e) => handleInputChange('role', e.target.value)}
-                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-tindago-500 focus:border-transparent transition-all ${
-                      errors.role ? 'border-red-500 bg-red-50' : 'border-gray-300'
-                    }`}
-                    style={{
-                      fontFamily: 'Clash Grotesk Variable',
-                      fontWeight: 400,
-                      fontSize: '14px'
-                    }}
-                  >
-                    <option value="viewer">Viewer</option>
-                    <option value="moderator">Moderator</option>
-                    <option value="admin">Admin</option>
-                    <option value="super_admin">Super Admin</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label
-                    className="block mb-2"
-                    style={{
-                      fontFamily: 'Clash Grotesk Variable',
-                      fontWeight: 500,
-                      fontSize: '14px',
-                      color: '#1E1E1E'
-                    }}
-                  >
-                    Status
-                  </label>
-                  <select
-                    value={formData.status}
-                    onChange={(e) => handleInputChange('status', e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-tindago-500 focus:border-transparent transition-all"
-                    style={{
-                      fontFamily: 'Clash Grotesk Variable',
-                      fontWeight: 400,
-                      fontSize: '14px'
-                    }}
-                  >
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Phone and Department Row */}
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label
-                    className="block mb-2"
-                    style={{
-                      fontFamily: 'Clash Grotesk Variable',
-                      fontWeight: 500,
-                      fontSize: '14px',
-                      color: '#1E1E1E'
-                    }}
-                  >
-                    Phone Number
-                  </label>
-                  <input
-                    type="tel"
-                    value={formData.phone || ''}
-                    onChange={(e) => handleInputChange('phone', e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-tindago-500 focus:border-transparent transition-all"
-                    style={{
-                      fontFamily: 'Clash Grotesk Variable',
-                      fontWeight: 400,
-                      fontSize: '14px'
-                    }}
-                    placeholder="+63 912 345 6789"
-                  />
-                </div>
-
-                <div>
-                  <label
-                    className="block mb-2"
-                    style={{
-                      fontFamily: 'Clash Grotesk Variable',
-                      fontWeight: 500,
-                      fontSize: '14px',
-                      color: '#1E1E1E'
-                    }}
-                  >
-                    Department
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.department || ''}
-                    onChange={(e) => handleInputChange('department', e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-tindago-500 focus:border-transparent transition-all"
-                    style={{
-                      fontFamily: 'Clash Grotesk Variable',
-                      fontWeight: 400,
-                      fontSize: '14px'
-                    }}
-                    placeholder="IT Administration"
-                  />
-                </div>
-              </div>
-
-              {/* Permissions */}
-              <div>
-                <label
-                  className="block mb-3"
-                  style={{
-                    fontFamily: 'Clash Grotesk Variable',
-                    fontWeight: 500,
-                    fontSize: '14px',
-                    color: '#1E1E1E'
-                  }}
-                >
-                  Permissions
-                </label>
-                <div className="space-y-2">
-                  {availablePermissions.map((permission, index) => (
-                    <label key={index} className="flex items-center space-x-3">
-                      <input
-                        type="checkbox"
-                        checked={formData.permissions?.some(p => p.resource === permission.resource) || false}
-                        onChange={() => handlePermissionToggle(permission)}
-                        className="rounded border-gray-300 text-tindago-500 focus:ring-tindago-500"
-                      />
-                      <span
-                        style={{
-                          fontFamily: 'Clash Grotesk Variable',
-                          fontWeight: 400,
-                          fontSize: '14px',
-                          color: '#1E1E1E',
-                          textTransform: 'capitalize'
-                        }}
-                      >
-                        {permission.resource} ({permission.actions.join(', ')})
-                      </span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              {/* Notes */}
-              <div>
-                <label
-                  className="block mb-2"
-                  style={{
-                    fontFamily: 'Clash Grotesk Variable',
-                    fontWeight: 500,
-                    fontSize: '14px',
-                    color: '#1E1E1E'
-                  }}
-                >
-                  Notes
-                </label>
-                <textarea
-                  value={formData.notes || ''}
-                  onChange={(e) => handleInputChange('notes', e.target.value)}
-                  rows={3}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-tindago-500 focus:border-transparent transition-all resize-none"
-                  style={{
-                    fontFamily: 'Clash Grotesk Variable',
-                    fontWeight: 400,
-                    fontSize: '14px'
-                  }}
-                  placeholder="Additional notes about this admin user..."
-                />
-              </div>
-
-              {/* Error Message */}
-              {errors.submit && (
-                <div
-                  className="bg-red-50 border border-red-200 rounded-lg p-4"
-                  style={{
-                    fontFamily: 'Clash Grotesk Variable',
-                    fontWeight: 400,
-                    fontSize: '14px',
-                    color: '#DC2626'
-                  }}
-                >
-                  {errors.submit}
-                </div>
-              )}
-            </form>
-          </div>
-
-          {/* Footer */}
-          <div
-            className="border-t border-gray-200 flex justify-end space-x-3"
-            style={{
-              padding: '20px 32px 24px 32px',
-              borderTop: '1px solid rgba(0, 0, 0, 0.05)'
-            }}
-          >
-            <Button
-              variant="secondary"
-              onClick={onClose}
-              disabled={loading}
-              style={{
-                fontFamily: 'Clash Grotesk Variable',
-                fontWeight: 500,
-                fontSize: '14px',
-                height: '40px',
-                padding: '0 20px'
-              }}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="primary"
-              onClick={handleSubmit}
-              disabled={loading}
-              style={{
-                fontFamily: 'Clash Grotesk Variable',
-                fontWeight: 500,
-                fontSize: '14px',
-                height: '40px',
-                padding: '0 20px',
-                backgroundColor: '#3BB77E'
-              }}
-            >
-              {loading ? (
-                <div className="flex items-center">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                  Creating...
-                </div>
-              ) : (
-                'Create Admin User'
-              )}
-            </Button>
-          </div>
+          </form>
         </div>
       </div>
     </div>

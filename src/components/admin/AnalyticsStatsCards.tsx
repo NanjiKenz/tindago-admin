@@ -139,7 +139,7 @@ export const AnalyticsStatsCards: React.FC = () => {
               className="absolute"
               style={{
                 left: '20px',
-                bottom: '45px'
+                bottom: '20px'
               }}
             >
               <p

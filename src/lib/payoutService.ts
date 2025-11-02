@@ -40,7 +40,7 @@ export async function createPayoutRequest(params: {
     const storeName = storeSnap.exists() ? storeSnap.val().name : 'Unknown Store';
 
     // Create payout request
-    const payoutRef = push(ref(database, 'payouts'));
+    const payoutRef = push(ref(database, 'payout_requests'));
     const payoutId = payoutRef.key!;
 
     await set(payoutRef, {
@@ -66,7 +66,28 @@ export async function createPayoutRequest(params: {
  */
 export async function getAllPayoutRequests(): Promise<PayoutRequest[]> {
   try {
-    const payoutsRef = ref(database, 'payouts');
+    // Fetch from API route to bypass Firebase security rules
+    const res = await fetch('/api/admin/payouts', { cache: 'no-store' });
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error(`Failed to fetch payouts: ${errorText}`);
+    }
+
+    const data = await res.json();
+    return (data.payouts || []) as PayoutRequest[];
+  } catch (error) {
+    console.error('Error fetching payout requests:', error);
+    throw error;
+  }
+}
+
+/**
+ * DEPRECATED: Old direct Firebase access - kept for reference
+ * Use getAllPayoutRequests() instead which uses API routes
+ */
+async function getAllPayoutRequestsLegacy(): Promise<PayoutRequest[]> {
+  try {
+    const payoutsRef = ref(database, 'payout_requests');
     const snapshot = await get(payoutsRef);
 
     if (!snapshot.exists()) {
@@ -111,7 +132,7 @@ export async function getAllPayoutRequests(): Promise<PayoutRequest[]> {
  */
 export async function getStorePayoutRequests(storeId: string): Promise<PayoutRequest[]> {
   try {
-    const payoutsRef = ref(database, 'payouts');
+    const payoutsRef = ref(database, 'payout_requests');
     const snapshot = await get(payoutsRef);
 
     if (!snapshot.exists()) {
@@ -165,7 +186,7 @@ export async function approvePayoutRequest(params: {
 
   try {
     // Get payout details
-    const payoutRef = ref(database, `payouts/${payoutId}`);
+    const payoutRef = ref(database, `payout_requests/${payoutId}`);
     const snapshot = await get(payoutRef);
 
     if (!snapshot.exists()) {
@@ -210,7 +231,7 @@ export async function rejectPayoutRequest(params: {
   const { payoutId, adminUserId, adminNotes } = params;
 
   try {
-    const payoutRef = ref(database, `payouts/${payoutId}`);
+    const payoutRef = ref(database, `payout_requests/${payoutId}`);
     const snapshot = await get(payoutRef);
 
     if (!snapshot.exists()) {
@@ -241,7 +262,7 @@ export async function rejectPayoutRequest(params: {
  */
 export async function completePayoutRequest(payoutId: string): Promise<void> {
   try {
-    const payoutRef = ref(database, `payouts/${payoutId}`);
+    const payoutRef = ref(database, `payout_requests/${payoutId}`);
     const snapshot = await get(payoutRef);
 
     if (!snapshot.exists()) {
@@ -277,6 +298,43 @@ export async function getPayoutStats(): Promise<{
   totalApprovedAmount: number;
 }> {
   try {
+    // Fetch stats from API route (bypasses Firebase security rules)
+    const res = await fetch('/api/admin/payouts/stats', { cache: 'no-store' });
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error(`Failed to fetch payout stats: ${errorText}`);
+    }
+
+    const apiStats = await res.json();
+
+    return {
+      totalRequests: apiStats.totalRequests || 0,
+      pendingCount: apiStats.pendingRequests || 0,
+      approvedCount: apiStats.approvedRequests || 0,
+      rejectedCount: apiStats.rejectedRequests || 0,
+      completedCount: apiStats.completedRequests || 0,
+      totalPendingAmount: apiStats.pendingAmount || 0,
+      totalApprovedAmount: apiStats.totalAmount || 0,
+    };
+  } catch (error) {
+    console.error('Error fetching payout stats:', error);
+    throw error;
+  }
+}
+
+/**
+ * DEPRECATED: Old calculation method
+ */
+async function getPayoutStatsLegacy(): Promise<{
+  totalRequests: number;
+  pendingCount: number;
+  approvedCount: number;
+  rejectedCount: number;
+  completedCount: number;
+  totalPendingAmount: number;
+  totalApprovedAmount: number;
+}> {
+  try{
     const payouts = await getAllPayoutRequests();
 
     const stats = {

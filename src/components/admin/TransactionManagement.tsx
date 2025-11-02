@@ -69,6 +69,7 @@ const getPaymentMethodLogo = (method: string) => {
 };
 
 interface Transaction {
+  id: string;
   invoiceId: string;
   orderNumber: string;
   storeId: string;
@@ -79,6 +80,7 @@ interface Transaction {
   storeAmount: number;
   method: string;
   status: string;
+  paymentStatus: 'pending' | 'paid' | 'refunded';
   createdAt: string;
   paidAt?: string;
   invoiceUrl?: string;
@@ -111,40 +113,29 @@ export const TransactionManagement: React.FC = () => {
     loadCommissionRate();
   }, []);
 
-  // Load transactions from Firebase
+  // Load transactions from API route (bypasses Firebase security rules)
   useEffect(() => {
-    const rootRef = ref(database, 'ledgers/stores');
-    const handler = onValue(rootRef, (snap) => {
-      const rows: Transaction[] = [];
-      if (snap.exists()) {
-        const data = snap.val() as Record<string, Record<string, unknown>>;
-        for (const storeId of Object.keys(data)) {
-          const txs = (data[storeId] as Record<string, unknown>).transactions || {};
-          for (const invoiceId of Object.keys(txs)) {
-            const t = txs[invoiceId];
-            rows.push({
-              invoiceId,
-              orderNumber: t.orderNumber || '',
-              storeId,
-              storeName: t.storeName || '',
-              amount: Number(t.amount || 0),
-              commission: Number(t.commission || 0),
-              commissionRate: Number(t.commissionRate || 0),
-              storeAmount: Number(t.storeAmount || 0),
-              method: t.method || '',
-              status: (t.status || 'PENDING').toString(),
-              createdAt: t.createdAt || '',
-              paidAt: t.paidAt,
-              invoiceUrl: t.invoiceUrl,
-            });
-          }
+    const loadTransactions = async () => {
+      try {
+        setLoading(true);
+        const res = await fetch('/api/admin/transactions', { cache: 'no-store' });
+        if (!res.ok) {
+          throw new Error('Failed to fetch transactions');
         }
+        const data = await res.json();
+        setTransactions(data.transactions || []);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error loading transactions:', error);
+        setLoading(false);
       }
-      rows.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-      setTransactions(rows);
-      setLoading(false);
-    });
-    return () => off(rootRef, 'value', handler);
+    };
+
+    loadTransactions();
+
+    // Refresh every 30 seconds
+    const interval = setInterval(loadTransactions, 30000);
+    return () => clearInterval(interval);
   }, []);
 
   // Calculate stats
@@ -712,33 +703,49 @@ export const TransactionManagement: React.FC = () => {
 
             {/* Status Filter Badges */}
             <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-              {(['all', 'PAID', 'PENDING', 'REFUNDED'] as const).map((status) => (
-                <button
-                  key={status}
-                  onClick={() => setStatusFilter(status)}
-                  style={{
-                    padding: '8px 16px',
-                    borderRadius: '20px',
-                    border: '1px solid rgba(0, 0, 0, 0.1)',
-                    backgroundColor: statusFilter === status ? '#3BB77E' : '#FFFFFF',
-                    color: statusFilter === status ? '#FFFFFF' : '#1E1E1E',
-                    cursor: 'pointer',
-                    fontFamily: 'Clash Grotesk Variable',
-                    fontWeight: 500,
-                    fontSize: '14px',
-                    transition: 'all 0.2s ease'
-                  }}
-                >
-                  {status === 'all' ? 'All' : status}
-                </button>
-              ))}
+              {(['all', 'PAID', 'PENDING', 'REFUNDED'] as const).map((status) => {
+                const isActive = statusFilter === status;
+                return (
+                  <button
+                    key={status}
+                    onClick={() => setStatusFilter(status)}
+                    style={{
+                      padding: '8px 16px',
+                      fontSize: '14px',
+                      fontFamily: 'Clash Grotesk Variable',
+                      fontWeight: 500,
+                      borderRadius: '6px',
+                      border: '1px solid',
+                      borderColor: isActive ? '#3BB77E' : '#CBD5E1',
+                      backgroundColor: isActive ? '#3BB77E' : '#FFFFFF',
+                      color: isActive ? '#FFFFFF' : '#64748B',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isActive) {
+                        e.currentTarget.style.backgroundColor = '#F1F5F9';
+                        e.currentTarget.style.borderColor = '#94A3B8';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isActive) {
+                        e.currentTarget.style.backgroundColor = '#FFFFFF';
+                        e.currentTarget.style.borderColor = '#CBD5E1';
+                      }
+                    }}
+                  >
+                    {status === 'all' ? 'All' : status.charAt(0) + status.slice(1).toLowerCase()}
+                  </button>
+                );
+              })}
 
               {/* Export CSV Button */}
               <button
                 onClick={handleExport}
                 style={{
                   padding: '8px 16px',
-                  borderRadius: '20px',
+                  borderRadius: '6px',
                   border: '1px solid #3BB77E',
                   backgroundColor: '#3BB77E',
                   color: '#FFFFFF',
@@ -1033,7 +1040,7 @@ export const TransactionManagement: React.FC = () => {
                             paddingRight: '12px',
                             paddingTop: '4px',
                             paddingBottom: '4px',
-                            borderRadius: '16px',
+                            borderRadius: '8px',
                             fontSize: '12px',
                             fontWeight: 500,
                             fontFamily: 'Clash Grotesk Variable',
@@ -1294,7 +1301,7 @@ export const TransactionManagement: React.FC = () => {
                   paddingRight: '12px',
                   paddingTop: '4px',
                   paddingBottom: '4px',
-                  borderRadius: '16px',
+                  borderRadius: '8px',
                   fontSize: '12px',
                   fontWeight: 500,
                   fontFamily: 'Clash Grotesk Variable',

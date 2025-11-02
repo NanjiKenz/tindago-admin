@@ -1,18 +1,19 @@
 /**
- * Store Management Page
+ * TindaGo Admin Management Page - Pixel Perfect Implementation
  *
- * Next.js page for managing stores in TindaGo admin dashboard
- * Integrates StoreManagement component with admin dashboard layout
+ * Admin management page (1440x1024) with sidebar, header, and admin management interface
+ * Exact positioning and styling following dashboard pattern
+ * Matches design from Store Management, Customer Management, Transaction Management, and Payout Management pages
  */
 
 'use client';
 
-import { useState, Suspense } from 'react';
+import React, { useState } from 'react';
 import { AdminSidebar } from '@/components/admin/AdminSidebar';
 import { AdminHeader } from '@/components/admin/AdminHeader';
-import { StoreManagement } from '@/components/admin/StoreManagement';
+import { AdminManagement } from '@/components/admin/AdminManagement';
 
-export default function StoresPage() {
+export default function AdminManagementPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
@@ -26,10 +27,10 @@ export default function StoresPage() {
         margin: '0 auto'
       }}
     >
-      {/* Sidebar - EXACT 273px wide */}
-      <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} currentPage="stores" />
+      {/* Sidebar - 273px wide */}
+      <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} currentPage="admins" />
 
-      {/* Main Container - EXACT positioning */}
+      {/* Main Container */}
       <div
         className="absolute lg:left-[273px] left-0 lg:w-[1167px] w-full"
         style={{
@@ -37,7 +38,7 @@ export default function StoresPage() {
           minHeight: '1024px'
         }}
       >
-        {/* Header - EXACT 80px height */}
+        {/* Top Header */}
         <div
           className="absolute w-full"
           style={{
@@ -50,21 +51,26 @@ export default function StoresPage() {
           <AdminHeader onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
         </div>
 
-        {/* Content Area - Below header */}
+        {/* Main Content Area - Below header */}
         <div
-          className="absolute w-full lg:px-5 px-4"
+          className="absolute w-full"
           style={{
             left: '0px',
             top: '80px',
-            minHeight: '944px',
-            paddingTop: '40px'
+            minHeight: '944px'
           }}
         >
-          <Suspense fallback={<div style={{ padding: '20px', fontFamily: 'Clash Grotesk Variable', color: '#1E1E1E' }}>Loading store management...</div>}>
-            <StoreManagement />
-          </Suspense>
+          <AdminManagement />
         </div>
       </div>
+
+      {/* Mobile Sidebar Overlay */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-30 bg-black bg-opacity-50 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
     </div>
   );
 }

@@ -19,6 +19,11 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { getAllPayoutRequests, approvePayoutRequest, rejectPayoutRequest, getPayoutStats, formatPayoutAmount } from '@/lib/payoutService';
+import { ref, get } from 'firebase/database';
+import { database } from '@/lib/firebase.js';
+import { useAuth } from '@/contexts/AuthContext';
+import { useNotifications } from '@/hooks/useNotifications';
+import { NotificationContainer } from '@/components/ui/NotificationToast';
 import type { PayoutRequest } from '@/lib/payoutService';
 
 // Payment Method Badge Components
@@ -58,8 +63,12 @@ const getPaymentMethodBadge = (method: string) => {
 };
 
 export const PayoutManagement: React.FC = () => {
+  const { user } = useAuth();
+  const { notifications, success, error, warning, info, removeNotification } = useNotifications();
   const [payouts, setPayouts] = useState<PayoutRequest[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [events, setEvents] = useState<{ ts: number; action: string; amount?: number }[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'approved' | 'rejected' | 'completed'>('all');
   const [currentPage, setCurrentPage] = useState(1);
@@ -69,9 +78,34 @@ export const PayoutManagement: React.FC = () => {
   const [selectedPayouts, setSelectedPayouts] = useState<Set<string>>(new Set());
   const [bulkProcessing, setBulkProcessing] = useState(false);
 
-  // Load payouts
+  // Role check
   useEffect(() => {
-    loadData();
+    // check admin role
+    const uid = user?.uid;
+    if (uid) {
+      get(ref(database, `roles/${uid}`)).then(s => setIsAdmin(s.exists() && s.val() === 'admin')).catch(() => setIsAdmin(false));
+    }
+  }, [user?.uid]);
+
+  // Load payouts from API route (bypasses Firebase security rules)
+  useEffect(() => {
+    const loadPayouts = async () => {
+      try {
+        setLoading(true);
+        const data = await getAllPayoutRequests();
+        setPayouts(data);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error loading payouts:', error);
+        setLoading(false);
+      }
+    };
+
+    loadPayouts();
+
+    // Refresh every 30 seconds
+    const interval = setInterval(loadPayouts, 30000);
+    return () => clearInterval(interval);
   }, []);
 
   const loadData = async () => {
@@ -132,6 +166,7 @@ export const PayoutManagement: React.FC = () => {
   };
 
   const handleApprove = async (payout: PayoutRequest) => {
+    if (!isAdmin) { alert('Admins only'); return; }
     if (!confirm(`Approve payout of ${formatPayoutAmount(payout.amount)} for ${payout.storeName}?\n\nThis will debit the store wallet.`)) {
       return;
     }
@@ -143,18 +178,19 @@ export const PayoutManagement: React.FC = () => {
         adminUserId: 'admin',
         adminNotes: 'Approved by admin',
       });
-      alert('Payout approved successfully!');
+      success('Payout approved', `${payout.storeName} • ${formatPayoutAmount(payout.amount)}`);
       setSelectedPayout(null);
       await loadData();
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'An error occurred';
-      alert(`Error: ${errorMessage}`);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'An error occurred';
+      error('Approval failed', errorMessage);
     } finally {
       setProcessing(false);
     }
   };
 
   const handleReject = async (payout: PayoutRequest) => {
+    if (!isAdmin) { alert('Admins only'); return; }
     const reason = prompt('Reason for rejection:');
     if (!reason) return;
 
@@ -165,12 +201,12 @@ export const PayoutManagement: React.FC = () => {
         adminUserId: 'admin',
         adminNotes: reason,
       });
-      alert('Payout rejected successfully!');
+      warning('Payout rejected', `${payout.storeName} • ${formatPayoutAmount(payout.amount)}`);
       setSelectedPayout(null);
       await loadData();
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'An error occurred';
-      alert(`Error: ${errorMessage}`);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'An error occurred';
+      error('Rejection failed', errorMessage);
     } finally {
       setProcessing(false);
     }
@@ -204,14 +240,37 @@ export const PayoutManagement: React.FC = () => {
       }
     }
 
-    alert(`Bulk approval complete!\n\nApproved: ${successCount}\nFailed: ${failCount}`);
+    info('Bulk approval complete', `Approved: ${successCount} • Failed: ${failCount}`);
     setSelectedPayouts(new Set());
     await loadData();
     setBulkProcessing(false);
   };
 
+  const handleComplete = async (payout: PayoutRequest) => {
+    if (!isAdmin) { alert('Admins only'); return; }
+    if (payout.status !== 'approved') {
+      alert('Payout must be approved before completing.');
+      return;
+    }
+    if (!confirm(`Mark payout of ${formatPayoutAmount(payout.amount)} for ${payout.storeName} as COMPLETED?`)) return;
+    setProcessing(true);
+    try {
+      await import('@/lib/payoutService').then(m => m.completePayoutRequest(payout.id));
+      success('Payout completed', `${payout.storeName} • ${formatPayoutAmount(payout.amount)}`);
+      setSelectedPayout(null);
+      await loadData();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'An error occurred';
+      error('Completion failed', msg);
+    } finally {
+      setProcessing(false);
+    }
+  };
+
   return (
-    <div
+    <>
+      <NotificationContainer notifications={notifications} onRemove={removeNotification} />
+      <div
       className="relative"
       style={{
         width: '100%',
@@ -706,26 +765,42 @@ export const PayoutManagement: React.FC = () => {
 
             {/* Status Filter Badges */}
             <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-              {(['all', 'pending', 'approved', 'completed', 'rejected'] as const).map((status) => (
-                <button
-                  key={status}
-                  onClick={() => setStatusFilter(status)}
-                  style={{
-                    padding: '8px 16px',
-                    borderRadius: '20px',
-                    border: '1px solid rgba(0, 0, 0, 0.1)',
-                    backgroundColor: statusFilter === status ? '#3BB77E' : '#FFFFFF',
-                    color: statusFilter === status ? '#FFFFFF' : '#1E1E1E',
-                    cursor: 'pointer',
-                    fontFamily: 'Clash Grotesk Variable',
-                    fontWeight: 500,
-                    fontSize: '14px',
-                    transition: 'all 0.2s ease'
-                  }}
-                >
-                  {status.charAt(0).toUpperCase() + status.slice(1)}
-                </button>
-              ))}
+              {(['all', 'pending', 'approved', 'completed', 'rejected'] as const).map((status) => {
+                const isActive = statusFilter === status;
+                return (
+                  <button
+                    key={status}
+                    onClick={() => setStatusFilter(status)}
+                    style={{
+                      padding: '8px 16px',
+                      fontSize: '14px',
+                      fontFamily: 'Clash Grotesk Variable',
+                      fontWeight: 500,
+                      borderRadius: '6px',
+                      border: '1px solid',
+                      borderColor: isActive ? '#3BB77E' : '#CBD5E1',
+                      backgroundColor: isActive ? '#3BB77E' : '#FFFFFF',
+                      color: isActive ? '#FFFFFF' : '#64748B',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isActive) {
+                        e.currentTarget.style.backgroundColor = '#F1F5F9';
+                        e.currentTarget.style.borderColor = '#94A3B8';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isActive) {
+                        e.currentTarget.style.backgroundColor = '#FFFFFF';
+                        e.currentTarget.style.borderColor = '#CBD5E1';
+                      }
+                    }}
+                  >
+                    {status.charAt(0).toUpperCase() + status.slice(1)}
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -1017,7 +1092,7 @@ export const PayoutManagement: React.FC = () => {
                             paddingRight: '12px',
                             paddingTop: '4px',
                             paddingBottom: '4px',
-                            borderRadius: '16px',
+                            borderRadius: '8px',
                             fontSize: '12px',
                             fontWeight: 500,
                             fontFamily: 'Clash Grotesk Variable',
@@ -1102,6 +1177,29 @@ export const PayoutManagement: React.FC = () => {
                                 Reject
                               </button>
                             </div>
+                          )}
+                          {payout.status === 'approved' && (
+                            <button
+                              onClick={(e) => { e.stopPropagation(); handleComplete(payout); }}
+                              disabled={processing}
+                              style={{
+                                padding: '6px 12px',
+                                borderRadius: '8px',
+                                border: '1px solid #3B82F6',
+                                backgroundColor: 'transparent',
+                                color: '#3B82F6',
+                                cursor: processing ? 'not-allowed' : 'pointer',
+                                fontFamily: 'Clash Grotesk Variable',
+                                fontWeight: 500,
+                                fontSize: '12px',
+                                transition: 'all 0.2s ease',
+                                opacity: processing ? 0.5 : 1
+                              }}
+                              onMouseEnter={(e) => { if (!processing) { e.currentTarget.style.backgroundColor = '#3B82F6'; e.currentTarget.style.color = '#FFFFFF'; } }}
+                              onMouseLeave={(e) => { if (!processing) { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = '#3B82F6'; } }}
+                            >
+                              Mark Completed
+                            </button>
                           )}
                           {payout.status !== 'pending' && (
                             <button
@@ -1318,7 +1416,7 @@ export const PayoutManagement: React.FC = () => {
                   paddingRight: '12px',
                   paddingTop: '4px',
                   paddingBottom: '4px',
-                  borderRadius: '16px',
+                  borderRadius: '8px',
                   fontSize: '12px',
                   fontWeight: 500,
                   fontFamily: 'Clash Grotesk Variable',
@@ -1411,6 +1509,24 @@ export const PayoutManagement: React.FC = () => {
               )}
             </div>
 
+            {/* Event log */}
+            <div style={{ marginTop: '16px' }}>
+              <label style={{ fontFamily: 'Clash Grotesk Variable', fontWeight: 600, fontSize: '14px', color: '#1E1E1E' }}>Events</label>
+              <div style={{ marginTop: '8px', padding: '12px', border: '1px solid #E2E8F0', borderRadius: '12px', maxHeight: '160px', overflowY: 'auto' }}>
+                {events.length === 0 ? (
+                  <p style={{ fontFamily: 'Clash Grotesk Variable', fontSize: '12px', color: '#64748B', margin: 0 }}>No events</p>
+                ) : (
+                  <ul style={{ margin: 0, paddingLeft: '16px' }}>
+                    {events.map(e => (
+                      <li key={e.ts} style={{ fontFamily: 'Clash Grotesk Variable', fontSize: '12px', color: '#1E293B', marginBottom: '4px' }}>
+                        {new Date(e.ts).toLocaleString()} • {e.action}{typeof e.amount === 'number' ? ` • ₱${e.amount.toFixed(2)}` : ''}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </div>
+
             <div style={{ marginTop: '24px', display: 'flex', gap: '12px' }}>
               {selectedPayout.status === 'pending' && (
                 <>
@@ -1454,6 +1570,27 @@ export const PayoutManagement: React.FC = () => {
                   </button>
                 </>
               )}
+              {selectedPayout.status === 'approved' && (
+                <button
+                  onClick={() => handleComplete(selectedPayout)}
+                  disabled={processing}
+                  style={{
+                    flex: 1,
+                    padding: '12px 24px',
+                    borderRadius: '12px',
+                    border: '1px solid #3B82F6',
+                    backgroundColor: '#3B82F6',
+                    color: '#FFFFFF',
+                    cursor: processing ? 'not-allowed' : 'pointer',
+                    fontFamily: 'Clash Grotesk Variable',
+                    fontWeight: 500,
+                    fontSize: '14px',
+                    opacity: processing ? 0.5 : 1
+                  }}
+                >
+                  {processing ? 'Processing...' : 'Mark Completed'}
+                </button>
+              )}
               <button
                 onClick={() => setSelectedPayout(null)}
                 style={{
@@ -1475,6 +1612,7 @@ export const PayoutManagement: React.FC = () => {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </>
   );
 };

@@ -4,7 +4,7 @@
  * Firebase Authentication service with admin role verification
  */
 
-import { auth, database } from './firebase.js';
+import { auth } from './firebase.js';
 import {
   signInWithEmailAndPassword,
   signOut,
@@ -13,7 +13,6 @@ import {
   sendPasswordResetEmail,
   updatePassword
 } from 'firebase/auth';
-import { ref, get } from 'firebase/database';
 
 export interface AdminUser {
   uid: string;
@@ -107,22 +106,16 @@ export class AuthService {
    */
   static async verifyAdminRole(firebaseUser: FirebaseUser): Promise<AdminUser> {
     try {
-      const adminRef = ref(database, `admins/${firebaseUser.uid}`);
-      const snapshot = await get(adminRef);
-
-      if (!snapshot.exists()) {
-        throw new Error('Access denied. Admin privileges required.');
-      }
-
-      const adminData = snapshot.val();
-
+      const res = await fetch(`/api/admin/auth/verify?uid=${encodeURIComponent(firebaseUser.uid)}`, { cache: 'no-store' });
+      if (!res.ok) throw new Error(await res.text());
+      const data = await res.json();
       return {
-        uid: firebaseUser.uid,
-        email: firebaseUser.email!,
-        displayName: firebaseUser.displayName || adminData.displayName,
-        role: adminData.role || 'admin',
-        createdAt: adminData.createdAt,
-        lastLogin: adminData.lastLogin
+        uid: data.uid,
+        email: data.email || firebaseUser.email!,
+        displayName: data.displayName || firebaseUser.displayName || undefined,
+        role: data.role || 'admin',
+        createdAt: data.createdAt,
+        lastLogin: data.lastLogin,
       };
     } catch (error) {
       console.error('Admin verification error:', error);
@@ -135,12 +128,8 @@ export class AuthService {
    */
   static async updateLastLogin(uid: string): Promise<void> {
     try {
-      const timestamp = new Date().toISOString();
-      // Using AdminService pattern for database updates
-      const { update } = await import('firebase/database');
-      await update(ref(database, `admins/${uid}`), {
-        lastLogin: timestamp
-      });
+      // This is now handled on the server during verify; keep as no-op fallback
+      await fetch(`/api/admin/auth/verify?uid=${encodeURIComponent(uid)}`, { cache: 'no-store' });
     } catch (error) {
       console.error('Last login update error:', error);
       // Non-critical error, don't throw

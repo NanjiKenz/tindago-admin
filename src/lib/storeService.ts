@@ -12,20 +12,44 @@ import { AdminService, StoreRegistration } from './adminService';
 
 export class StoreService {
   /**
-   * Get all stores with enhanced data
+   * Get all stores with enhanced data (via API route to bypass Firebase security rules)
    */
   static async getAllStores(): Promise<Store[]> {
+    try {
+      console.log('🔍 [getAllStores] Fetching stores from API...');
+
+      const res = await fetch('/api/admin/stores', { cache: 'no-store' });
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(`Failed to fetch stores: ${errorText}`);
+      }
+
+      const data = await res.json();
+      console.log(`📊 [getAllStores] Found ${data.stores?.length || 0} stores from API`);
+
+      return (data.stores || []) as Store[];
+    } catch (error) {
+      console.error('Error fetching stores:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * DEPRECATED: Old direct Firebase access method - kept for reference
+   * Use getAllStores() instead which uses API routes
+   */
+  private static async getAllStoresLegacy(): Promise<Store[]> {
     try {
       const storesRef = ref(database, 'stores');
       const snapshot = await get(storesRef);
 
-      console.log('🔍 [getAllStores] Fetching stores from Firebase...');
+      console.log('🔍 [getAllStoresLegacy] Fetching stores from Firebase...');
 
       if (snapshot.exists()) {
         const data = snapshot.val();
         const stores: Store[] = [];
 
-        console.log(`📊 [getAllStores] Found ${Object.keys(data).length} stores in 'stores' collection`);
+        console.log(`📊 [getAllStoresLegacy] Found ${Object.keys(data).length} stores in 'stores' collection`);
 
         for (const storeId of Object.keys(data)) {
           const storeData = data[storeId];
@@ -501,12 +525,22 @@ export class StoreService {
    */
   static async getStoreStats(): Promise<StoreStats> {
     try {
+      // Fetch stats from API route (bypasses Firebase security rules)
+      const res = await fetch('/api/admin/stores/stats', { cache: 'no-store' });
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(`Failed to fetch store stats: ${errorText}`);
+      }
+
+      const apiStats = await res.json();
+
+      // Get stores for additional calculations if needed
       const stores = await this.getAllStoresWithRegistrations();
 
       const now = new Date();
       const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
-      const totalStores = stores.length;
+      const totalStores = apiStats.totalStores || stores.length;
       const activeStores = stores.filter(s => s.status === 'active').length;
       const pendingApproval = stores.filter(s => s.status === 'pending').length;
       const rejectedStores = stores.filter(s => s.status === 'rejected').length;

@@ -76,7 +76,7 @@ export default function PendingApprovalsPage() {
         </h1>
         <p
           style={{
-            fontFamily: 'Inter',
+            fontFamily: 'Clash Grotesk Variable',
             fontWeight: 400,
             fontSize: '16px',
             color: 'rgba(30, 30, 30, 0.6)'
@@ -105,7 +105,7 @@ export default function PendingApprovalsPage() {
             <div className="text-center py-12">
               <p
                 style={{
-                  fontFamily: 'Inter',
+                  fontFamily: 'Clash Grotesk Variable',
                   fontWeight: 400,
                   fontSize: '16px',
                   color: 'rgba(30, 30, 30, 0.6)'
@@ -122,7 +122,7 @@ export default function PendingApprovalsPage() {
                     <th
                       className="text-left py-4 px-2"
                       style={{
-                        fontFamily: 'Inter',
+                        fontFamily: 'Clash Grotesk Variable',
                         fontWeight: 500,
                         fontSize: '12px',
                         color: 'rgba(30, 30, 30, 0.6)',
@@ -134,7 +134,7 @@ export default function PendingApprovalsPage() {
                     <th
                       className="text-left py-4 px-2"
                       style={{
-                        fontFamily: 'Inter',
+                        fontFamily: 'Clash Grotesk Variable',
                         fontWeight: 500,
                         fontSize: '12px',
                         color: 'rgba(30, 30, 30, 0.6)',
@@ -146,7 +146,7 @@ export default function PendingApprovalsPage() {
                     <th
                       className="text-left py-4 px-2"
                       style={{
-                        fontFamily: 'Inter',
+                        fontFamily: 'Clash Grotesk Variable',
                         fontWeight: 500,
                         fontSize: '12px',
                         color: 'rgba(30, 30, 30, 0.6)',
@@ -158,7 +158,7 @@ export default function PendingApprovalsPage() {
                     <th
                       className="text-left py-4 px-2"
                       style={{
-                        fontFamily: 'Inter',
+                        fontFamily: 'Clash Grotesk Variable',
                         fontWeight: 500,
                         fontSize: '12px',
                         color: 'rgba(30, 30, 30, 0.6)',
@@ -170,7 +170,7 @@ export default function PendingApprovalsPage() {
                     <th
                       className="text-left py-4 px-2"
                       style={{
-                        fontFamily: 'Inter',
+                        fontFamily: 'Clash Grotesk Variable',
                         fontWeight: 500,
                         fontSize: '12px',
                         color: 'rgba(30, 30, 30, 0.6)',
@@ -192,7 +192,7 @@ export default function PendingApprovalsPage() {
                       <td className="py-4 px-2">
                         <p
                           style={{
-                            fontFamily: 'Inter',
+                            fontFamily: 'Clash Grotesk Variable',
                             fontWeight: 600,
                             fontSize: '14px',
                             color: '#1E1E1E'
@@ -204,7 +204,7 @@ export default function PendingApprovalsPage() {
                       <td className="py-4 px-2">
                         <p
                           style={{
-                            fontFamily: 'Inter',
+                            fontFamily: 'Clash Grotesk Variable',
                             fontWeight: 400,
                             fontSize: '14px',
                             color: '#1E1E1E'
@@ -216,7 +216,7 @@ export default function PendingApprovalsPage() {
                       <td className="py-4 px-2">
                         <p
                           style={{
-                            fontFamily: 'Inter',
+                            fontFamily: 'Clash Grotesk Variable',
                             fontWeight: 400,
                             fontSize: '14px',
                             color: 'rgba(30, 30, 30, 0.7)'
@@ -228,7 +228,7 @@ export default function PendingApprovalsPage() {
                       <td className="py-4 px-2">
                         <p
                           style={{
-                            fontFamily: 'Inter',
+                            fontFamily: 'Clash Grotesk Variable',
                             fontWeight: 400,
                             fontSize: '14px',
                             color: 'rgba(30, 30, 30, 0.7)'
@@ -257,7 +257,7 @@ export default function PendingApprovalsPage() {
                           />
                           <span
                             style={{
-                              fontFamily: 'Inter',
+                              fontFamily: 'Clash Grotesk Variable',
                               fontWeight: 500,
                               fontSize: '11px',
                               color: '#D97706'
@@ -280,7 +280,7 @@ export default function PendingApprovalsPage() {
       <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
         <p
           style={{
-            fontFamily: 'Inter',
+            fontFamily: 'Clash Grotesk Variable',
             fontWeight: 400,
             fontSize: '14px',
             color: '#1E40AF'

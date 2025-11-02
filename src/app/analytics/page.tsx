@@ -65,17 +65,22 @@ const AnalyticsPage: React.FC = () => {
             paddingTop: '40px'
           }}
         >
-          {/* Report Header Section - Exact Figma positioning */}
+          {/* Report Header Section - Standardized positioning */}
           <div
             className="absolute"
             style={{
-              left: '20px',
-              top: '40px',
-              width: '1100px',
-              height: '79px'
+              left: '35px',
+              top: '0px',
+              width: 'calc(100% - 70px)',
+              height: '80px',
+              borderBottom: '1px solid rgba(0, 0, 0, 0.05)',
+              paddingBottom: '20px',
+              marginBottom: '40px'
             }}
           >
-            <ReportHeader />
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <ReportHeader />
+            </div>
           </div>
 
           {/* Analytics Stats Cards - Exact Figma positioning */}
@@ -83,7 +88,7 @@ const AnalyticsPage: React.FC = () => {
             className="absolute"
             style={{
               left: '35px',
-              top: '131px',
+              top: '120px',
               width: '1095px',
               height: '150px'
             }}
@@ -96,7 +101,7 @@ const AnalyticsPage: React.FC = () => {
             className="absolute"
             style={{
               left: '40px',
-              top: '301px',
+              top: '290px',
               width: '620px',
               height: '320px'
             }}
@@ -109,7 +114,7 @@ const AnalyticsPage: React.FC = () => {
             className="absolute"
             style={{
               left: '680px',
-              top: '301px',
+              top: '290px',
               width: '447px',
               height: '320px'
             }}
@@ -122,7 +127,7 @@ const AnalyticsPage: React.FC = () => {
             className="absolute"
             style={{
               left: '40px',
-              top: '641px',
+              top: '630px',
               width: '620px',
               height: '280px'
             }}
@@ -135,7 +140,7 @@ const AnalyticsPage: React.FC = () => {
             className="absolute"
             style={{
               left: '680px',
-              top: '641px',
+              top: '630px',
               width: '447px',
               height: '280px'
             }}

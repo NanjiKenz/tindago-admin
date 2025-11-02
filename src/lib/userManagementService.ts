@@ -15,20 +15,10 @@ export class UserManagementService {
    */
   static async getAllAdminUsers(): Promise<AdminUser[]> {
     try {
-      const adminsRef = ref(database, 'admins');
-      const snapshot = await get(adminsRef);
-
-      if (snapshot.exists()) {
-        const data = snapshot.val();
-        return Object.keys(data)
-          .map(userId => ({
-            userId,
-            ...data[userId]
-          }))
-          .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-      }
-
-      return [];
+      const res = await fetch('/api/admin/users/all', { cache: 'no-store' });
+      if (!res.ok) throw new Error(await res.text());
+      const data = await res.json();
+      return (data.admins || []) as AdminUser[];
     } catch (error) {
       console.error('Error fetching admin users:', error);
       throw error;
@@ -40,63 +30,10 @@ export class UserManagementService {
    */
   static async getAllCustomerUsers(): Promise<CustomerUser[]> {
     try {
-      const customersRef = ref(database, 'users');
-      const snapshot = await get(customersRef);
-
-      if (snapshot.exists()) {
-        const data = snapshot.val();
-        const customers: CustomerUser[] = [];
-
-        for (const userId of Object.keys(data)) {
-          const userData = data[userId];
-
-          // Filter only users with userType: "customer" (consistent with Customer Management)
-          if (userData && userData.userType === 'customer') {
-            // Get additional customer data
-            const ordersRef = ref(database, `user_orders/${userId}`);
-            const ordersSnapshot = await get(ordersRef);
-            const orders = ordersSnapshot.exists() ? Object.values(ordersSnapshot.val()) : [];
-
-            // Extract customer data with nested structure priority
-            // Email: Priority - personalInfo.email > email
-            const email = userData.personalInfo?.email || userData.email || '';
-
-            // Name: Priority - personalInfo.name > displayName > name
-            const displayName = userData.personalInfo?.name || userData.displayName || userData.name || 'Unknown User';
-
-            // Phone: Priority - personalInfo.mobile > phone
-            const phone = userData.personalInfo?.mobile || userData.phone || '';
-
-            // Address: Priority - personalInfo.address > address (customers might not have businessInfo)
-            const address = userData.personalInfo?.address || userData.address || '';
-
-            const customer: CustomerUser = {
-              userId,
-              email,
-              displayName,
-              phone,
-              address,
-              status: userData.status || 'active',
-              createdAt: userData.createdAt,
-              lastLoginAt: userData.lastLoginAt,
-              totalOrders: orders.length,
-              totalSpent: (orders as Record<string, unknown>[]).reduce((sum: number, order: Record<string, unknown>) => sum + ((order.total as number) || 0), 0),
-              avatar: userData.avatar,
-              verificationStatus: userData.verificationStatus || 'unverified',
-              userType: userData.userType, // Include Firebase userType field
-              storeOwnership: {
-                hasStore: false
-              }
-            };
-
-            customers.push(customer);
-          }
-        }
-
-        return customers.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-      }
-
-      return [];
+      const res = await fetch('/api/admin/users/all', { cache: 'no-store' });
+      if (!res.ok) throw new Error(await res.text());
+      const data = await res.json();
+      return (data.customers || []) as CustomerUser[];
     } catch (error) {
       console.error('Error fetching customer users:', error);
       throw error;
@@ -108,87 +45,10 @@ export class UserManagementService {
    */
   static async getAllStoreOwnerUsers(): Promise<StoreOwnerUser[]> {
     try {
-      const usersRef = ref(database, 'users');
-      const snapshot = await get(usersRef);
-
-      if (snapshot.exists()) {
-        const data = snapshot.val();
-        const storeOwners: StoreOwnerUser[] = [];
-
-        for (const userId of Object.keys(data)) {
-          const ownerData = data[userId];
-
-          // Filter only users with userType: "store_owner"
-          if (ownerData && ownerData.userType === 'store_owner') {
-            // Get store information
-            const userStoresRef = ref(database, `user_stores/${userId}`);
-            const storesSnapshot = await get(userStoresRef);
-            const stores = storesSnapshot.exists() ? Object.values(storesSnapshot.val()) : [];
-
-            // Get business verification
-            const verificationRef = ref(database, `business_verifications/${userId}`);
-            const verificationSnapshot = await get(verificationRef);
-            const verification = verificationSnapshot.exists() ? verificationSnapshot.val() : { status: 'pending' };
-
-            // Get performance metrics
-            const metricsRef = ref(database, `store_metrics/${userId}`);
-            const metricsSnapshot = await get(metricsRef);
-            const metrics = metricsSnapshot.exists() ? metricsSnapshot.val() : {
-              totalSales: 0,
-              totalOrders: 0,
-              rating: 0,
-              responseTime: 0
-            };
-
-            // Extract store owner data with nested structure priority
-            // Email: Priority - personalInfo.email > email
-            const email = ownerData.personalInfo?.email || ownerData.email || '';
-
-            // Name: Priority - personalInfo.name > displayName > name
-            const displayName = ownerData.personalInfo?.name || ownerData.displayName || ownerData.name || 'Unknown Owner';
-
-            // Phone: Priority - personalInfo.mobile > phone
-            const phone = ownerData.personalInfo?.mobile || ownerData.phone || '';
-
-            // Address: Priority - businessInfo (address + city) > legacy address
-            const businessAddress = ownerData.businessInfo?.address;
-            const businessCity = ownerData.businessInfo?.city;
-            const legacyAddress = ownerData.address;
-
-            const address = businessAddress && businessCity
-              ? `${businessAddress}, ${businessCity}`
-              : businessAddress || legacyAddress || '';
-
-            const storeOwner: StoreOwnerUser = {
-              userId,
-              email,
-              displayName,
-              phone,
-              address,
-              status: ownerData.status || 'active',
-              createdAt: ownerData.createdAt,
-              lastLoginAt: ownerData.lastLoginAt,
-              avatar: ownerData.avatar,
-              userType: ownerData.userType, // Include Firebase userType field
-              stores: (stores as Record<string, unknown>[]).map((store: Record<string, unknown>) => ({
-                storeId: store.storeId as string,
-                storeName: store.storeName as string,
-                status: (store.status as 'active' | 'inactive' | 'pending_approval') || 'pending_approval',
-                role: ((store.role as 'owner' | 'manager' | 'staff') || 'owner'),
-                joinedAt: (store.joinedAt as string) || ownerData.createdAt
-              })),
-              businessVerification: verification,
-              performanceMetrics: metrics
-            };
-
-            storeOwners.push(storeOwner);
-          }
-        }
-
-        return storeOwners.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-      }
-
-      return [];
+      const res = await fetch('/api/admin/users/all', { cache: 'no-store' });
+      if (!res.ok) throw new Error(await res.text());
+      const data = await res.json();
+      return (data.storeOwners || []) as StoreOwnerUser[];
     } catch (error) {
       console.error('Error fetching store owner users:', error);
       throw error;

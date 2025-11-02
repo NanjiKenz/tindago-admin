@@ -1,46 +1,38 @@
-import { ref, get, set } from 'firebase/database';
-import { database } from './firebase.js';
 import { PLATFORM_COMMISSION_RATE } from './config';
 
-const GLOBAL_RATE_PATH = 'settings/platform/commissionRate';
-const STORE_RATE_PATH = (storeId: string) => `settings/stores/${storeId}/commissionRate`;
-
-// Cache in-memory for brief period to avoid frequent RTDB reads on hot paths
+// Cache in-memory for brief period to avoid frequent calls on hot paths
 let cachedRate: { value: number; expiresAt: number } | null = null;
 
 export async function getCommissionRate(storeId?: string): Promise<number> {
-  // Per-store override
-  if (storeId) {
-    const storeRef = ref(database, STORE_RATE_PATH(storeId));
-    const storeSnap = await get(storeRef);
-    if (storeSnap.exists() && typeof storeSnap.val() === 'number') {
-      return storeSnap.val();
-    }
-  }
-
-  // Global with 5-min cache
+  // Global with 5-min cache (only applies when no storeId)
   const now = Date.now();
-  if (cachedRate && cachedRate.expiresAt > now) return cachedRate.value;
+  if (!storeId && cachedRate && cachedRate.expiresAt > now) return cachedRate.value;
 
-  const globalRef = ref(database, GLOBAL_RATE_PATH);
-  const snap = await get(globalRef);
+  const url = storeId
+    ? `/api/admin/settings/commission?storeId=${encodeURIComponent(storeId)}`
+    : `/api/admin/settings/commission`;
 
-  let rate = PLATFORM_COMMISSION_RATE; // default from env
-  if (snap.exists() && typeof snap.val() === 'number') {
-    rate = snap.val();
-  } else {
-    await set(globalRef, rate); // seed default
+  const res = await fetch(url, { cache: 'no-store' });
+  if (!res.ok) throw new Error(await res.text());
+  const data = await res.json();
+  const rate = typeof data.rate === 'number' ? data.rate : PLATFORM_COMMISSION_RATE;
+
+  if (!storeId) {
+    cachedRate = { value: rate, expiresAt: now + 5 * 60 * 1000 };
   }
-
-  cachedRate = { value: rate, expiresAt: now + 5 * 60 * 1000 };
   return rate;
 }
 
 export async function setCommissionRate(rate: number): Promise<void> {
   if (Number.isNaN(rate) || rate < 0 || rate > 1) {
     throw new Error('commissionRate must be between 0 and 1');
-    }
-  await set(ref(database, GLOBAL_RATE_PATH), rate);
+  }
+  const res = await fetch('/api/admin/settings/commission', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ rate }),
+  });
+  if (!res.ok) throw new Error(await res.text());
   cachedRate = null;
 }
 
@@ -49,11 +41,19 @@ export async function setStoreCommissionRate(storeId: string, rate: number): Pro
   if (Number.isNaN(rate) || rate < 0 || rate > 1) {
     throw new Error('commissionRate must be between 0 and 1');
   }
-  await set(ref(database, STORE_RATE_PATH(storeId)), rate);
+  const res = await fetch(`/api/admin/settings/commission?storeId=${encodeURIComponent(storeId)}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ rate }),
+  });
+  if (!res.ok) throw new Error(await res.text());
 }
 
 export async function clearStoreCommissionRate(storeId: string): Promise<void> {
-  await set(ref(database, STORE_RATE_PATH(storeId)), null);
+  const res = await fetch(`/api/admin/settings/commission?storeId=${encodeURIComponent(storeId)}`, {
+    method: 'DELETE',
+  });
+  if (!res.ok) throw new Error(await res.text());
 }
 
 export function roundCurrency(amount: number): number {

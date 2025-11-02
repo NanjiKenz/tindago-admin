@@ -63,41 +63,48 @@ const DashboardPage: React.FC = () => {
             paddingTop: '40px'
           }}
         >
-          {/* Page Title Section - Exact Figma positioning */}
+          {/* Page Title Section - Standardized positioning */}
           <div
             className="absolute"
             style={{
-              left: '20px',
-              top: '40px',
-              width: '600px',
-              height: '79px'
+              left: '35px',
+              top: '0px',
+              width: 'calc(100% - 70px)',
+              height: '80px',
+              borderBottom: '1px solid rgba(0, 0, 0, 0.05)',
+              paddingBottom: '20px',
+              marginBottom: '40px'
             }}
           >
-            <h1
-              style={{
-                fontFamily: 'Clash Grotesk Variable',
-                fontWeight: 500,
-                fontSize: '48px',
-                lineHeight: '1.2em',
-                color: '#1E1E1E',
-                marginBottom: '8px',
-                margin: 0
-              }}
-            >
-              Dashboard
-            </h1>
-            <p
-              style={{
-                fontFamily: 'Clash Grotesk Variable',
-                fontWeight: 400,
-                fontSize: '16px',
-                lineHeight: '1.2em',
-                color: 'rgba(30, 30, 30, 0.6)',
-                margin: 0
-              }}
-            >
-              Welcome back! Here&apos;s what&apos;s happening with your TindaGo today.
-            </p>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <div>
+                <h1
+                  style={{
+                    fontFamily: 'Clash Grotesk Variable',
+                    fontWeight: 500,
+                    fontSize: '48px',
+                    lineHeight: '1.2em',
+                    color: '#1E1E1E',
+                    marginBottom: '8px',
+                    margin: 0
+                  }}
+                >
+                  Dashboard
+                </h1>
+                <p
+                  style={{
+                    fontFamily: 'Clash Grotesk Variable',
+                    fontWeight: 400,
+                    fontSize: '16px',
+                    color: 'rgba(30, 30, 30, 0.6)',
+                    margin: 0,
+                    marginTop: '8px'
+                  }}
+                >
+                  Welcome back! Here&apos;s what&apos;s happening with your TindaGo today.
+                </p>
+              </div>
+            </div>
           </div>
 
           {/* Stats Cards - Exact Figma positioning */}
@@ -105,7 +112,7 @@ const DashboardPage: React.FC = () => {
             className="absolute"
             style={{
               left: '35px',
-              top: '131px',
+              top: '120px',
               width: '1095px',
               height: '150px'
             }}
@@ -118,7 +125,7 @@ const DashboardPage: React.FC = () => {
             className="absolute"
             style={{
               left: '40px',
-              top: '301px',
+              top: '290px',
               width: '620px',
               height: '300px'
             }}
@@ -131,7 +138,7 @@ const DashboardPage: React.FC = () => {
             className="absolute"
             style={{
               left: '680px',
-              top: '301px',
+              top: '290px',
               width: '447px',
               height: '300px'
             }}
@@ -144,7 +151,7 @@ const DashboardPage: React.FC = () => {
             className="absolute"
             style={{
               left: '40px',
-              top: '621px',
+              top: '610px',
               width: '1087px',
               height: '303px'
             }}

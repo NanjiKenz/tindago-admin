@@ -37,9 +37,13 @@ export const StatsCards: React.FC = () => {
         const customerCount = customers.filter(u => u.userType === 'customer').length;
         setTotalCustomers(customerCount);
 
-        // Load store stats
-        const storeStats = await StoreService.getStoreStats();
-        setActiveStores(storeStats.activeStores);
+        // Load store stats from API route (bypasses Firebase security rules)
+        const storeStatsRes = await fetch('/api/admin/stores/stats', { cache: 'no-store' });
+        if (!storeStatsRes.ok) {
+          throw new Error('Failed to fetch store statistics');
+        }
+        const storeStats = await storeStatsRes.json();
+        setActiveStores(storeStats.activeStores || 0);
 
         setLoading(false);
       } catch (error) {
@@ -177,7 +181,7 @@ export const StatsCards: React.FC = () => {
               className="absolute"
               style={{
                 left: '20px',
-                bottom: '45px'
+                bottom: '20px'
               }}
             >
               <p

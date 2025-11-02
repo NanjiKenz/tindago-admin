@@ -246,7 +246,7 @@ export const UserManagement: React.FC<UserManagementProps> = () => {
       paddingRight: '16px',
       paddingTop: '6px',
       paddingBottom: '6px',
-      borderRadius: '20px',
+      borderRadius: '8px',
       fontSize: '14px',
       fontWeight: 500,
       fontFamily: 'Clash Grotesk Variable',
@@ -313,7 +313,7 @@ export const UserManagement: React.FC<UserManagementProps> = () => {
         className="absolute w-full lg:px-5 px-4"
         style={{
           left: '0px',
-          top: '80px',
+          top: '40px',
           minHeight: '1200px'
         }}
       >
@@ -511,7 +511,7 @@ export const UserManagement: React.FC<UserManagementProps> = () => {
                   className="absolute"
                   style={{
                     left: '20px',
-                    bottom: '45px'
+                    bottom: '20px'
                   }}
                 >
                   <p
@@ -608,7 +608,7 @@ export const UserManagement: React.FC<UserManagementProps> = () => {
                   className="absolute"
                   style={{
                     left: '20px',
-                    bottom: '45px'
+                    bottom: '20px'
                   }}
                 >
                   <p
@@ -706,7 +706,7 @@ export const UserManagement: React.FC<UserManagementProps> = () => {
                   className="absolute"
                   style={{
                     left: '20px',
-                    bottom: '45px'
+                    bottom: '20px'
                   }}
                 >
                   <p
@@ -803,7 +803,7 @@ export const UserManagement: React.FC<UserManagementProps> = () => {
                   className="absolute"
                   style={{
                     left: '20px',
-                    bottom: '45px'
+                    bottom: '20px'
                   }}
                 >
                   <p
@@ -1061,51 +1061,43 @@ export const UserManagement: React.FC<UserManagementProps> = () => {
             </div>
             </div>
 
-            {/* Right side - Export Button */}
+            {/* Export CSV Button */}
             <button
               onClick={exportUsers}
               disabled={loading}
               style={{
-                width: '120px',
-                height: '50px',
-                padding: '12px 16px',
-                borderRadius: '12px',
-                border: '1px solid rgba(0, 0, 0, 0.05)',
+                padding: '8px 16px',
+                borderRadius: '6px',
+                border: '1px solid #3BB77E',
                 backgroundColor: '#3BB77E',
                 color: '#FFFFFF',
                 cursor: loading ? 'not-allowed' : 'pointer',
                 fontFamily: 'Clash Grotesk Variable',
                 fontWeight: 500,
                 fontSize: '14px',
-                boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
                 transition: 'all 0.2s ease',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
+                gap: '6px',
+                marginLeft: '4px',
                 opacity: loading ? 0.6 : 1
               }}
               onMouseEnter={(e) => {
                 if (!loading) {
-                  e.currentTarget.style.backgroundColor = '#2CA968';
-                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.backgroundColor = '#2E9C66';
                 }
               }}
               onMouseLeave={(e) => {
                 if (!loading) {
                   e.currentTarget.style.backgroundColor = '#3BB77E';
-                  e.currentTarget.style.transform = 'translateY(0px)';
                 }
               }}
             >
-              <Image
-                src="/images/admin-dashboard/settings-icon.png"
-                alt="Export"
-                width={16}
-                height={16}
-                className="object-contain"
-                style={{ filter: 'brightness(0) invert(1)' }}
-              />
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
               {loading ? 'Exporting...' : 'Export CSV'}
             </button>
           </div>

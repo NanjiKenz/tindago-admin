@@ -58,9 +58,28 @@ export interface OrderItem {
 
 export class CustomerService {
   /**
-   * Get all customers with enhanced data
+   * Get all customers with enhanced data (via API route to bypass Firebase security rules)
    */
   static async getAllCustomers(): Promise<CustomerUser[]> {
+    try {
+      const res = await fetch('/api/admin/customers', { cache: 'no-store' });
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(`Failed to fetch customers: ${errorText}`);
+      }
+      const data = await res.json();
+      return (data.customers || []) as CustomerUser[];
+    } catch (error) {
+      console.error('Error fetching customers:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * DEPRECATED: Old direct Firebase access method - kept for reference
+   * Use getAllCustomers() instead which uses API routes
+   */
+  private static async getAllCustomersLegacy(): Promise<CustomerUser[]> {
     try {
       const customersRef = ref(database, 'users');
       const snapshot = await get(customersRef);
@@ -304,14 +323,23 @@ export class CustomerService {
    */
   static async getCustomerStats(): Promise<CustomerStats> {
     try {
+      // Fetch stats from API route (bypasses Firebase security rules)
+      const res = await fetch('/api/admin/customers/stats', { cache: 'no-store' });
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(`Failed to fetch customer stats: ${errorText}`);
+      }
+      const apiStats = await res.json();
+
+      // Get customers for additional calculations
       const customers = await this.getAllCustomers();
 
       const now = new Date();
       const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
-      const totalCustomers = customers.length;
-      const activeCustomers = customers.filter(c => c.status === 'active').length;
-      const inactiveCustomers = customers.filter(c => c.status === 'inactive').length;
+      const totalCustomers = apiStats.totalCustomers || customers.length;
+      const activeCustomers = apiStats.activeCustomers || customers.filter(c => c.status === 'active').length;
+      const inactiveCustomers = apiStats.inactiveCustomers || customers.filter(c => c.status === 'inactive').length;
       const bannedCustomers = customers.filter(c => c.status === 'banned').length;
 
       const verifiedCustomers = customers.filter(c => c.verificationStatus === 'verified').length;

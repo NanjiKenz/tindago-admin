@@ -31,7 +31,24 @@ export default function LoginPage() {
 
     try {
       // Firebase authentication
-      await signInWithEmailAndPassword(auth, formData.email, formData.password);
+      const userCredential = await signInWithEmailAndPassword(auth, formData.email, formData.password);
+
+      // Update last login timestamp in admin record
+      const user = userCredential.user;
+      if (user) {
+        try {
+          const { ref, update } = await import('firebase/database');
+          const { database } = await import('@/lib/firebase');
+          const adminRef = ref(database, `admins/${user.uid}`);
+          await update(adminRef, {
+            lastLoginAt: new Date().toISOString(),
+            status: 'active' // Ensure admin is active when they log in
+          });
+        } catch (updateError) {
+          console.error('Error updating last login:', updateError);
+          // Don't block login if update fails
+        }
+      }
 
       // Redirect to Dashboard page
       router.push('/dashboard');
