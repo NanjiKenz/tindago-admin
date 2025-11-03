@@ -63,6 +63,7 @@ export const UserCreateModal: React.FC<UserCreateModalProps> = ({
       await UserManagementService.createAdminUser({
         email: formData.email,
         displayName: formData.name,
+        password: formData.password,
         role: 'admin',
         status: 'active',
         permissions: []

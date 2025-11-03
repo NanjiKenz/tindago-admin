@@ -1,21 +1,29 @@
 import { NextResponse } from 'next/server';
-import { getAdminDb } from '@/lib/adminFirebase';
+
 
 /**
  * Get all payout requests
  */
+
+// Helper function to fetch from Firebase REST API
+async function fetchFirebase(path: string) {
+  const dbUrl = process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL;
+  const url = `${dbUrl}/${path}.json`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('Failed to fetch from Firebase');
+  return res.json();
+}
+
 export async function GET() {
   try {
-    const db = getAdminDb();
+    // Fetch payout requests - REST API returns plain JSON
+    const payoutsData = await fetchFirebase('payout_requests');
 
-    // Fetch payout requests
-    const payoutsSnap = await db.ref('payout_requests').get();
-
-    if (!payoutsSnap.exists()) {
+    // Handle null/empty response
+    if (!payoutsData || typeof payoutsData !== 'object') {
       return NextResponse.json({ payouts: [] });
     }
 
-    const payoutsData = payoutsSnap.val();
     const payouts = Object.entries(payoutsData).map(([id, payout]: [string, any]) => ({
       id,
       storeId: payout.storeId || '',

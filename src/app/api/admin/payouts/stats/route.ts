@@ -1,17 +1,26 @@
 import { NextResponse } from 'next/server';
-import { getAdminDb } from '@/lib/adminFirebase';
+
 
 /**
  * Get payout statistics
  */
+
+// Helper function to fetch from Firebase REST API
+async function fetchFirebase(path: string) {
+  const dbUrl = process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL;
+  const url = `${dbUrl}/${path}.json`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('Failed to fetch from Firebase');
+  return res.json();
+}
+
 export async function GET() {
   try {
-    const db = getAdminDb();
+    // Fetch payout requests - REST API returns plain JSON
+    const payoutsDataRaw = await fetchFirebase('payout_requests');
 
-    // Fetch payout requests
-    const payoutsSnap = await db.ref('payout_requests').get();
-
-    if (!payoutsSnap.exists()) {
+    // Handle null/empty response
+    if (!payoutsDataRaw || typeof payoutsDataRaw !== 'object') {
       return NextResponse.json({
         totalRequests: 0,
         pendingRequests: 0,
@@ -23,7 +32,7 @@ export async function GET() {
       });
     }
 
-    const payoutsData = Object.values(payoutsSnap.val()) as any[];
+    const payoutsData = Object.values(payoutsDataRaw) as any[];
 
     const stats = {
       totalRequests: payoutsData.length,

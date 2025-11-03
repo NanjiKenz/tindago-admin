@@ -51,19 +51,26 @@ async function createAdminUser() {
 
     console.log('✅ User added to Realtime Database with admin role');
 
+    // Add to roles collection (REQUIRED for security rules)
+    await set(ref(database, `roles/${user.uid}`), 'admin');
+
+    console.log('✅ User role set to admin in roles collection');
+
     // Add to admins collection
     await set(ref(database, `admins/${user.uid}`), {
       uid: user.uid,
       email: ADMIN_EMAIL,
       name: 'Admin User',
       role: 'super_admin',
+      status: 'active',
       permissions: {
         manageStores: true,
         manageUsers: true,
         viewAnalytics: true,
         manageOrders: true
       },
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      lastLoginAt: null
     });
 
     console.log('✅ User added to admins collection');

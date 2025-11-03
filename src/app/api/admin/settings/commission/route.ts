@@ -1,31 +1,53 @@
 import { NextResponse } from 'next/server';
-import { getAdminDb } from '@/lib/adminFirebase';
+
 import { PLATFORM_COMMISSION_RATE } from '@/lib/config';
 
 const GLOBAL_RATE_PATH = 'settings/platform/commissionRate';
 const STORE_RATE_PATH = (storeId: string) => `settings/stores/${storeId}/commissionRate`;
 
+
+// Helper function to fetch from Firebase REST API
+async function fetchFirebase(path: string) {
+  const dbUrl = process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL;
+  const url = `${dbUrl}/${path}.json`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('Failed to fetch from Firebase');
+  return res.json();
+}
+
+// Helper function to set Firebase data via REST API
+async function setFirebase(path: string, value: any) {
+  const dbUrl = process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL;
+  const url = `${dbUrl}/${path}.json`;
+  const res = await fetch(url, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(value)
+  });
+  if (!res.ok) throw new Error('Failed to set Firebase data');
+  return res.json();
+}
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const storeId = searchParams.get('storeId');
-    const db = getAdminDb();
 
     if (storeId) {
-      const storeSnap = await db.ref(STORE_RATE_PATH(storeId)).get();
-      if (storeSnap.exists() && typeof storeSnap.val() === 'number') {
-        return NextResponse.json({ rate: storeSnap.val(), scope: 'store', storeId });
+      const storeRate = await fetchFirebase(STORE_RATE_PATH(storeId));
+      if (storeRate !== null && typeof storeRate === 'number') {
+        return NextResponse.json({ rate: storeRate, scope: 'store', storeId });
       }
       // fall through to global
     }
 
     let rate = PLATFORM_COMMISSION_RATE;
-    const snap = await db.ref(GLOBAL_RATE_PATH).get();
-    if (snap.exists() && typeof snap.val() === 'number') {
-      rate = snap.val();
+    const globalRate = await fetchFirebase(GLOBAL_RATE_PATH);
+    if (globalRate !== null && typeof globalRate === 'number') {
+      rate = globalRate;
     } else {
       // seed default for convenience
-      await db.ref(GLOBAL_RATE_PATH).set(rate);
+      await setFirebase(GLOBAL_RATE_PATH, rate);
     }
     return NextResponse.json({ rate, scope: 'global' });
   } catch (e: any) {
@@ -42,12 +64,12 @@ export async function POST(request: Request) {
     if (!Number.isFinite(rate) || rate < 0 || rate > 1) {
       return NextResponse.json({ error: 'commissionRate must be between 0 and 1' }, { status: 400 });
     }
-    const db = getAdminDb();
+
     if (storeId) {
-      await db.ref(STORE_RATE_PATH(storeId)).set(rate);
+      await setFirebase(STORE_RATE_PATH(storeId), rate);
       return NextResponse.json({ ok: true, scope: 'store', storeId, rate });
     }
-    await db.ref(GLOBAL_RATE_PATH).set(rate);
+    await setFirebase(GLOBAL_RATE_PATH, rate);
     return NextResponse.json({ ok: true, scope: 'global', rate });
   } catch (e: any) {
     return NextResponse.json({ error: e?.message || 'Server error' }, { status: 500 });
@@ -59,8 +81,8 @@ export async function DELETE(request: Request) {
     const { searchParams } = new URL(request.url);
     const storeId = searchParams.get('storeId');
     if (!storeId) return NextResponse.json({ error: 'storeId required' }, { status: 400 });
-    const db = getAdminDb();
-    await db.ref(STORE_RATE_PATH(storeId)).set(null);
+
+    await setFirebase(STORE_RATE_PATH(storeId), null);
     return NextResponse.json({ ok: true });
   } catch (e: any) {
     return NextResponse.json({ error: e?.message || 'Server error' }, { status: 500 });

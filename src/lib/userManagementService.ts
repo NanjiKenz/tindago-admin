@@ -126,27 +126,37 @@ export class UserManagementService {
   }
 
   /**
-   * Create a new admin user
+   * Create a new admin user via API route
+   * Creates both Firebase Auth user and admin database record
    */
-  static async createAdminUser(userData: UserFormData): Promise<void> {
+  static async createAdminUser(userData: UserFormData & { password?: string }): Promise<void> {
     try {
-      const userId = `admin_${Date.now()}`;
-      const adminRef = ref(database, `admins/${userId}`);
+      // Call API route to create admin (handles Firebase Auth + Database)
+      const response = await fetch('/api/admin/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: userData.email,
+          password: userData.password || 'Admin123!', // Default password if not provided
+          displayName: userData.displayName,
+          role: userData.role || 'admin',
+          status: userData.status || 'active',
+          permissions: userData.permissions || [],
+          phone: userData.phone,
+          department: userData.department,
+          notes: userData.notes
+        }),
+      });
 
-      const adminData: Omit<AdminUser, 'userId'> = {
-        email: userData.email,
-        displayName: userData.displayName,
-        role: userData.role || 'admin',
-        status: userData.status,
-        createdAt: new Date().toISOString(),
-        permissions: userData.permissions || [],
-        phone: userData.phone,
-        department: userData.department,
-        notes: userData.notes
-      };
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to create admin user');
+      }
 
-      await set(adminRef, adminData);
-      console.log(`Admin user created: ${userId}`);
+      const result = await response.json();
+      console.log(`Admin user created: ${result.userId}`);
     } catch (error) {
       console.error('Error creating admin user:', error);
       throw error;

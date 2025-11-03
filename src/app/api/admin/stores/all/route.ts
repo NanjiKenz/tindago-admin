@@ -1,44 +1,56 @@
 import { NextResponse } from 'next/server';
-import { getAdminDb } from '@/lib/adminFirebase';
+
 
 /**
  * Get all stores with registrations combined
  * Combines both 'stores' collection and 'store_registrations' for unified view
  */
+
+// Helper function to fetch from Firebase REST API
+async function fetchFirebase(path: string) {
+  const dbUrl = process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL;
+  const url = `${dbUrl}/${path}.json`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('Failed to fetch from Firebase');
+  return res.json();
+}
+
 export async function GET() {
   try {
-    const db = getAdminDb();
-
-    // Fetch both stores and registrations
-    const [storesSnap, registrationsSnap] = await Promise.all([
-      db.ref('stores').get(),
-      db.ref('store_registrations').get(),
+    // Fetch both stores and registrations - REST API returns plain JSON
+    const [storesData, registrationsData] = await Promise.all([
+      fetchFirebase('stores'),
+      fetchFirebase('store_registrations'),
     ]);
 
-    const storesData = storesSnap.exists() ? storesSnap.val() : {};
-    const registrationsData = registrationsSnap.exists() ? registrationsSnap.val() : {};
+    // Handle null/empty responses and convert to arrays
+    const stores = storesData && typeof storesData === 'object'
+      ? Object.entries(storesData).map(([id, store]: [string, any]) => ({
+          storeId: id,
+          ...store,
+          // Map createdAt to joinedDate for compatibility
+          joinedDate: store.joinedDate || store.createdAt || store.approvedAt || new Date().toISOString(),
+          source: 'stores',
+        }))
+      : [];
 
-    // Convert stores to array
-    const stores = Object.entries(storesData).map(([id, store]: [string, any]) => ({
-      storeId: id,
-      ...store,
-      source: 'stores',
-    }));
-
-    // Convert registrations to array (pending stores)
-    const registrations = Object.entries(registrationsData).map(([id, reg]: [string, any]) => ({
-      storeId: id,
-      userId: id,
-      storeName: reg.businessInfo?.storeName || reg.storeName || reg.businessName || 'Unknown Store',
-      ownerName: reg.personalInfo?.name || reg.ownerName || reg.name || 'Unknown Owner',
-      email: reg.personalInfo?.email || reg.email || '',
-      phone: reg.personalInfo?.mobile || reg.phone || '',
-      address: reg.businessInfo?.address || reg.address || '',
-      status: reg.status || 'pending',
-      createdAt: reg.createdAt || new Date().toISOString(),
-      documents: reg.documents || {},
-      source: 'registrations',
-    }));
+    const registrations = registrationsData && typeof registrationsData === 'object'
+      ? Object.entries(registrationsData).map(([id, reg]: [string, any]) => ({
+          storeId: id,
+          userId: id,
+          storeName: reg.businessInfo?.storeName || reg.storeName || reg.businessName || 'Unknown Store',
+          ownerName: reg.personalInfo?.name || reg.ownerName || reg.name || 'Unknown Owner',
+          email: reg.personalInfo?.email || reg.email || '',
+          phone: reg.personalInfo?.mobile || reg.phone || '',
+          address: reg.businessInfo?.address || reg.address || '',
+          status: reg.status || 'pending',
+          createdAt: reg.createdAt || new Date().toISOString(),
+          // Map createdAt to joinedDate for compatibility
+          joinedDate: reg.createdAt || new Date().toISOString(),
+          documents: reg.documents || {},
+          source: 'registrations',
+        }))
+      : [];
 
     // Combine both arrays
     const allStores = [...stores, ...registrations];

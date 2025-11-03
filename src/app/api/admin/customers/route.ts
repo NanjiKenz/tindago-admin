@@ -1,17 +1,26 @@
 import { NextResponse } from 'next/server';
-import { getAdminDb } from '@/lib/adminFirebase';
+
+
+
+// Helper function to fetch from Firebase REST API
+async function fetchFirebase(path: string) {
+  const dbUrl = process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL;
+  const url = `${dbUrl}/${path}.json`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('Failed to fetch from Firebase');
+  return res.json();
+}
 
 export async function GET() {
   try {
-    const db = getAdminDb();
+    // Fetch customers from users collection - REST API returns plain JSON
+    const usersData = await fetchFirebase('users');
+    const userOrders = await fetchFirebase('user_orders');
 
-    // Fetch customers from users collection
-    const usersSnap = await db.ref('users').get();
-    const usersData = usersSnap.exists() ? usersSnap.val() : {};
-
-    // Fetch user orders
-    const userOrdersSnap = await db.ref('user_orders').get();
-    const userOrders = userOrdersSnap.exists() ? userOrdersSnap.val() : {};
+    // Handle null/empty responses
+    if (!usersData || typeof usersData !== 'object') {
+      return NextResponse.json({ customers: [] });
+    }
 
     // Filter and format customers
     const customers: any[] = [];
@@ -19,8 +28,8 @@ export async function GET() {
       const user = usersData[uid];
 
       // Only include users with userType 'customer'
-      if (user.userType === 'customer') {
-        const orders = Object.values(userOrders[uid] || {});
+      if (user?.userType === 'customer') {
+        const orders = Object.values((userOrders && userOrders[uid]) || {});
 
         customers.push({
           userId: uid,

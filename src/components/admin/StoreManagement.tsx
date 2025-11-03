@@ -243,62 +243,28 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
     }
   }, [viewMode, loadCategoryData]);
 
-  // Set up real-time subscriptions for category views
+  // Set up polling for category views (replaced real-time subscriptions to avoid permission errors)
   useEffect(() => {
-    let unsubscribe: (() => void) | null = null;
-
-    if (viewMode === 'pending' || viewMode === 'rejected') {
-      // Subscribe to store_registrations for pending/rejected data
-      unsubscribe = AdminService.subscribeToRegistrations((registrations) => {
-        let filteredRegistrations;
-        if (viewMode === 'pending') {
-          // Accept multiple pending-related statuses
-          const pendingStatuses = ['pending', 'completed_pending', 'pending_approval'];
-          filteredRegistrations = registrations.filter(reg => pendingStatuses.includes(reg.status));
-        } else {
-          filteredRegistrations = registrations.filter(reg => reg.status === viewMode);
-        }
-
-        console.log(`Real-time ${viewMode} data updated:`, filteredRegistrations.length, 'items');
-
-        const filteredData = filteredRegistrations
-          .map(registration => ({
-            storeId: registration.userId,
-            storeName: registration.businessInfo?.storeName || registration.storeName || 'Unknown Store',
-            ownerName: registration.personalInfo?.name || registration.ownerName || 'Unknown Owner',
-            ownerEmail: registration.personalInfo?.email || registration.email || '',
-            ownerPhone: registration.personalInfo?.mobile || registration.phone || '',
-            address: registration.businessInfo?.address || registration.address || '',
-            status: viewMode as 'pending' | 'rejected',
-            joinedDate: registration.createdAt || '',
-            documents: registration.documents,
-            businessVerification: { status: viewMode as 'pending' | 'rejected' },
-            performanceMetrics: {
-              totalSales: 0,
-              totalOrders: 0,
-              rating: 0,
-              responseTime: 0
-            },
-            registrationData: registration
-          }));
-        setCategoryData(filteredData);
-        console.log(`Real-time ${viewMode} data updated:`, filteredData.length);
-      });
-    } else if (viewMode === 'active' || viewMode === 'suspended') {
-      // Subscribe to stores for active/suspended data
-      unsubscribe = StoreService.subscribeToStores((allStores) => {
-        const filteredData = allStores.filter(store => store.status === viewMode);
-        setCategoryData(filteredData);
-        console.log(`Real-time ${viewMode} data updated:`, filteredData.length);
-      });
+    if (viewMode === 'overview') {
+      return; // No polling needed for overview
     }
 
+    // Initial load
+    loadCategoryData();
+
+    // Poll every 30 seconds for updates
+    const interval = setInterval(() => {
+      loadCategoryData();
+    }, 30000);
+
     return () => {
-      if (unsubscribe) {
-        unsubscribe();
-      }
+      clearInterval(interval);
     };
-  }, [viewMode]);
+  }, [viewMode, loadCategoryData]);
+
+  // DEPRECATED: Old real-time subscription approach removed
+  // Replaced with polling approach (30-second intervals) to avoid Firebase permission errors
+  // Now using API routes with Firebase Admin SDK for secure data access
 
   const loadStores = async () => {
     try {

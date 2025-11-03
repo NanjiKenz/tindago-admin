@@ -1,21 +1,29 @@
 import { NextResponse } from 'next/server';
-import { getAdminDb } from '@/lib/adminFirebase';
+
 
 /**
  * Get all store registrations
  */
+
+// Helper function to fetch from Firebase REST API
+async function fetchFirebase(path: string) {
+  const dbUrl = process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL;
+  const url = `${dbUrl}/${path}.json`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('Failed to fetch from Firebase');
+  return res.json();
+}
+
 export async function GET() {
   try {
-    const db = getAdminDb();
+    // Fetch store registrations - REST API returns plain JSON (null if no data)
+    const registrationsData = await fetchFirebase('store_registrations');
 
-    // Fetch store registrations
-    const registrationsSnap = await db.ref('store_registrations').get();
-
-    if (!registrationsSnap.exists()) {
+    // Handle null/empty response
+    if (!registrationsData || typeof registrationsData !== 'object') {
       return NextResponse.json({ registrations: [] });
     }
 
-    const registrationsData = registrationsSnap.val();
     const registrations = Object.entries(registrationsData).map(([userId, registration]: [string, any]) => ({
       userId,
       storeName: registration.storeName || '',

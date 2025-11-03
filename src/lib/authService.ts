@@ -106,16 +106,33 @@ export class AuthService {
    */
   static async verifyAdminRole(firebaseUser: FirebaseUser): Promise<AdminUser> {
     try {
-      const res = await fetch(`/api/admin/auth/verify?uid=${encodeURIComponent(firebaseUser.uid)}`, { cache: 'no-store' });
-      if (!res.ok) throw new Error(await res.text());
-      const data = await res.json();
+      // Read admin data directly from database using Client SDK
+      const { ref, get, update } = await import('firebase/database');
+      const { database } = await import('./firebase.js');
+
+      const adminRef = ref(database, `admins/${firebaseUser.uid}`);
+      const snapshot = await get(adminRef);
+
+      if (!snapshot.exists()) {
+        throw new Error('Access denied. Admin privileges required.');
+      }
+
+      const data = snapshot.val();
+
+      // Update last login timestamp
+      const nowIso = new Date().toISOString();
+      await update(adminRef, { lastLogin: nowIso }).catch(err => {
+        console.warn('Failed to update last login:', err);
+        // Don't block login if update fails
+      });
+
       return {
-        uid: data.uid,
+        uid: firebaseUser.uid,
         email: data.email || firebaseUser.email!,
-        displayName: data.displayName || firebaseUser.displayName || undefined,
+        displayName: data.displayName || data.name || firebaseUser.displayName || undefined,
         role: data.role || 'admin',
-        createdAt: data.createdAt,
-        lastLogin: data.lastLogin,
+        createdAt: data.createdAt || nowIso,
+        lastLogin: nowIso,
       };
     } catch (error) {
       console.error('Admin verification error:', error);

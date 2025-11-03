@@ -1,21 +1,29 @@
 import { NextResponse } from 'next/server';
-import { getAdminDb } from '@/lib/adminFirebase';
+
 
 /**
  * Get all transactions across all stores
  */
+
+// Helper function to fetch from Firebase REST API
+async function fetchFirebase(path: string) {
+  const dbUrl = process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL;
+  const url = `${dbUrl}/${path}.json`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('Failed to fetch from Firebase');
+  return res.json();
+}
+
 export async function GET() {
   try {
-    const db = getAdminDb();
+    // Fetch transactions from ledgers/stores - REST API returns plain JSON
+    const ledgerData = await fetchFirebase('ledgers/stores');
 
-    // Fetch transactions from ledgers/stores
-    const ledgerSnap = await db.ref('ledgers/stores').get();
-
-    if (!ledgerSnap.exists()) {
+    // Handle null/empty response
+    if (!ledgerData || typeof ledgerData !== 'object') {
       return NextResponse.json({ transactions: [] });
     }
 
-    const ledgerData = ledgerSnap.val();
     const transactions: any[] = [];
 
     // Process each store's transactions

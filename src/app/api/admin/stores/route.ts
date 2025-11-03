@@ -1,18 +1,32 @@
 import { NextResponse } from 'next/server';
-import { getAdminDb } from '@/lib/adminFirebase';
+
+
+
+// Helper function to fetch from Firebase REST API
+async function fetchFirebase(path: string) {
+  const dbUrl = process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL;
+  const url = `${dbUrl}/${path}.json`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('Failed to fetch from Firebase');
+  return res.json();
+}
 
 export async function GET() {
   try {
-    const db = getAdminDb();
+    // Fetch stores data - REST API returns plain JSON (null if no data)
+    const storesData = await fetchFirebase('stores');
 
-    // Fetch stores data
-    const storesSnap = await db.ref('stores').get();
-    const storesData = storesSnap.exists() ? storesSnap.val() : {};
+    // Handle null/empty response
+    if (!storesData || typeof storesData !== 'object') {
+      return NextResponse.json({ stores: [] });
+    }
 
-    // Convert to array with IDs
+    // Convert to array with IDs and map fields properly
     const stores = Object.entries(storesData).map(([id, store]: [string, any]) => ({
       storeId: id,
       ...store,
+      // Map createdAt to joinedDate for compatibility with StoreManagement component
+      joinedDate: store.joinedDate || store.createdAt || store.approvedAt || new Date().toISOString(),
     }));
 
     return NextResponse.json({ stores });

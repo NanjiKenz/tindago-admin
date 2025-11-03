@@ -88,24 +88,12 @@ export interface Store {
 export class AdminService {
   static async getPendingStoreRegistrations(): Promise<StoreRegistration[]> {
     try {
-      const registrationsRef = ref(database, 'store_registrations');
-      const snapshot = await get(registrationsRef);
-
-      if (snapshot.exists()) {
-        const data = snapshot.val();
-        return Object.keys(data)
-          .map(userId => ({
-            userId,
-            ...data[userId]
-          }))
-          .filter(registration => {
-            const pendingStatuses = ['pending', 'completed_pending', 'pending_approval'];
-            return pendingStatuses.includes(registration.status);
-          })
-          .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-      }
-
-      return [];
+      // Fetch all registrations from API and filter for pending ones
+      const allRegistrations = await this.getAllStoreRegistrations();
+      const pendingStatuses = ['pending', 'completed_pending', 'pending_approval'];
+      return allRegistrations.filter(registration =>
+        pendingStatuses.includes(registration.status)
+      );
     } catch (error) {
       console.error('Error fetching pending registrations:', error);
       throw error;
@@ -114,20 +102,15 @@ export class AdminService {
 
   static async getAllStoreRegistrations(): Promise<StoreRegistration[]> {
     try {
-      const registrationsRef = ref(database, 'store_registrations');
-      const snapshot = await get(registrationsRef);
-
-      if (snapshot.exists()) {
-        const data = snapshot.val();
-        return Object.keys(data)
-          .map(userId => ({
-            userId,
-            ...data[userId]
-          }))
-          .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      // Fetch from API route to bypass Firebase security rules
+      const res = await fetch('/api/admin/registrations', { cache: 'no-store' });
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(`Failed to fetch registrations: ${errorText}`);
       }
 
-      return [];
+      const data = await res.json();
+      return (data.registrations || []) as StoreRegistration[];
     } catch (error) {
       console.error('Error fetching all registrations:', error);
       throw error;

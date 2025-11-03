@@ -1,17 +1,25 @@
 import { NextResponse } from 'next/server';
-import { getAdminDb } from '@/lib/adminFirebase';
+
+
+
+// Helper function to fetch from Firebase REST API
+async function fetchFirebase(path: string) {
+  const dbUrl = process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL;
+  const url = `${dbUrl}/${path}.json`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('Failed to fetch from Firebase');
+  return res.json();
+}
 
 export async function GET() {
   try {
-    const db = getAdminDb();
+    // Fetch stores and registrations data - REST API returns plain JSON
+    const storesData = await fetchFirebase('stores');
+    const registrationsData = await fetchFirebase('store_registrations');
 
-    // Fetch stores data
-    const storesSnap = await db.ref('stores').get();
-    const stores = storesSnap.exists() ? Object.values(storesSnap.val() || {}) : [];
-
-    // Fetch store registrations data
-    const registrationsSnap = await db.ref('store_registrations').get();
-    const registrations = registrationsSnap.exists() ? Object.values(registrationsSnap.val() || {}) : [];
+    // Handle null/empty responses
+    const stores = storesData && typeof storesData === 'object' ? Object.values(storesData) : [];
+    const registrations = registrationsData && typeof registrationsData === 'object' ? Object.values(registrationsData) : [];
 
     // Calculate statistics
     const activeStores = stores.filter((s: any) => s.status === 'active').length;
