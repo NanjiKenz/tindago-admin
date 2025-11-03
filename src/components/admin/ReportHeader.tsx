@@ -33,9 +33,9 @@ export const ReportHeader: React.FC = () => {
           fontFamily: 'Clash Grotesk Variable',
           fontWeight: 400,
           fontSize: '16px',
-          lineHeight: '1.2em',
           color: 'rgba(30, 30, 30, 0.6)',
-          margin: 0
+          margin: 0,
+          marginTop: '8px'
         }}
       >
         Comprehensive insights and data visualization for your TindaGo marketplace performance.

@@ -639,6 +639,20 @@ export const PayoutManagement: React.FC = () => {
                   >
                     {stats.completed.toLocaleString()}
                   </p>
+                  {/* Spacer for alignment with cards that have revenue */}
+                  <p
+                    style={{
+                      fontFamily: 'Clash Grotesk Variable',
+                      fontWeight: 400,
+                      fontSize: '12px',
+                      color: 'transparent',
+                      margin: 0,
+                      marginTop: '4px',
+                      userSelect: 'none'
+                    }}
+                  >
+                    &nbsp;
+                  </p>
                 </div>
               </div>
             </div>
@@ -712,6 +726,20 @@ export const PayoutManagement: React.FC = () => {
                     }}
                   >
                     {stats.rejected.toLocaleString()}
+                  </p>
+                  {/* Spacer for alignment with cards that have revenue */}
+                  <p
+                    style={{
+                      fontFamily: 'Clash Grotesk Variable',
+                      fontWeight: 400,
+                      fontSize: '12px',
+                      color: 'transparent',
+                      margin: 0,
+                      marginTop: '4px',
+                      userSelect: 'none'
+                    }}
+                  >
+                    &nbsp;
                   </p>
                 </div>
               </div>

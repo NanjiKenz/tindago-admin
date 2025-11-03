@@ -454,9 +454,17 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
     }
   };
 
-  const handleEdit = async (storeId: string) => {
-    console.log('Edit store:', storeId);
-    // TODO: Implement edit store modal/form
+  const handleEdit = (storeId: string, status: string) => {
+    console.log('Navigating to edit page for store:', storeId, 'status:', status);
+    if (status === 'active') {
+      router.push(`/stores/active/${storeId}?returnTo=storeManagement`);
+    } else if (status === 'pending') {
+      router.push(`/stores/pending/${storeId}?returnTo=storeManagement`);
+    } else if (status === 'rejected') {
+      router.push(`/stores/rejected/${storeId}?returnTo=storeManagement`);
+    } else if (status === 'suspended') {
+      router.push(`/stores/suspended/${storeId}?returnTo=storeManagement`);
+    }
   };
 
   const handleUpdateStatus = async (storeId: string, newStatus: 'active' | 'pending' | 'suspended', reason?: string) => {
@@ -1892,7 +1900,7 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
                               />
                             </button>
                             <button
-                              onClick={() => handleEdit(store.storeId)}
+                              onClick={() => handleEdit(store.storeId, store.status)}
                               style={{
                                 width: '40px',
                                 height: '40px',

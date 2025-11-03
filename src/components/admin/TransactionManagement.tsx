@@ -421,6 +421,20 @@ export const TransactionManagement: React.FC = () => {
                   >
                     {stats.total.toLocaleString()}
                   </p>
+                  {/* Spacer for alignment with cards that have revenue */}
+                  <p
+                    style={{
+                      fontFamily: 'Clash Grotesk Variable',
+                      fontWeight: 400,
+                      fontSize: '12px',
+                      color: 'transparent',
+                      margin: 0,
+                      marginTop: '4px',
+                      userSelect: 'none'
+                    }}
+                  >
+                    &nbsp;
+                  </p>
                 </div>
               </div>
             </div>
@@ -578,6 +592,20 @@ export const TransactionManagement: React.FC = () => {
                   >
                     {stats.pending.toLocaleString()}
                   </p>
+                  {/* Spacer for alignment with cards that have revenue */}
+                  <p
+                    style={{
+                      fontFamily: 'Clash Grotesk Variable',
+                      fontWeight: 400,
+                      fontSize: '12px',
+                      color: 'transparent',
+                      margin: 0,
+                      marginTop: '4px',
+                      userSelect: 'none'
+                    }}
+                  >
+                    &nbsp;
+                  </p>
                 </div>
               </div>
             </div>
@@ -650,6 +678,20 @@ export const TransactionManagement: React.FC = () => {
                     }}
                   >
                     {stats.refunded.toLocaleString()}
+                  </p>
+                  {/* Spacer for alignment with cards that have revenue */}
+                  <p
+                    style={{
+                      fontFamily: 'Clash Grotesk Variable',
+                      fontWeight: 400,
+                      fontSize: '12px',
+                      color: 'transparent',
+                      margin: 0,
+                      marginTop: '4px',
+                      userSelect: 'none'
+                    }}
+                  >
+                    &nbsp;
                   </p>
                 </div>
               </div>
