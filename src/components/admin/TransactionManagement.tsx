@@ -99,6 +99,17 @@ export const TransactionManagement: React.FC = () => {
   const [showEditFee, setShowEditFee] = useState(false);
   const [newCommissionRate, setNewCommissionRate] = useState('10');
 
+  // Row-specific edit states
+  const [showReplaceInvoice, setShowReplaceInvoice] = useState(false);
+  const [replaceRatePct, setReplaceRatePct] = useState(''); // optional, %
+  const [replaceFeeAmount, setReplaceFeeAmount] = useState(''); // optional, ₱ absolute
+  const [savingReplace, setSavingReplace] = useState(false);
+
+  const [showAdjustment, setShowAdjustment] = useState(false);
+  const [adjustDelta, setAdjustDelta] = useState(''); // can be + or -
+  const [adjustReason, setAdjustReason] = useState('');
+  const [savingAdjustment, setSavingAdjustment] = useState(false);
+
   // Load commission rate
   useEffect(() => {
     const loadCommissionRate = async () => {
@@ -1395,6 +1406,46 @@ export const TransactionManagement: React.FC = () => {
             </div>
 
             <div style={{ marginTop: '24px', display: 'flex', gap: '12px' }}>
+              {selectedTransaction.status === 'PENDING' && (
+                <button
+                  onClick={() => setShowReplaceInvoice(true)}
+                  style={{
+                    flex: 1,
+                    padding: '12px 24px',
+                    borderRadius: '12px',
+                    border: '1px solid #3BB77E',
+                    backgroundColor: '#3BB77E',
+                    color: '#FFFFFF',
+                    cursor: 'pointer',
+                    fontFamily: 'Clash Grotesk Variable',
+                    fontWeight: 500,
+                    fontSize: '14px'
+                  }}
+                >
+                  Replace Invoice (Edit Fee)
+                </button>
+              )}
+
+              {(selectedTransaction.status === 'PAID' || selectedTransaction.status === 'SETTLED') && (
+                <button
+                  onClick={() => setShowAdjustment(true)}
+                  style={{
+                    flex: 1,
+                    padding: '12px 24px',
+                    borderRadius: '12px',
+                    border: '1px solid #3B82F6',
+                    backgroundColor: '#3B82F6',
+                    color: '#FFFFFF',
+                    cursor: 'pointer',
+                    fontFamily: 'Clash Grotesk Variable',
+                    fontWeight: 500,
+                    fontSize: '14px'
+                  }}
+                >
+                  Add Adjustment
+                </button>
+              )}
+
               {(selectedTransaction.status === 'PAID' || selectedTransaction.status === 'SETTLED') && (
                 <button
                   onClick={() => handleRefund(selectedTransaction)}
@@ -1588,6 +1639,133 @@ export const TransactionManagement: React.FC = () => {
               >
                 Cancel
               </button>
+            </div>
+
+            <div style={{ marginTop: '12px', display: 'flex', justifyContent: 'center' }}>
+              <a
+                href="/settings/payments"
+                style={{
+                  fontFamily: 'Clash Grotesk Variable',
+                  fontWeight: 500,
+                  fontSize: '13px',
+                  color: '#3BB77E',
+                  textDecoration: 'none'
+                }}
+              >
+                Edit default or per-store rate in Payment Settings →
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Replace Invoice Modal (Pending only) */}
+      {showReplaceInvoice && selectedTransaction && (
+        <div
+          style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}
+          onClick={() => !savingReplace && setShowReplaceInvoice(false)}
+        >
+          <div
+            style={{ backgroundColor: '#FFFFFF', borderRadius: '20px', width: '90%', maxWidth: '520px', padding: '24px' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 style={{ fontFamily: 'Clash Grotesk Variable', fontSize: '20px', fontWeight: 600, margin: 0, marginBottom: '6px' }}>Replace Invoice (Edit Fee)</h3>
+            <p style={{ fontFamily: 'Clash Grotesk Variable', fontSize: '12px', color: 'rgba(30,30,30,0.6)', marginTop: 0 }}>
+              Enter either a new commission rate (%) or a new platform fee amount (₱). Leave the other blank.
+            </p>
+            <div style={{ display: 'flex', gap: '12px', marginTop: '12px' }}>
+              <div style={{ flex: 1 }}>
+                <label style={{ fontFamily: 'Clash Grotesk Variable', fontSize: '13px' }}>New Rate (%)</label>
+                <input type="number" min="0" max="100" step="0.1" value={replaceRatePct} onChange={(e)=>setReplaceRatePct(e.target.value)}
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: '10px', border: '1px solid rgba(0,0,0,0.1)' }} />
+              </div>
+              <div style={{ flex: 1 }}>
+                <label style={{ fontFamily: 'Clash Grotesk Variable', fontSize: '13px' }}>New Fee (₱)</label>
+                <input type="number" min="0" step="0.01" value={replaceFeeAmount} onChange={(e)=>setReplaceFeeAmount(e.target.value)}
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: '10px', border: '1px solid rgba(0,0,0,0.1)' }} />
+              </div>
+            </div>
+            <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
+              <button
+                onClick={async ()=>{
+                  if (savingReplace) return;
+                  const body: any = {};
+                  const rate = parseFloat(replaceRatePct);
+                  const fee = parseFloat(replaceFeeAmount);
+                  if (!isNaN(rate)) body.newCommissionRate = rate/100;
+                  if (!isNaN(fee)) body.newCommissionAmount = fee;
+                  if (!body.newCommissionRate && !body.newCommissionAmount){ alert('Enter a rate or a fee'); return; }
+                  setSavingReplace(true);
+                  try {
+                    const res = await fetch(`/api/admin/transactions/${selectedTransaction.invoiceId}/replace-invoice`, {
+                      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+                    });
+                    if (!res.ok) throw new Error(await res.text());
+                    alert('Invoice replaced successfully.');
+                    setShowReplaceInvoice(false);
+                    window.location.reload();
+                  } catch (e: any) {
+                    alert(`Error: ${e?.message || 'Failed to replace invoice'}`);
+                  } finally { setSavingReplace(false); }
+                }}
+                style={{ flex: 1, padding: '12px 24px', borderRadius: '12px', border: '1px solid #3BB77E', backgroundColor: '#3BB77E', color: '#FFFFFF' }}
+              >{savingReplace ? 'Saving...' : 'Save'}</button>
+              <button onClick={()=>!savingReplace && setShowReplaceInvoice(false)}
+                style={{ flex: 1, padding: '12px 24px', borderRadius: '12px', border: '1px solid rgba(0,0,0,0.1)', backgroundColor: '#FFFFFF' }}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Adjustment Modal (Paid/Settled only) */}
+      {showAdjustment && selectedTransaction && (
+        <div
+          style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}
+          onClick={() => !savingAdjustment && setShowAdjustment(false)}
+        >
+          <div
+            style={{ backgroundColor: '#FFFFFF', borderRadius: '20px', width: '90%', maxWidth: '520px', padding: '24px' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 style={{ fontFamily: 'Clash Grotesk Variable', fontSize: '20px', fontWeight: 600, margin: 0, marginBottom: '6px' }}>Add Adjustment</h3>
+            <p style={{ fontFamily: 'Clash Grotesk Variable', fontSize: '12px', color: 'rgba(30,30,30,0.6)', marginTop: 0 }}>
+              Add a positive or negative amount to the store’s earnings for this transaction. Wallets will reconcile automatically.
+            </p>
+            <div style={{ display: 'flex', gap: '12px', marginTop: '12px' }}>
+              <div style={{ flex: 1 }}>
+                <label style={{ fontFamily: 'Clash Grotesk Variable', fontSize: '13px' }}>Delta (₱)</label>
+                <input type="number" step="0.01" value={adjustDelta} onChange={(e)=>setAdjustDelta(e.target.value)}
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: '10px', border: '1px solid rgba(0,0,0,0.1)' }} />
+              </div>
+            </div>
+            <div style={{ marginTop: '12px' }}>
+              <label style={{ fontFamily: 'Clash Grotesk Variable', fontSize: '13px' }}>Reason</label>
+              <input type="text" value={adjustReason} onChange={(e)=>setAdjustReason(e.target.value)}
+                style={{ width: '100%', padding: '10px 12px', borderRadius: '10px', border: '1px solid rgba(0,0,0,0.1)' }} />
+            </div>
+            <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
+              <button
+                onClick={async ()=>{
+                  if (savingAdjustment) return;
+                  const delta = parseFloat(adjustDelta);
+                  if (isNaN(delta) || delta === 0){ alert('Enter a non-zero delta'); return; }
+                  setSavingAdjustment(true);
+                  try {
+                    const res = await fetch(`/api/admin/transactions/${selectedTransaction.invoiceId}/adjustment`, {
+                      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ deltaStoreAmount: delta, reason: adjustReason || 'Adjustment' })
+                    });
+                    if (!res.ok) throw new Error(await res.text());
+                    alert('Adjustment saved.');
+                    setShowAdjustment(false);
+                    window.location.reload();
+                  } catch (e: any) {
+                    alert(`Error: ${e?.message || 'Failed to save adjustment'}`);
+                  } finally { setSavingAdjustment(false); }
+                }}
+                style={{ flex: 1, padding: '12px 24px', borderRadius: '12px', border: '1px solid #3B82F6', backgroundColor: '#3B82F6', color: '#FFFFFF' }}
+              >{savingAdjustment ? 'Saving...' : 'Save'}</button>
+              <button onClick={()=>!savingAdjustment && setShowAdjustment(false)}
+                style={{ flex: 1, padding: '12px 24px', borderRadius: '12px', border: '1px solid rgba(0,0,0,0.1)', backgroundColor: '#FFFFFF' }}>Cancel</button>
             </div>
           </div>
         </div>

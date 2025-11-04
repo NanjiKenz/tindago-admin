@@ -60,6 +60,13 @@ const TransactionsPage: React.FC = () => {
             minHeight: '944px'
           }}
         >
+          {/* Info banner */}
+          <div className="mx-4 my-4 rounded-xl border border-amber-300 bg-amber-50 p-3">
+            <p className="text-sm text-amber-800">
+              Commission changes in <a href="/settings/payments" className="underline">Payment Settings</a> apply to <span className="font-medium">new</span> transactions only.
+              For a specific row: <span className="font-medium">Pending</span> → Replace invoice, <span className="font-medium">Paid/Settled</span> → Add adjustment.
+            </p>
+          </div>
           <TransactionManagement />
         </div>
       </div>
