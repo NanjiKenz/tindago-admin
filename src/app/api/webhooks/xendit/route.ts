@@ -99,27 +99,61 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  // Link to order by order_number metadata if present
-  if (orderNumber) {
-    const ordersQ = query(ref(database, 'orders'), orderByChild('orderNumber'), equalTo(orderNumber));
-    const snap = await get(ordersQ);
-    if (snap.exists()) {
-      const orders = snap.val() as Record<string, any>;
-      for (const oid of Object.keys(orders)) {
-        let paymentStatus = 'pending';
-        if (status === 'PAID' || status === 'SETTLED') paymentStatus = 'PAID';
-        else if (status === 'REFUNDED') paymentStatus = 'REFUNDED';
-        else if (status === 'EXPIRED' || status === 'VOIDED') paymentStatus = 'pending';
-        await update(ref(database, `orders/${oid}`), {
-          paymentStatus,
-          updatedAt: new Date().toISOString(),
-        });
+  // Update order paymentStatus using orderId (preferred), then orderNumber, then legacy query
+  try {
+    let orderId: string | undefined = metadata.order_id;
+    if (!orderId) {
+      const mapSnap = await get(ref(database, `indexes/invoice_to_order/${invoiceId}`));
+      if (mapSnap.exists()) orderId = mapSnap.val().orderId;
+    }
+
+    // Compute paymentStatus from Xendit status
+    let paymentStatus = 'pending';
+    if (status === 'PAID' || status === 'SETTLED') paymentStatus = 'PAID';
+    else if (status === 'REFUNDED') paymentStatus = 'REFUNDED';
+    else if (status === 'EXPIRED' || status === 'VOIDED') paymentStatus = 'pending';
+
+    if (orderId) {
+      const orderRef = ref(database, `orders/${orderId}`);
+      const snap = await get(orderRef);
+      if (snap.exists()) {
+        await update(orderRef, { paymentStatus, updatedAt: new Date().toISOString() });
+      } else {
+        console.warn('[Webhook] Order not found at orders/' + orderId + '; skipping orderId update');
+      }
+    } else if (orderNumber) {
+      const orderRef = ref(database, `orders/${orderNumber}`);
+      const orderSnap = await get(orderRef);
+      if (orderSnap.exists()) {
+        await update(orderRef, { paymentStatus, updatedAt: new Date().toISOString() });
+      } else {
+        // Fallback: legacy query by child (non-fatal if index missing)
+        try {
+          const ordersQ = query(ref(database, 'orders'), orderByChild('orderNumber'), equalTo(orderNumber));
+          const snap = await get(ordersQ);
+          if (snap.exists()) {
+            const orders = snap.val() as Record<string, any>;
+            for (const oid of Object.keys(orders)) {
+              await update(ref(database, `orders/${oid}`), { paymentStatus, updatedAt: new Date().toISOString() });
+            }
+          } else {
+            console.warn('[Webhook] Order not found at orders/' + orderNumber + ' and no query match; skipping order update');
+          }
+        } catch (err: any) {
+          console.warn('[Webhook] Skipping fallback query (likely missing index):', err?.message || err);
+        }
       }
     }
+  } catch (err: any) {
+    console.warn('[Webhook] Order update error:', err?.message || err);
   }
 
-  // Mark processed
-  await set(processedRef, true);
+  // Mark processed (non-fatal if rules block it)
+  try {
+    await set(processedRef, true);
+  } catch (err: any) {
+    console.warn('[Webhook] Could not mark processed_webhooks (rules?):', err?.message || err);
+  }
 
   return ok({ ok: true });
 }

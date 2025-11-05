@@ -1,14 +1,15 @@
 import { NextRequest } from 'next/server';
-import { ref, set } from 'firebase/database';
+import { ref, set, get } from 'firebase/database';
 import { database } from '@/lib/firebase.js';
-import { getCommissionRate, roundCurrency } from '@/lib/commission';
-import { requireEnv, XENDIT_SECRET_KEY } from '@/lib/config';
+import { roundCurrency } from '@/lib/commission';
+import { requireEnv, XENDIT_SECRET_KEY, PLATFORM_COMMISSION_RATE } from '@/lib/config';
 import { createInvoice } from '@/lib/xenditService';
 
 export const runtime = 'nodejs';
 
 interface InvoiceItem { name: string; quantity: number; price: number; }
 interface CreateInvoiceBody {
+  orderId?: string; // internal order key in RTDB (preferred for direct updates)
   orderNumber: string; // unique string used as external_id
   total: number;
   method: 'gcash' | 'paymaya' | 'online';
@@ -22,13 +23,26 @@ export async function POST(req: NextRequest) {
     requireEnv('XENDIT_SECRET_KEY', XENDIT_SECRET_KEY);
 
     const body = (await req.json()) as CreateInvoiceBody;
-    const { orderNumber, total, method, store, customer, items } = body;
+    const { orderId, orderNumber, total, method, store, customer, items } = body;
 
     if (!orderNumber || !store?.id || !total || total <= 0) {
       return new Response(JSON.stringify({ error: 'Invalid request body' }), { status: 400 });
     }
 
-    const commissionRate = await getCommissionRate(store.id);
+    // Get commission rate from Firebase directly (avoid server-side fetch)
+    let commissionRate = PLATFORM_COMMISSION_RATE;
+    try {
+      const storeRateSnap = await get(ref(database, `settings/commissions/stores/${store.id}`));
+      if (storeRateSnap.exists()) {
+        commissionRate = storeRateSnap.val().rate;
+      } else {
+        const globalRateSnap = await get(ref(database, 'settings/platform/commissionRate'));
+        if (globalRateSnap.exists()) commissionRate = globalRateSnap.val();
+      }
+    } catch (err) {
+      console.warn('[Invoice] Could not read commission from Firebase, using default:', PLATFORM_COMMISSION_RATE);
+    }
+
     const commission = roundCurrency(total * commissionRate);
     const storeAmount = roundCurrency(total - commission);
 
@@ -57,6 +71,7 @@ export async function POST(req: NextRequest) {
       paymentMethods,
       fees: [{ type: 'PLATFORM_FEE', value: commission }],
       metadata: {
+        order_id: orderId || undefined,
         order_number: orderNumber,
         store_id: store.id,
         store_name: store.name,
@@ -86,8 +101,11 @@ export async function POST(req: NextRequest) {
       storeName: store.name,
     });
 
-    // Helpful secondary index
+    // Helpful secondary indexes
     await set(ref(database, `indexes/invoice_to_store/${invoiceId}`), { storeId: store.id, orderNumber });
+    if (orderId) {
+      await set(ref(database, `indexes/invoice_to_order/${invoiceId}`), { orderId, orderNumber });
+    }
 
     return new Response(JSON.stringify({
       success: true,
@@ -99,6 +117,7 @@ export async function POST(req: NextRequest) {
     }), { status: 200 });
   } catch (e) {
     const errorMessage = e instanceof Error ? e.message : 'Server error';
+    console.error('[Invoice API] Error creating invoice:', e);
     return new Response(JSON.stringify({ error: errorMessage }), { status: 500 });
   }
 }
