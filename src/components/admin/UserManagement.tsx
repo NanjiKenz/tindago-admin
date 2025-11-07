@@ -18,8 +18,11 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { UserManagementService } from '@/lib/userManagementService';
 import { UserStats } from '@/types/userManagement';
+import { StatusChangeModal } from '@/components/admin/StatusChangeModal';
+import { ViewDetailsModal } from '@/components/admin/ViewDetailsModal';
 
 
 interface UserDisplay {
@@ -39,6 +42,7 @@ interface UserManagementProps {
 }
 
 export const UserManagement: React.FC<UserManagementProps> = () => {
+  const router = useRouter();
   const [users, setUsers] = useState<UserDisplay[]>([]);
   const [stats, setStats] = useState<UserStats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -48,6 +52,30 @@ export const UserManagement: React.FC<UserManagementProps> = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(8);
   const [error, setError] = useState<string | null>(null);
+  const [processing, setProcessing] = useState(false);
+
+  // Professional Modal State
+  const [statusModal, setStatusModal] = useState<{
+    isOpen: boolean;
+    action: 'deactivate' | 'suspend' | 'reactivate';
+    itemId: string | null;
+    itemName: string;
+    currentStatus: string;
+  }>({
+    isOpen: false,
+    action: 'deactivate',
+    itemId: null,
+    itemName: '',
+    currentStatus: ''
+  });
+
+  const [viewModal, setViewModal] = useState<{
+    isOpen: boolean;
+    data: UserDisplay | null;
+  }>({
+    isOpen: false,
+    data: null
+  });
 
   // Load real user data from Firebase
   useEffect(() => {
@@ -256,24 +284,105 @@ export const UserManagement: React.FC<UserManagementProps> = () => {
     };
   };
 
-  const handleView = (userId: string) => {
-    console.log('View user:', userId);
-    // TODO: Implement view functionality
+  // PROFESSIONAL ACTION HANDLERS
+
+  // 1. VIEW Handler - Opens detailed view modal
+  const handleView = (user: UserDisplay) => {
+    setViewModal({
+      isOpen: true,
+      data: user
+    });
   };
 
-  const handleEdit = (userId: string) => {
-    console.log('Edit user:', userId);
-    // TODO: Implement edit functionality
+  // 2. EDIT Handler - Navigate to edit page
+  const handleEdit = (userId: string, userType: string) => {
+    if (userType === 'customer') {
+      router.push(`/customers/edit/${userId}`);
+    } else if (userType === 'store_owner') {
+      router.push(`/stores/edit/${userId}`);
+    } else {
+      router.push(`/users/edit/${userId}`);
+    }
   };
 
-  const handleProfile = (userId: string) => {
-    console.log('View profile:', userId);
-    // TODO: Implement profile view functionality
+  // 3. PROFILE Handler - Navigate to profile page
+  const handleProfile = (userId: string, userType: string) => {
+    if (userType === 'customer') {
+      router.push(`/customers/profile/${userId}`);
+    } else if (userType === 'store_owner') {
+      router.push(`/stores/profile/${userId}`);
+    } else {
+      router.push(`/users/profile/${userId}`);
+    }
   };
 
-  const handleDelete = (userId: string) => {
-    console.log('Delete user:', userId);
-    // TODO: Implement delete functionality with confirmation
+  // 4. DEACTIVATE Handler - Opens status change modal
+  const handleDeactivate = (user: UserDisplay) => {
+    setStatusModal({
+      isOpen: true,
+      action: 'deactivate',
+      itemId: user.userId,
+      itemName: user.displayName || user.email,
+      currentStatus: user.status || 'unknown'
+    });
+  };
+
+  // 5. REACTIVATE Handler - Opens status change modal
+  const handleReactivate = (user: UserDisplay) => {
+    setStatusModal({
+      isOpen: true,
+      action: 'reactivate',
+      itemId: user.userId,
+      itemName: user.displayName || user.email,
+      currentStatus: user.status || 'unknown'
+    });
+  };
+
+  // 6. STATUS CHANGE CONFIRM Handler - Processes status change
+  const confirmStatusChange = async (reason?: string) => {
+    if (!statusModal.itemId) return;
+
+    try {
+      setProcessing(true);
+
+      // Determine new status
+      const newStatus = statusModal.action === 'reactivate' ? 'active' : 'inactive';
+
+      // Find the user to get their userType
+      const user = users.find(u => u.userId === statusModal.itemId);
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+      // Call API with correct userType
+      await UserManagementService.updateUserStatus(statusModal.itemId, newStatus, user.userType);
+
+      // Log reason if provided
+      if (reason) {
+        console.log(`Status change reason: ${reason}`);
+      }
+
+      // Refresh data
+      await loadUsers();
+
+      // Close modal
+      setStatusModal({
+        isOpen: false,
+        action: 'deactivate',
+        itemId: null,
+        itemName: '',
+        currentStatus: ''
+      });
+
+      console.log('✅ User status updated successfully');
+
+    } catch (error) {
+      console.error('❌ Status change error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Status update failed';
+      alert(`Error: ${errorMessage}`);
+    } finally {
+      setProcessing(false);
+    }
   };
 
   const exportUsers = async () => {
@@ -1381,28 +1490,32 @@ export const UserManagement: React.FC<UserManagementProps> = () => {
                             style={{
                               display: 'flex',
                               justifyContent: 'center',
-                              gap: '8px'
+                              gap: '12px'
                             }}
                           >
-                            {/* View Button */}
+                            {/* VIEW Button - User Icon (context-specific) */}
                             <button
-                              onClick={() => handleView(user.userId)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleView(user);
+                              }}
+                              title="View user details"
                               style={{
-                                width: '36px',
-                                height: '36px',
-                                borderRadius: '8px',
+                                width: '40px',
+                                height: '40px',
+                                borderRadius: '10px',
                                 border: '1px solid rgba(0, 0, 0, 0.05)',
                                 backgroundColor: '#FFFFFF',
                                 cursor: 'pointer',
-                                transition: 'all 0.2s ease',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
+                                transition: 'all 0.2s ease',
                                 boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.08)'
                               }}
                               onMouseEnter={(e) => {
-                                e.currentTarget.style.backgroundColor = '#22C55E';
-                                e.currentTarget.style.borderColor = '#22C55E';
+                                e.currentTarget.style.backgroundColor = '#3BB77E';
+                                e.currentTarget.style.borderColor = '#3BB77E';
                                 e.currentTarget.style.transform = 'translateY(-2px)';
                               }}
                               onMouseLeave={(e) => {
@@ -1410,28 +1523,31 @@ export const UserManagement: React.FC<UserManagementProps> = () => {
                                 e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.05)';
                                 e.currentTarget.style.transform = 'translateY(0px)';
                               }}
-                              title="View user details"
                             >
-                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                                <circle cx="12" cy="12" r="3"/>
+                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                <circle cx="12" cy="7" r="4"/>
                               </svg>
                             </button>
 
-                            {/* Edit Button */}
+                            {/* EDIT Button */}
                             <button
-                              onClick={() => handleEdit(user.userId)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleEdit(user.userId, user.userType);
+                              }}
+                              title="Edit user"
                               style={{
-                                width: '36px',
-                                height: '36px',
-                                borderRadius: '8px',
+                                width: '40px',
+                                height: '40px',
+                                borderRadius: '10px',
                                 border: '1px solid rgba(0, 0, 0, 0.05)',
                                 backgroundColor: '#FFFFFF',
                                 cursor: 'pointer',
-                                transition: 'all 0.2s ease',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
+                                transition: 'all 0.2s ease',
                                 boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.08)'
                               }}
                               onMouseEnter={(e) => {
@@ -1444,32 +1560,35 @@ export const UserManagement: React.FC<UserManagementProps> = () => {
                                 e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.05)';
                                 e.currentTarget.style.transform = 'translateY(0px)';
                               }}
-                              title="Edit user"
                             >
                               <Image
                                 src="/images/admin-dashboard/edit-icon.svg"
                                 alt="Edit"
-                                width={16}
-                                height={16}
+                                width={18}
+                                height={18}
                                 className="object-contain"
                                 style={{ filter: 'brightness(0.4)' }}
                               />
                             </button>
 
-                            {/* Profile Button */}
+                            {/* PROFILE Button */}
                             <button
-                              onClick={() => handleProfile(user.userId)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleProfile(user.userId, user.userType);
+                              }}
+                              title="View profile"
                               style={{
-                                width: '36px',
-                                height: '36px',
-                                borderRadius: '8px',
+                                width: '40px',
+                                height: '40px',
+                                borderRadius: '10px',
                                 border: '1px solid rgba(0, 0, 0, 0.05)',
                                 backgroundColor: '#FFFFFF',
                                 cursor: 'pointer',
-                                transition: 'all 0.2s ease',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
+                                transition: 'all 0.2s ease',
                                 boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.08)'
                               }}
                               onMouseEnter={(e) => {
@@ -1482,51 +1601,98 @@ export const UserManagement: React.FC<UserManagementProps> = () => {
                                 e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.05)';
                                 e.currentTarget.style.transform = 'translateY(0px)';
                               }}
-                              title="View profile"
                             >
-                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                                 <circle cx="12" cy="7" r="4"/>
                               </svg>
                             </button>
 
-                            {/* Delete Button */}
-                            <button
-                              onClick={() => handleDelete(user.userId)}
-                              style={{
-                                width: '36px',
-                                height: '36px',
-                                borderRadius: '8px',
-                                border: '1px solid rgba(0, 0, 0, 0.05)',
-                                backgroundColor: '#FFFFFF',
-                                cursor: 'pointer',
-                                transition: 'all 0.2s ease',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.08)'
-                              }}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.backgroundColor = '#EF4444';
-                                e.currentTarget.style.borderColor = '#EF4444';
-                                e.currentTarget.style.transform = 'translateY(-2px)';
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.backgroundColor = '#FFFFFF';
-                                e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.05)';
-                                e.currentTarget.style.transform = 'translateY(0px)';
-                              }}
-                              title="Delete user"
-                            >
-                              <Image
-                                src="/images/admin-dashboard/delete-icon.svg"
-                                alt="Delete"
-                                width={16}
-                                height={16}
-                                className="object-contain"
-                                style={{ filter: 'brightness(0.4)' }}
-                              />
-                            </button>
+                            {/* DEACTIVATE / REACTIVATE Button (status-based) */}
+                            {user.status === 'active' ? (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDeactivate(user);
+                                }}
+                                title="Deactivate user"
+                                disabled={processing}
+                                style={{
+                                  width: '40px',
+                                  height: '40px',
+                                  borderRadius: '10px',
+                                  border: '1px solid rgba(0, 0, 0, 0.05)',
+                                  backgroundColor: '#FFFFFF',
+                                  cursor: processing ? 'not-allowed' : 'pointer',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  transition: 'all 0.2s ease',
+                                  opacity: processing ? 0.5 : 1,
+                                  boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.08)'
+                                }}
+                                onMouseEnter={(e) => {
+                                  if (!processing) {
+                                    e.currentTarget.style.backgroundColor = '#EF4444';
+                                    e.currentTarget.style.borderColor = '#EF4444';
+                                    e.currentTarget.style.transform = 'translateY(-2px)';
+                                  }
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.backgroundColor = '#FFFFFF';
+                                  e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.05)';
+                                  e.currentTarget.style.transform = 'translateY(0px)';
+                                }}
+                              >
+                                <Image
+                                  src="/images/admin-dashboard/delete-icon.svg"
+                                  alt="Deactivate"
+                                  width={18}
+                                  height={18}
+                                  className="object-contain"
+                                  style={{ filter: 'brightness(0.4)' }}
+                                />
+                              </button>
+                            ) : (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleReactivate(user);
+                                }}
+                                title="Reactivate user"
+                                disabled={processing}
+                                style={{
+                                  width: '40px',
+                                  height: '40px',
+                                  borderRadius: '10px',
+                                  border: '1px solid rgba(0, 0, 0, 0.05)',
+                                  backgroundColor: '#FFFFFF',
+                                  cursor: processing ? 'not-allowed' : 'pointer',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  transition: 'all 0.2s ease',
+                                  opacity: processing ? 0.5 : 1,
+                                  boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.08)'
+                                }}
+                                onMouseEnter={(e) => {
+                                  if (!processing) {
+                                    e.currentTarget.style.backgroundColor = '#22C55E';
+                                    e.currentTarget.style.borderColor = '#22C55E';
+                                    e.currentTarget.style.transform = 'translateY(-2px)';
+                                  }
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.backgroundColor = '#FFFFFF';
+                                  e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.05)';
+                                  e.currentTarget.style.transform = 'translateY(0px)';
+                                }}
+                              >
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <path d="M3 12h18M15 6l6 6-6 6"/>
+                                </svg>
+                              </button>
+                            )}
                           </div>
                         </td>
                       </tr>
@@ -1630,6 +1796,34 @@ export const UserManagement: React.FC<UserManagementProps> = () => {
           )}
         </div>
       </div>
+
+      {/* Professional Modals */}
+      <StatusChangeModal
+        isOpen={statusModal.isOpen}
+        onClose={() => setStatusModal({ ...statusModal, isOpen: false })}
+        onConfirm={confirmStatusChange}
+        action={statusModal.action}
+        itemName={statusModal.itemName}
+        itemType="user"
+        currentStatus={statusModal.currentStatus}
+      />
+
+      <ViewDetailsModal
+        isOpen={viewModal.isOpen}
+        onClose={() => setViewModal({ isOpen: false, data: null })}
+        title="User Details"
+        data={viewModal.data ? {
+          'User ID': viewModal.data.userId,
+          'Name': viewModal.data.displayName,
+          'Email': viewModal.data.email,
+          'Phone': viewModal.data.phone || 'N/A',
+          'Role': viewModal.data.role,
+          'User Type': viewModal.data.userType,
+          'Status': viewModal.data.status || 'N/A',
+          'Joined': viewModal.data.createdAt ? new Date(viewModal.data.createdAt).toLocaleDateString() : 'N/A',
+          'Last Login': viewModal.data.lastLoginAt ? new Date(viewModal.data.lastLoginAt).toLocaleDateString() : 'N/A'
+        } : {}}
+      />
     </div>
   );
 };

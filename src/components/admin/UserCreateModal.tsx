@@ -542,7 +542,7 @@ export const UserCreateModal: React.FC<UserCreateModalProps> = ({
                   style={{
                     flex: 1,
                     height: '48px',
-                    backgroundColor: '#3B82F6',
+                    backgroundColor: '#3BB77E',
                     borderRadius: '16px',
                     border: 'none',
                     fontFamily: 'Clash Grotesk Variable',
@@ -556,12 +556,12 @@ export const UserCreateModal: React.FC<UserCreateModalProps> = ({
                   }}
                   onMouseEnter={(e) => {
                     if (!loading) {
-                      e.currentTarget.style.backgroundColor = '#2563EB';
+                      e.currentTarget.style.backgroundColor = '#2F9A5F';
                     }
                   }}
                   onMouseLeave={(e) => {
                     if (!loading) {
-                      e.currentTarget.style.backgroundColor = '#3B82F6';
+                      e.currentTarget.style.backgroundColor = '#3BB77E';
                     }
                   }}
                 >

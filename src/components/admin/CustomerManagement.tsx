@@ -18,14 +18,18 @@
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { CustomerUser } from '@/types/userManagement';
 import { CustomerService, CustomerStats } from '@/lib/customerService';
+import { StatusChangeModal } from '@/components/admin/StatusChangeModal';
+import { ViewDetailsModal } from '@/components/admin/ViewDetailsModal';
 
 interface CustomerManagementProps {
   className?: string;
 }
 
 export const CustomerManagement: React.FC<CustomerManagementProps> = () => {
+  const router = useRouter();
   const [customers, setCustomers] = useState<CustomerUser[]>([]);
   const [stats, setStats] = useState<CustomerStats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -35,6 +39,30 @@ export const CustomerManagement: React.FC<CustomerManagementProps> = () => {
   const [filterVerification] = useState<'all' | 'verified' | 'pending' | 'unverified'>('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(8);
+  const [processing, setProcessing] = useState(false);
+
+  // Professional Modal State
+  const [statusModal, setStatusModal] = useState<{
+    isOpen: boolean;
+    action: 'deactivate' | 'suspend' | 'reactivate';
+    itemId: string | null;
+    itemName: string;
+    currentStatus: string;
+  }>({
+    isOpen: false,
+    action: 'deactivate',
+    itemId: null,
+    itemName: '',
+    currentStatus: ''
+  });
+
+  const [viewModal, setViewModal] = useState<{
+    isOpen: boolean;
+    data: CustomerUser | null;
+  }>({
+    isOpen: false,
+    data: null
+  });
 
   // Load customers and stats on component mount
   useEffect(() => {
@@ -294,7 +322,70 @@ export const CustomerManagement: React.FC<CustomerManagementProps> = () => {
   const startIndex = (currentPage - 1) * pageSize;
   const currentData = filteredCustomers.slice(startIndex, startIndex + pageSize);
 
+  // Professional Action Handlers
+  const handleView = (customer: CustomerUser) => {
+    setViewModal({
+      isOpen: true,
+      data: customer
+    });
+  };
 
+  const handleEdit = (customerId: string) => {
+    router.push(`/customers/edit/${customerId}`);
+  };
+
+  const handleProfile = (customerId: string) => {
+    router.push(`/customers/profile/${customerId}`);
+  };
+
+  const handleDeactivate = (customer: CustomerUser) => {
+    setStatusModal({
+      isOpen: true,
+      action: 'deactivate',
+      itemId: customer.userId,
+      itemName: customer.displayName || customer.email,
+      currentStatus: customer.status || 'unknown'
+    });
+  };
+
+  const handleReactivate = (customer: CustomerUser) => {
+    setStatusModal({
+      isOpen: true,
+      action: 'reactivate',
+      itemId: customer.userId,
+      itemName: customer.displayName || customer.email,
+      currentStatus: customer.status || 'unknown'
+    });
+  };
+
+  const confirmStatusChange = async (reason?: string) => {
+    if (!statusModal.itemId) return;
+
+    try {
+      setProcessing(true);
+      const newStatus = statusModal.action === 'reactivate' ? 'active' : 'inactive';
+
+      await CustomerService.updateCustomerStatus(statusModal.itemId, newStatus);
+
+      if (reason) console.log(`Status change reason: ${reason}`);
+      await loadCustomers();
+
+      setStatusModal({
+        isOpen: false,
+        action: 'deactivate',
+        itemId: null,
+        itemName: '',
+        currentStatus: ''
+      });
+
+      console.log('✅ Customer status updated successfully');
+    } catch (error) {
+      console.error('❌ Status change error:', error);
+      alert(`Error: ${error instanceof Error ? error.message : 'Status update failed'}`);
+    } finally {
+      setProcessing(false);
+    }
+  };
 
   const getStatusBadge = (status: string) => {
     // Support ticket status colors
@@ -365,36 +456,6 @@ export const CustomerManagement: React.FC<CustomerManagementProps> = () => {
       backgroundColor: style.backgroundColor,
       color: style.color
     };
-  };
-
-  const handleView = (customerId: string) => {
-    console.log('View customer:', customerId);
-    // TODO: Implement customer details modal/page
-  };
-
-  const handleEdit = async (customerId: string) => {
-    console.log('Edit customer:', customerId);
-    // TODO: Implement edit customer modal/form
-  };
-
-  const handleUpdateStatus = async (customerId: string, newStatus: 'active' | 'inactive' | 'banned', reason?: string) => {
-    try {
-      await CustomerService.updateCustomerStatus(customerId, newStatus, reason);
-      // Customers will be updated via subscription
-      console.log(`Customer ${customerId} status updated to ${newStatus}`);
-    } catch (error) {
-      console.error('Error updating customer status:', error);
-      setError('Failed to update customer status. Please try again.');
-    }
-  };
-
-
-  const handleBan = async (customerId: string) => {
-    const confirmed = window.confirm('Are you sure you want to ban this customer? This action will prevent them from accessing the platform.');
-    if (confirmed) {
-      const reason = prompt('Please provide a reason for banning this customer:');
-      await handleUpdateStatus(customerId, 'banned', reason || 'Banned by admin');
-    }
   };
 
   const exportCustomers = async () => {
@@ -1264,8 +1325,12 @@ export const CustomerManagement: React.FC<CustomerManagementProps> = () => {
                               gap: '12px'
                             }}
                           >
+                            {/* VIEW Button */}
                             <button
-                              onClick={() => handleView(customer.userId)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleView(customer);
+                              }}
                               style={{
                                 width: '40px',
                                 height: '40px',
@@ -1300,8 +1365,13 @@ export const CustomerManagement: React.FC<CustomerManagementProps> = () => {
                                 style={{ filter: 'brightness(0.4)' }}
                               />
                             </button>
+
+                            {/* EDIT Button */}
                             <button
-                              onClick={() => handleEdit(customer.userId)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleEdit(customer.userId);
+                              }}
                               style={{
                                 width: '40px',
                                 height: '40px',
@@ -1336,42 +1406,92 @@ export const CustomerManagement: React.FC<CustomerManagementProps> = () => {
                                 style={{ filter: 'brightness(0.4)' }}
                               />
                             </button>
-                            <button
-                              onClick={() => handleBan(customer.userId)}
-                              style={{
-                                width: '40px',
-                                height: '40px',
-                                borderRadius: '10px',
-                                border: '1px solid rgba(0, 0, 0, 0.05)',
-                                backgroundColor: '#FFFFFF',
-                                cursor: 'pointer',
-                                transition: 'all 0.2s ease',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.08)'
-                              }}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.backgroundColor = '#EF4444';
-                                e.currentTarget.style.borderColor = '#EF4444';
-                                e.currentTarget.style.transform = 'translateY(-2px)';
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.backgroundColor = '#FFFFFF';
-                                e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.05)';
-                                e.currentTarget.style.transform = 'translateY(0px)';
-                              }}
-                              title="Ban customer"
-                            >
-                              <Image
-                                src="/images/admin-dashboard/delete-icon.svg"
-                                alt="Ban"
-                                width={18}
-                                height={18}
-                                className="object-contain"
-                                style={{ filter: 'brightness(0.4)' }}
-                              />
-                            </button>
+
+                            {/* DEACTIVATE / REACTIVATE Button (status-based) */}
+                            {customer.status === 'active' ? (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDeactivate(customer);
+                                }}
+                                title="Deactivate customer"
+                                disabled={processing}
+                                style={{
+                                  width: '40px',
+                                  height: '40px',
+                                  borderRadius: '10px',
+                                  border: '1px solid rgba(0, 0, 0, 0.05)',
+                                  backgroundColor: '#FFFFFF',
+                                  cursor: processing ? 'not-allowed' : 'pointer',
+                                  transition: 'all 0.2s ease',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.08)',
+                                  opacity: processing ? 0.5 : 1
+                                }}
+                                onMouseEnter={(e) => {
+                                  if (!processing) {
+                                    e.currentTarget.style.backgroundColor = '#EF4444';
+                                    e.currentTarget.style.borderColor = '#EF4444';
+                                    e.currentTarget.style.transform = 'translateY(-2px)';
+                                  }
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.backgroundColor = '#FFFFFF';
+                                  e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.05)';
+                                  e.currentTarget.style.transform = 'translateY(0px)';
+                                }}
+                              >
+                                <Image
+                                  src="/images/admin-dashboard/delete-icon.svg"
+                                  alt="Deactivate"
+                                  width={18}
+                                  height={18}
+                                  className="object-contain"
+                                  style={{ filter: 'brightness(0.4)' }}
+                                />
+                              </button>
+                            ) : (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleReactivate(customer);
+                                }}
+                                title="Reactivate customer"
+                                disabled={processing}
+                                style={{
+                                  width: '40px',
+                                  height: '40px',
+                                  borderRadius: '10px',
+                                  border: '1px solid rgba(0, 0, 0, 0.05)',
+                                  backgroundColor: '#FFFFFF',
+                                  cursor: processing ? 'not-allowed' : 'pointer',
+                                  transition: 'all 0.2s ease',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.08)',
+                                  opacity: processing ? 0.5 : 1
+                                }}
+                                onMouseEnter={(e) => {
+                                  if (!processing) {
+                                    e.currentTarget.style.backgroundColor = '#22C55E';
+                                    e.currentTarget.style.borderColor = '#22C55E';
+                                    e.currentTarget.style.transform = 'translateY(-2px)';
+                                  }
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.backgroundColor = '#FFFFFF';
+                                  e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.05)';
+                                  e.currentTarget.style.transform = 'translateY(0px)';
+                                }}
+                              >
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <path d="M3 12h18M15 6l6 6-6 6"/>
+                                </svg>
+                              </button>
+                            )}
                           </div>
                         </td>
                       </tr>
@@ -1475,6 +1595,36 @@ export const CustomerManagement: React.FC<CustomerManagementProps> = () => {
           )}
         </div>
       </div>
+
+      {/* Professional Modals */}
+      <StatusChangeModal
+        isOpen={statusModal.isOpen}
+        onClose={() => setStatusModal({ ...statusModal, isOpen: false })}
+        onConfirm={confirmStatusChange}
+        action={statusModal.action}
+        itemName={statusModal.itemName}
+        itemType="customer"
+        currentStatus={statusModal.currentStatus}
+      />
+
+      <ViewDetailsModal
+        isOpen={viewModal.isOpen}
+        onClose={() => setViewModal({ isOpen: false, data: null })}
+        title="Customer Details"
+        data={viewModal.data ? {
+          'Customer ID': viewModal.data.userId,
+          'Name': viewModal.data.displayName,
+          'Email': viewModal.data.email,
+          'Phone': viewModal.data.phone || 'N/A',
+          'Address': viewModal.data.address || 'N/A',
+          'Status': viewModal.data.status || 'N/A',
+          'Verification': viewModal.data.verificationStatus || 'N/A',
+          'Total Orders': viewModal.data.totalOrders?.toString() || '0',
+          'Total Spent': `₱${viewModal.data.totalSpent?.toFixed(2) || '0.00'}`,
+          'Joined': viewModal.data.createdAt ? new Date(viewModal.data.createdAt).toLocaleDateString() : 'N/A',
+          'Last Order': viewModal.data.lastOrderDate ? new Date(viewModal.data.lastOrderDate).toLocaleDateString() : 'N/A'
+        } : {}}
+      />
     </div>
   );
 };

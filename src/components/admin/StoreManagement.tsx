@@ -22,6 +22,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Store, StoreStats } from '@/types/storeManagement';
 import { StoreService } from '@/lib/storeService';
 import { AdminService } from '@/lib/adminService';
+import { StatusChangeModal } from '@/components/admin/StatusChangeModal';
+import { ViewDetailsModal } from '@/components/admin/ViewDetailsModal';
 
 interface StoreManagementProps {
   className?: string;
@@ -38,10 +40,34 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'pending' | 'rejected' | 'suspended'>('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(8);
+  const [processing, setProcessing] = useState(false);
 
   // View state management for category switching
   const [viewMode, setViewMode] = useState<'overview' | 'active' | 'pending' | 'rejected' | 'suspended'>('overview');
   const [categoryData, setCategoryData] = useState<Store[]>([]);
+
+  // Professional Modal State
+  const [statusModal, setStatusModal] = useState<{
+    isOpen: boolean;
+    action: 'deactivate' | 'suspend' | 'reactivate';
+    itemId: string | null;
+    itemName: string;
+    currentStatus: string;
+  }>({
+    isOpen: false,
+    action: 'deactivate',
+    itemId: null,
+    itemName: '',
+    currentStatus: ''
+  });
+
+  const [viewModal, setViewModal] = useState<{
+    isOpen: boolean;
+    data: Store | null;
+  }>({
+    isOpen: false,
+    data: null
+  });
 
   // Handle URL parameters to set initial view mode
   useEffect(() => {
@@ -340,6 +366,87 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
   const startIndex = (currentPage - 1) * pageSize;
   const currentData = filteredStores.slice(startIndex, startIndex + pageSize);
 
+  // Professional Action Handlers
+  const handleView = (store: Store) => {
+    setViewModal({
+      isOpen: true,
+      data: store
+    });
+  };
+
+  const handleEdit = (storeId: string) => {
+    router.push(`/stores/edit/${storeId}`);
+  };
+
+  const handleProfile = (storeId: string) => {
+    router.push(`/stores/profile/${storeId}`);
+  };
+
+  const handleDeactivate = (store: Store) => {
+    setStatusModal({
+      isOpen: true,
+      action: 'deactivate',
+      itemId: store.storeId,
+      itemName: store.storeName,
+      currentStatus: store.status || 'unknown'
+    });
+  };
+
+  const handleSuspend = (store: Store) => {
+    setStatusModal({
+      isOpen: true,
+      action: 'suspend',
+      itemId: store.storeId,
+      itemName: store.storeName,
+      currentStatus: store.status || 'unknown'
+    });
+  };
+
+  const handleReactivate = (store: Store) => {
+    setStatusModal({
+      isOpen: true,
+      action: 'reactivate',
+      itemId: store.storeId,
+      itemName: store.storeName,
+      currentStatus: store.status || 'unknown'
+    });
+  };
+
+  const confirmStatusChange = async (reason?: string) => {
+    if (!statusModal.itemId) return;
+
+    try {
+      setProcessing(true);
+      let newStatus: 'active' | 'inactive' | 'suspended' = 'inactive';
+
+      if (statusModal.action === 'reactivate') {
+        newStatus = 'active';
+      } else if (statusModal.action === 'suspend') {
+        newStatus = 'suspended';
+      }
+
+      await StoreService.updateStoreStatus(statusModal.itemId, newStatus);
+
+      if (reason) console.log(`Status change reason: ${reason}`);
+      await loadStores();
+
+      setStatusModal({
+        isOpen: false,
+        action: 'deactivate',
+        itemId: null,
+        itemName: '',
+        currentStatus: ''
+      });
+
+      console.log('✅ Store status updated successfully');
+    } catch (error) {
+      console.error('❌ Status change error:', error);
+      alert(`Error: ${error instanceof Error ? error.message : 'Status update failed'}`);
+    } finally {
+      setProcessing(false);
+    }
+  };
+
   const formatDate = (dateString: string) => {
     if (!dateString) return 'Date not available';
 
@@ -431,11 +538,6 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
     };
   };
 
-  const handleView = (storeId: string) => {
-    console.log('View store:', storeId);
-    // TODO: Implement store details modal/page
-  };
-
   const handlePendingRowClick = (storeId: string) => {
     console.log('Navigating to pending approval detail for store:', storeId);
     router.push(`/stores/pending/${storeId}?returnTo=storeManagement`);
@@ -451,37 +553,6 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
       router.push(`/stores/rejected/${storeId}?returnTo=storeManagement`);
     } else if (status === 'suspended') {
       router.push(`/stores/suspended/${storeId}?returnTo=storeManagement`);
-    }
-  };
-
-  const handleEdit = (storeId: string, status: string) => {
-    console.log('Navigating to edit page for store:', storeId, 'status:', status);
-    if (status === 'active') {
-      router.push(`/stores/active/${storeId}?returnTo=storeManagement`);
-    } else if (status === 'pending') {
-      router.push(`/stores/pending/${storeId}?returnTo=storeManagement`);
-    } else if (status === 'rejected') {
-      router.push(`/stores/rejected/${storeId}?returnTo=storeManagement`);
-    } else if (status === 'suspended') {
-      router.push(`/stores/suspended/${storeId}?returnTo=storeManagement`);
-    }
-  };
-
-  const handleUpdateStatus = async (storeId: string, newStatus: 'active' | 'pending' | 'suspended', reason?: string) => {
-    try {
-      await StoreService.updateStoreStatus(storeId, newStatus, reason);
-      console.log(`Store ${storeId} status updated to ${newStatus}`);
-    } catch (error) {
-      console.error('Error updating store status:', error);
-      setError('Failed to update store status. Please try again.');
-    }
-  };
-
-  const handleSuspend = async (storeId: string) => {
-    const confirmed = window.confirm('Are you sure you want to suspend this store? This action will prevent them from operating on the platform.');
-    if (confirmed) {
-      const reason = prompt('Please provide a reason for suspending this store:');
-      await handleUpdateStatus(storeId, 'suspended', reason || 'Suspended by admin');
     }
   };
 
@@ -1863,8 +1934,12 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
                               gap: '12px'
                             }}
                           >
+                            {/* VIEW Button */}
                             <button
-                              onClick={() => handleView(store.storeId)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleView(store);
+                              }}
                               style={{
                                 width: '40px',
                                 height: '40px',
@@ -1899,8 +1974,13 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
                                 style={{ filter: 'brightness(0.4)' }}
                               />
                             </button>
+
+                            {/* EDIT Button */}
                             <button
-                              onClick={() => handleEdit(store.storeId, store.status)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleEdit(store.storeId);
+                              }}
                               style={{
                                 width: '40px',
                                 height: '40px',
@@ -1935,42 +2015,92 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
                                 style={{ filter: 'brightness(0.4)' }}
                               />
                             </button>
-                            <button
-                              onClick={() => handleSuspend(store.storeId)}
-                              style={{
-                                width: '40px',
-                                height: '40px',
-                                borderRadius: '10px',
-                                border: '1px solid rgba(0, 0, 0, 0.05)',
-                                backgroundColor: '#FFFFFF',
-                                cursor: 'pointer',
-                                transition: 'all 0.2s ease',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.08)'
-                              }}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.backgroundColor = '#EF4444';
-                                e.currentTarget.style.borderColor = '#EF4444';
-                                e.currentTarget.style.transform = 'translateY(-2px)';
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.backgroundColor = '#FFFFFF';
-                                e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.05)';
-                                e.currentTarget.style.transform = 'translateY(0px)';
-                              }}
-                              title="Suspend store"
-                            >
-                              <Image
-                                src="/images/admin-dashboard/delete-icon.svg"
-                                alt="Suspend"
-                                width={18}
-                                height={18}
-                                className="object-contain"
-                                style={{ filter: 'brightness(0.4)' }}
-                              />
-                            </button>
+
+                            {/* SUSPEND / DEACTIVATE / REACTIVATE Button (status-based) */}
+                            {store.status === 'active' ? (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleSuspend(store);
+                                }}
+                                title="Suspend store"
+                                disabled={processing}
+                                style={{
+                                  width: '40px',
+                                  height: '40px',
+                                  borderRadius: '10px',
+                                  border: '1px solid rgba(0, 0, 0, 0.05)',
+                                  backgroundColor: '#FFFFFF',
+                                  cursor: processing ? 'not-allowed' : 'pointer',
+                                  transition: 'all 0.2s ease',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.08)',
+                                  opacity: processing ? 0.5 : 1
+                                }}
+                                onMouseEnter={(e) => {
+                                  if (!processing) {
+                                    e.currentTarget.style.backgroundColor = '#EF4444';
+                                    e.currentTarget.style.borderColor = '#EF4444';
+                                    e.currentTarget.style.transform = 'translateY(-2px)';
+                                  }
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.backgroundColor = '#FFFFFF';
+                                  e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.05)';
+                                  e.currentTarget.style.transform = 'translateY(0px)';
+                                }}
+                              >
+                                <Image
+                                  src="/images/admin-dashboard/delete-icon.svg"
+                                  alt="Suspend"
+                                  width={18}
+                                  height={18}
+                                  className="object-contain"
+                                  style={{ filter: 'brightness(0.4)' }}
+                                />
+                              </button>
+                            ) : (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleReactivate(store);
+                                }}
+                                title="Reactivate store"
+                                disabled={processing}
+                                style={{
+                                  width: '40px',
+                                  height: '40px',
+                                  borderRadius: '10px',
+                                  border: '1px solid rgba(0, 0, 0, 0.05)',
+                                  backgroundColor: '#FFFFFF',
+                                  cursor: processing ? 'not-allowed' : 'pointer',
+                                  transition: 'all 0.2s ease',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.08)',
+                                  opacity: processing ? 0.5 : 1
+                                }}
+                                onMouseEnter={(e) => {
+                                  if (!processing) {
+                                    e.currentTarget.style.backgroundColor = '#22C55E';
+                                    e.currentTarget.style.borderColor = '#22C55E';
+                                    e.currentTarget.style.transform = 'translateY(-2px)';
+                                  }
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.backgroundColor = '#FFFFFF';
+                                  e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.05)';
+                                  e.currentTarget.style.transform = 'translateY(0px)';
+                                }}
+                              >
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <path d="M3 12h18M15 6l6 6-6 6"/>
+                                </svg>
+                              </button>
+                            )}
                           </div>
                         </td>
                       </tr>
@@ -2075,6 +2205,37 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
         </div>
         )}
       </div>
+
+      {/* Professional Modals */}
+      <StatusChangeModal
+        isOpen={statusModal.isOpen}
+        onClose={() => setStatusModal({ ...statusModal, isOpen: false })}
+        onConfirm={confirmStatusChange}
+        action={statusModal.action}
+        itemName={statusModal.itemName}
+        itemType="store"
+        currentStatus={statusModal.currentStatus}
+      />
+
+      <ViewDetailsModal
+        isOpen={viewModal.isOpen}
+        onClose={() => setViewModal({ isOpen: false, data: null })}
+        title="Store Details"
+        data={viewModal.data ? {
+          'Store ID': viewModal.data.storeId,
+          'Store Name': viewModal.data.storeName,
+          'Owner': viewModal.data.ownerName,
+          'Email': viewModal.data.ownerEmail || 'N/A',
+          'Phone': viewModal.data.ownerPhone || 'N/A',
+          'Address': viewModal.data.address || 'N/A',
+          'Status': viewModal.data.status || 'N/A',
+          'Total Sales': `₱${viewModal.data.totalSales?.toFixed(2) || '0.00'}`,
+          'Products': viewModal.data.productCount?.toString() || '0',
+          'Orders': viewModal.data.orderCount?.toString() || '0',
+          'Rating': viewModal.data.rating ? `${viewModal.data.rating.toFixed(1)} ⭐` : 'N/A',
+          'Joined': viewModal.data.joinedDate ? new Date(viewModal.data.joinedDate).toLocaleDateString() : 'N/A'
+        } : {}}
+      />
     </div>
   );
 };
