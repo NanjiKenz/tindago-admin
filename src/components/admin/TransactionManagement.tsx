@@ -22,23 +22,68 @@ import { database } from '@/lib/firebase.js';
 import { processRefund, exportToCSV, formatCurrency } from '@/lib/transactionService';
 import { getCommissionRate, setCommissionRate } from '@/lib/commission';
 
-// Payment Method Logo Components
+// Payment Method Logo Components - Styled badges matching Figma design
 const GCashLogo = () => (
-  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 10px', backgroundColor: '#007DFF', borderRadius: '6px' }}>
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
-      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
-      <path d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z" fill="white"/>
-    </svg>
-    <span style={{ color: 'white', fontSize: '11px', fontWeight: 600, fontFamily: 'Clash Grotesk Variable' }}>GCash</span>
+  <div style={{ 
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '6px 16px',
+    backgroundColor: '#2F7FED',
+    borderRadius: '8px',
+    minWidth: '110px',
+    height: '32px'
+  }}>
+    {/* GCash G icon */}
+    <div style={{
+      width: '20px',
+      height: '20px',
+      borderRadius: '50%',
+      backgroundColor: '#1E5FCC',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontWeight: 700,
+      fontSize: '14px',
+      color: 'white',
+      fontFamily: 'sans-serif'
+    }}>
+      G
+    </div>
+    <span style={{ 
+      color: 'white', 
+      fontSize: '14px', 
+      fontWeight: 600, 
+      fontFamily: 'sans-serif'
+    }}>Gcash</span>
   </div>
 );
 
 const PayMayaLogo = () => (
-  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 10px', backgroundColor: '#00D632', borderRadius: '6px' }}>
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
-      <path d="M19 14V6c0-1.1-.9-2-2-2H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zm-9-1c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm13-6v11c0 1.1-.9 2-2 2H4v-2h17V7h2z"/>
-    </svg>
-    <span style={{ color: 'white', fontSize: '11px', fontWeight: 600, fontFamily: 'Clash Grotesk Variable' }}>PayMaya</span>
+  <div style={{ 
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '6px 16px',
+    backgroundColor: '#00D632',
+    borderRadius: '8px',
+    minWidth: '120px',
+    height: '32px'
+  }}>
+    {/* maya text watermark */}
+    <span style={{ 
+      color: 'rgba(255, 255, 255, 0.4)', 
+      fontSize: '11px', 
+      fontWeight: 600, 
+      fontFamily: 'sans-serif',
+      fontStyle: 'italic'
+    }}>maya</span>
+    <span style={{ 
+      color: 'white', 
+      fontSize: '14px', 
+      fontWeight: 600, 
+      fontFamily: 'sans-serif'
+    }}>PayMaya</span>
   </div>
 );
 
@@ -65,7 +110,8 @@ const getPaymentMethodLogo = (method: string) => {
   if (methodLower.includes('gcash')) return <GCashLogo />;
   if (methodLower.includes('paymaya')) return <PayMayaLogo />;
   if (methodLower.includes('card')) return <CardLogo />;
-  return <OnlineLogo />;
+  // Default to GCash for all other payment methods (including 'online')
+  return <GCashLogo />;
 };
 
 interface Transaction {

@@ -18,6 +18,7 @@ export interface AdminUser {
   uid: string;
   email: string;
   displayName?: string;
+  photoURL?: string;
   role: 'admin' | 'super_admin';
   createdAt: string;
   lastLogin?: string;
@@ -130,6 +131,7 @@ export class AuthService {
         uid: firebaseUser.uid,
         email: data.email || firebaseUser.email!,
         displayName: data.displayName || data.name || firebaseUser.displayName || undefined,
+        photoURL: data.photoURL || firebaseUser.photoURL || undefined,
         role: data.role || 'admin',
         createdAt: data.createdAt || nowIso,
         lastLogin: nowIso,

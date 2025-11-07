@@ -1,9 +1,9 @@
 /**
  * User Create Modal Component - Pixel Perfect Figma Implementation
  *
- * Simple Add Admin modal with Name, Email, and Password fields
- * Figma Design: node-id=1283-1669
- * 500x500px modal with clean, minimal design
+ * Complete Add Admin modal with Name, Email, Password, DOB, Country, City, Postal Code
+ * Figma Design: node-id=1337-5019
+ * Mobile-first responsive modal with clean design
  */
 
 'use client';
@@ -25,7 +25,11 @@ export const UserCreateModal: React.FC<UserCreateModalProps> = ({
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    password: ''
+    password: '',
+    dateOfBirth: '',
+    country: '',
+    city: '',
+    postalCode: ''
   });
 
   const [loading, setLoading] = useState(false);
@@ -56,6 +60,14 @@ export const UserCreateModal: React.FC<UserCreateModalProps> = ({
       setError('Password must be at least 6 characters');
       return;
     }
+    if (!formData.dateOfBirth.trim()) {
+      setError('Date of Birth is required');
+      return;
+    }
+    if (!formData.country.trim()) {
+      setError('Country is required');
+      return;
+    }
 
     setLoading(true);
 
@@ -73,7 +85,11 @@ export const UserCreateModal: React.FC<UserCreateModalProps> = ({
       setFormData({
         name: '',
         email: '',
-        password: ''
+        password: '',
+        dateOfBirth: '',
+        country: '',
+        city: '',
+        postalCode: ''
       });
 
       onUserCreated();
@@ -96,262 +112,464 @@ export const UserCreateModal: React.FC<UserCreateModalProps> = ({
         onClick={onClose}
       />
 
-      {/* Modal Container - Pixel Perfect 500x500 from Figma */}
+      {/* Modal Container - Centered popup design */}
       <div className="flex min-h-full items-center justify-center p-4">
         <div
-          className="relative transform transition-all"
+          className="relative transform transition-all w-full"
           style={{
-            width: '500px',
+            maxWidth: '522px',
             backgroundColor: '#F3F5F9',
-            borderRadius: '16px',
-            boxShadow: '0px 0px 5px rgba(0, 0, 0, 0.25)',
-            padding: '40px'
+            borderRadius: '20px',
+            boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.15)'
           }}
+          onClick={(e) => e.stopPropagation()}
         >
-          {/* Title - "Add New Admin" */}
-          <h2
+          {/* Header with Close Button */}
+          <div
             style={{
-              fontFamily: 'Clash Grotesk Variable',
-              fontWeight: 500,
-              fontSize: '24px',
-              lineHeight: '29.52px',
-              color: '#1E1E1E',
-              textAlign: 'center',
-              margin: '0 0 30px 0'
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '24px 24px 20px 24px',
+              borderBottom: '1px solid rgba(0, 0, 0, 0.05)'
             }}
           >
-            Add New Admin
-          </h2>
-
-          {/* Error Message */}
-          {error && (
-            <div
+            {/* Title - "Add New Admin" */}
+            <h2
               style={{
-                marginBottom: '20px',
-                padding: '12px',
-                backgroundColor: '#FEE2E2',
-                borderRadius: '8px',
-                color: '#DC2626',
-                fontSize: '14px',
-                fontFamily: 'Clash Grotesk Variable'
+                fontFamily: 'Clash Grotesk Variable',
+                fontWeight: 600,
+                fontSize: '20px',
+                lineHeight: '24.6px',
+                color: '#1E1E1E',
+                margin: 0,
+                flex: 1
               }}
             >
-              {error}
-            </div>
-          )}
+              Add New Admin
+            </h2>
 
-          {/* Form */}
-          <form onSubmit={handleSubmit}>
-            {/* Name Field */}
-            <div style={{ marginBottom: '20px' }}>
-              <label
-                style={{
-                  display: 'block',
-                  fontFamily: 'Clash Grotesk Variable',
-                  fontWeight: 500,
-                  fontSize: '16px',
-                  lineHeight: '19.68px',
-                  color: '#1E1E1E',
-                  marginBottom: '5px'
-                }}
-              >
-                Name
-              </label>
-              <input
-                type="text"
-                placeholder="Enter admin name"
-                value={formData.name}
-                onChange={(e) => handleInputChange('name', e.target.value)}
-                style={{
-                  width: '420px',
-                  height: '50px',
-                  backgroundColor: '#FFFFFF',
-                  borderRadius: '16px',
-                  border: 'none',
-                  padding: '0 20px',
-                  fontFamily: 'Clash Grotesk Variable',
-                  fontWeight: 500,
-                  fontSize: '18px',
-                  lineHeight: '22.14px',
-                  color: '#1E1E1E',
-                  boxShadow: '0px 0px 5px rgba(0, 0, 0, 0.25)',
-                  outline: 'none'
-                }}
-                onFocus={(e) => {
-                  e.currentTarget.style.boxShadow = '0px 0px 8px rgba(59, 130, 246, 0.5)';
-                }}
-                onBlur={(e) => {
-                  e.currentTarget.style.boxShadow = '0px 0px 5px rgba(0, 0, 0, 0.25)';
-                }}
-              />
-            </div>
-
-            {/* Email Field */}
-            <div style={{ marginBottom: '20px' }}>
-              <label
-                style={{
-                  display: 'block',
-                  fontFamily: 'Clash Grotesk Variable',
-                  fontWeight: 500,
-                  fontSize: '16px',
-                  lineHeight: '19.68px',
-                  color: '#1E1E1E',
-                  marginBottom: '5px'
-                }}
-              >
-                Email
-              </label>
-              <input
-                type="email"
-                placeholder="admin@gmail.com"
-                value={formData.email}
-                onChange={(e) => handleInputChange('email', e.target.value)}
-                style={{
-                  width: '420px',
-                  height: '50px',
-                  backgroundColor: '#FFFFFF',
-                  borderRadius: '16px',
-                  border: 'none',
-                  padding: '0 20px',
-                  fontFamily: 'Clash Grotesk Variable',
-                  fontWeight: 500,
-                  fontSize: '18px',
-                  lineHeight: '22.14px',
-                  color: '#1E1E1E',
-                  boxShadow: '0px 0px 5px rgba(0, 0, 0, 0.25)',
-                  outline: 'none'
-                }}
-                onFocus={(e) => {
-                  e.currentTarget.style.boxShadow = '0px 0px 8px rgba(59, 130, 246, 0.5)';
-                }}
-                onBlur={(e) => {
-                  e.currentTarget.style.boxShadow = '0px 0px 5px rgba(0, 0, 0, 0.25)';
-                }}
-              />
-            </div>
-
-            {/* Password Field */}
-            <div style={{ marginBottom: '40px' }}>
-              <label
-                style={{
-                  display: 'block',
-                  fontFamily: 'Clash Grotesk Variable',
-                  fontWeight: 500,
-                  fontSize: '16px',
-                  lineHeight: '19.68px',
-                  color: '#1E1E1E',
-                  marginBottom: '5px'
-                }}
-              >
-                Password
-              </label>
-              <input
-                type="password"
-                placeholder="*************"
-                value={formData.password}
-                onChange={(e) => handleInputChange('password', e.target.value)}
-                style={{
-                  width: '420px',
-                  height: '50px',
-                  backgroundColor: '#FFFFFF',
-                  borderRadius: '16px',
-                  border: 'none',
-                  padding: '0 20px',
-                  fontFamily: 'Clash Grotesk Variable',
-                  fontWeight: 500,
-                  fontSize: '18px',
-                  lineHeight: '22.14px',
-                  color: '#1E1E1E',
-                  boxShadow: '0px 0px 5px rgba(0, 0, 0, 0.25)',
-                  outline: 'none'
-                }}
-                onFocus={(e) => {
-                  e.currentTarget.style.boxShadow = '0px 0px 8px rgba(59, 130, 246, 0.5)';
-                }}
-                onBlur={(e) => {
-                  e.currentTarget.style.boxShadow = '0px 0px 5px rgba(0, 0, 0, 0.25)';
-                }}
-              />
-            </div>
-
-            {/* Action Buttons */}
-            <div
+            {/* Close X Button */}
+            <button
+              type="button"
+              onClick={onClose}
               style={{
+                width: '32px',
+                height: '32px',
                 display: 'flex',
-                gap: '30px',
-                justifyContent: 'space-between'
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+                padding: 0,
+                borderRadius: '8px',
+                transition: 'background-color 0.2s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.05)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent';
               }}
             >
-              {/* Cancel Button */}
-              <button
-                type="button"
-                onClick={onClose}
-                disabled={loading}
-                style={{
-                  width: '195px',
-                  height: '42px',
-                  backgroundColor: '#E5E7EB',
-                  borderRadius: '16px',
-                  border: 'none',
-                  fontFamily: 'Clash Grotesk Variable',
-                  fontWeight: 500,
-                  fontSize: '18px',
-                  lineHeight: '22.14px',
-                  color: '#8F8F8F',
-                  cursor: loading ? 'not-allowed' : 'pointer',
-                  boxShadow: '0px 0px 5px rgba(0, 0, 0, 0.25)',
-                  transition: 'all 0.2s ease',
-                  opacity: loading ? 0.6 : 1
-                }}
-                onMouseEnter={(e) => {
-                  if (!loading) {
-                    e.currentTarget.style.backgroundColor = '#D1D5DB';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!loading) {
-                    e.currentTarget.style.backgroundColor = '#E5E7EB';
-                  }
-                }}
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#64748B"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               >
-                Cancel
-              </button>
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+          </div>
 
-              {/* Add Admin Button */}
-              <button
-                type="submit"
-                disabled={loading}
+          {/* Form Container */}
+          <div 
+            style={{ 
+              padding: '24px 36px 24px 36px',
+              maxHeight: 'calc(90vh - 80px)',
+              overflowY: 'auto'
+            }}
+          >
+            {/* Error Message */}
+            {error && (
+              <div
                 style={{
-                  width: '195px',
-                  height: '42px',
-                  backgroundColor: '#3B82F6',
-                  borderRadius: '16px',
-                  border: 'none',
+                  marginBottom: '20px',
+                  padding: '12px 16px',
+                  backgroundColor: '#FEE2E2',
+                  borderRadius: '12px',
+                  color: '#DC2626',
+                  fontSize: '14px',
                   fontFamily: 'Clash Grotesk Variable',
-                  fontWeight: 500,
-                  fontSize: '18px',
-                  lineHeight: '22.14px',
-                  color: '#FFFFFF',
-                  cursor: loading ? 'not-allowed' : 'pointer',
-                  boxShadow: '0px 0px 5px rgba(0, 0, 0, 0.25)',
-                  transition: 'all 0.2s ease',
-                  opacity: loading ? 0.6 : 1
-                }}
-                onMouseEnter={(e) => {
-                  if (!loading) {
-                    e.currentTarget.style.backgroundColor = '#2563EB';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!loading) {
-                    e.currentTarget.style.backgroundColor = '#3B82F6';
-                  }
+                  fontWeight: 500
                 }}
               >
-                {loading ? 'Creating...' : 'Add Admin'}
-              </button>
-            </div>
-          </form>
+                {error}
+              </div>
+            )}
+
+            {/* Form */}
+            <form onSubmit={handleSubmit}>
+              {/* Name Field */}
+              <div style={{ marginBottom: '20px' }}>
+                <label
+                  style={{
+                    display: 'block',
+                    fontFamily: 'Clash Grotesk Variable',
+                    fontWeight: 600,
+                    fontSize: '16px',
+                    lineHeight: '19.68px',
+                    color: '#1E1E1E',
+                    marginBottom: '8px'
+                  }}
+                >
+                  Name
+                </label>
+                <input
+                  type="text"
+                  placeholder="Enter admin name"
+                  value={formData.name}
+                  onChange={(e) => handleInputChange('name', e.target.value)}
+                  style={{
+                    width: '100%',
+                    height: '50px',
+                    backgroundColor: '#FFFFFF',
+                    borderRadius: '16px',
+                    border: 'none',
+                    padding: '0 20px',
+                    fontFamily: 'Clash Grotesk Variable',
+                    fontWeight: 400,
+                    fontSize: '16px',
+                    lineHeight: '19.68px',
+                    color: '#1E1E1E',
+                    outline: 'none',
+                    boxSizing: 'border-box'
+                  }}
+                  className="placeholder:text-gray-400"
+                />
+              </div>
+
+              {/* Email Field */}
+              <div style={{ marginBottom: '20px' }}>
+                <label
+                  style={{
+                    display: 'block',
+                    fontFamily: 'Clash Grotesk Variable',
+                    fontWeight: 600,
+                    fontSize: '16px',
+                    lineHeight: '19.68px',
+                    color: '#1E1E1E',
+                    marginBottom: '8px'
+                  }}
+                >
+                  Email
+                </label>
+                <input
+                  type="email"
+                  placeholder="admin@gmail.com"
+                  value={formData.email}
+                  onChange={(e) => handleInputChange('email', e.target.value)}
+                  style={{
+                    width: '100%',
+                    height: '50px',
+                    backgroundColor: '#FFFFFF',
+                    borderRadius: '16px',
+                    border: 'none',
+                    padding: '0 20px',
+                    fontFamily: 'Clash Grotesk Variable',
+                    fontWeight: 400,
+                    fontSize: '16px',
+                    lineHeight: '19.68px',
+                    color: '#1E1E1E',
+                    outline: 'none',
+                    boxSizing: 'border-box'
+                  }}
+                  className="placeholder:text-gray-400"
+                />
+              </div>
+
+              {/* Password Field */}
+              <div style={{ marginBottom: '20px' }}>
+                <label
+                  style={{
+                    display: 'block',
+                    fontFamily: 'Clash Grotesk Variable',
+                    fontWeight: 600,
+                    fontSize: '16px',
+                    lineHeight: '19.68px',
+                    color: '#1E1E1E',
+                    marginBottom: '8px'
+                  }}
+                >
+                  Password
+                </label>
+                <input
+                  type="password"
+                  placeholder="*************"
+                  value={formData.password}
+                  onChange={(e) => handleInputChange('password', e.target.value)}
+                  style={{
+                    width: '100%',
+                    height: '50px',
+                    backgroundColor: '#FFFFFF',
+                    borderRadius: '16px',
+                    border: 'none',
+                    padding: '0 20px',
+                    fontFamily: 'Clash Grotesk Variable',
+                    fontWeight: 400,
+                    fontSize: '16px',
+                    lineHeight: '19.68px',
+                    color: '#1E1E1E',
+                    outline: 'none',
+                    boxSizing: 'border-box'
+                  }}
+                  className="placeholder:text-gray-400"
+                />
+              </div>
+
+              {/* Date of Birth Field */}
+              <div style={{ marginBottom: '20px' }}>
+                <label
+                  style={{
+                    display: 'block',
+                    fontFamily: 'Clash Grotesk Variable',
+                    fontWeight: 600,
+                    fontSize: '16px',
+                    lineHeight: '19.68px',
+                    color: '#1E1E1E',
+                    marginBottom: '8px'
+                  }}
+                >
+                  Date of Birth
+                </label>
+                <input
+                  type="text"
+                  placeholder="MM/DD/YYYY"
+                  value={formData.dateOfBirth}
+                  onChange={(e) => handleInputChange('dateOfBirth', e.target.value)}
+                  style={{
+                    width: '100%',
+                    height: '50px',
+                    backgroundColor: '#FFFFFF',
+                    borderRadius: '16px',
+                    border: 'none',
+                    padding: '0 20px',
+                    fontFamily: 'Clash Grotesk Variable',
+                    fontWeight: 400,
+                    fontSize: '16px',
+                    lineHeight: '19.68px',
+                    color: '#1E1E1E',
+                    outline: 'none',
+                    boxSizing: 'border-box'
+                  }}
+                  className="placeholder:text-gray-400"
+                />
+              </div>
+
+              {/* Country Field */}
+              <div style={{ marginBottom: '20px' }}>
+                <label
+                  style={{
+                    display: 'block',
+                    fontFamily: 'Clash Grotesk Variable',
+                    fontWeight: 600,
+                    fontSize: '16px',
+                    lineHeight: '19.68px',
+                    color: '#1E1E1E',
+                    marginBottom: '8px'
+                  }}
+                >
+                  Country
+                </label>
+                <input
+                  type="text"
+                  placeholder="Philippines"
+                  value={formData.country}
+                  onChange={(e) => handleInputChange('country', e.target.value)}
+                  style={{
+                    width: '100%',
+                    height: '50px',
+                    backgroundColor: '#FFFFFF',
+                    borderRadius: '16px',
+                    border: 'none',
+                    padding: '0 20px',
+                    fontFamily: 'Clash Grotesk Variable',
+                    fontWeight: 400,
+                    fontSize: '16px',
+                    lineHeight: '19.68px',
+                    color: '#1E1E1E',
+                    outline: 'none',
+                    boxSizing: 'border-box'
+                  }}
+                  className="placeholder:text-gray-400"
+                />
+              </div>
+
+              {/* City and Postal Code in Row */}
+              <div style={{ display: 'flex', gap: '16px', marginBottom: '32px' }}>
+                {/* City Field */}
+                <div style={{ flex: 1 }}>
+                  <label
+                    style={{
+                      display: 'block',
+                      fontFamily: 'Clash Grotesk Variable',
+                      fontWeight: 600,
+                      fontSize: '16px',
+                      lineHeight: '19.68px',
+                      color: '#1E1E1E',
+                      marginBottom: '8px'
+                    }}
+                  >
+                    City
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Enter city"
+                    value={formData.city}
+                    onChange={(e) => handleInputChange('city', e.target.value)}
+                    style={{
+                      width: '100%',
+                      height: '50px',
+                      backgroundColor: '#FFFFFF',
+                      borderRadius: '16px',
+                      border: 'none',
+                      padding: '0 20px',
+                      fontFamily: 'Clash Grotesk Variable',
+                      fontWeight: 400,
+                      fontSize: '16px',
+                      lineHeight: '19.68px',
+                      color: '#1E1E1E',
+                      outline: 'none',
+                      boxSizing: 'border-box'
+                    }}
+                    className="placeholder:text-gray-400"
+                  />
+                </div>
+
+                {/* Postal Code Field */}
+                <div style={{ flex: 1 }}>
+                  <label
+                    style={{
+                      display: 'block',
+                      fontFamily: 'Clash Grotesk Variable',
+                      fontWeight: 600,
+                      fontSize: '16px',
+                      lineHeight: '19.68px',
+                      color: '#1E1E1E',
+                      marginBottom: '8px'
+                    }}
+                  >
+                    Postal Code
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Enter postal code"
+                    value={formData.postalCode}
+                    onChange={(e) => handleInputChange('postalCode', e.target.value)}
+                    style={{
+                      width: '100%',
+                      height: '50px',
+                      backgroundColor: '#FFFFFF',
+                      borderRadius: '16px',
+                      border: 'none',
+                      padding: '0 20px',
+                      fontFamily: 'Clash Grotesk Variable',
+                      fontWeight: 400,
+                      fontSize: '16px',
+                      lineHeight: '19.68px',
+                      color: '#1E1E1E',
+                      outline: 'none',
+                      boxSizing: 'border-box'
+                    }}
+                    className="placeholder:text-gray-400"
+                  />
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div
+                style={{
+                  display: 'flex',
+                  gap: '16px',
+                  marginTop: '8px'
+                }}
+              >
+                {/* Cancel Button */}
+                <button
+                  type="button"
+                  onClick={onClose}
+                  disabled={loading}
+                  style={{
+                    flex: 1,
+                    height: '48px',
+                    backgroundColor: '#E5E7EB',
+                    borderRadius: '16px',
+                    border: 'none',
+                    fontFamily: 'Clash Grotesk Variable',
+                    fontWeight: 600,
+                    fontSize: '16px',
+                    lineHeight: '19.68px',
+                    color: '#6B7280',
+                    cursor: loading ? 'not-allowed' : 'pointer',
+                    transition: 'all 0.2s ease',
+                    opacity: loading ? 0.6 : 1
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!loading) {
+                      e.currentTarget.style.backgroundColor = '#D1D5DB';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!loading) {
+                      e.currentTarget.style.backgroundColor = '#E5E7EB';
+                    }
+                  }}
+                >
+                  Cancel
+                </button>
+
+                {/* Add Admin Button */}
+                <button
+                  type="submit"
+                  disabled={loading}
+                  style={{
+                    flex: 1,
+                    height: '48px',
+                    backgroundColor: '#3B82F6',
+                    borderRadius: '16px',
+                    border: 'none',
+                    fontFamily: 'Clash Grotesk Variable',
+                    fontWeight: 600,
+                    fontSize: '16px',
+                    lineHeight: '19.68px',
+                    color: '#FFFFFF',
+                    cursor: loading ? 'not-allowed' : 'pointer',
+                    transition: 'all 0.2s ease',
+                    opacity: loading ? 0.6 : 1
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!loading) {
+                      e.currentTarget.style.backgroundColor = '#2563EB';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!loading) {
+                      e.currentTarget.style.backgroundColor = '#3B82F6';
+                    }
+                  }}
+                >
+                  {loading ? 'Creating...' : 'Add Admin'}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
     </div>
