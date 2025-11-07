@@ -1,18 +1,10 @@
 import { NextResponse } from 'next/server';
-
-
-
-// Helper function to fetch from Firebase REST API
-async function fetchFirebase(path: string) {
-  const dbUrl = process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL;
-  const url = `${dbUrl}/${path}.json`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error('Failed to fetch from Firebase');
-  return res.json();
-}
+import { fetchFirebase } from '@/lib/fetchFirebase';
 
 export async function GET() {
   try {
+    console.log('📡 Starting customer stats fetch from Firebase...');
+
     // Fetch users and user orders - REST API returns plain JSON
     const [usersData, userOrders] = await Promise.all([
       fetchFirebase('users'),
@@ -57,6 +49,7 @@ export async function GET() {
       }
     }
 
+    console.log(`✅ Returning customer stats: ${totalCustomers} customers, ${totalOrders} orders`);
     return NextResponse.json({
       totalCustomers,
       activeCustomers,
@@ -65,11 +58,19 @@ export async function GET() {
       totalRevenue,
       averageOrderValue: totalOrders > 0 ? totalRevenue / totalOrders : 0,
     });
-  } catch (error) {
-    console.error('Error fetching customer stats:', error);
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to fetch customer statistics' },
-      { status: 500 }
-    );
+  } catch (error: any) {
+    console.error('❌ Error in /api/admin/customers/stats:', error);
+    console.error('Stack trace:', error.stack);
+
+    // Return zeros instead of error to allow UI to function
+    return NextResponse.json({
+      totalCustomers: 0,
+      activeCustomers: 0,
+      inactiveCustomers: 0,
+      totalOrders: 0,
+      totalRevenue: 0,
+      averageOrderValue: 0,
+      warning: 'Failed to fetch customer stats from Firebase. Check server logs for details.'
+    }, { status: 200 }); // Changed to 200 to prevent UI errors
   }
 }

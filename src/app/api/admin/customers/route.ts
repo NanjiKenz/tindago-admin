@@ -1,18 +1,10 @@
 import { NextResponse } from 'next/server';
-
-
-
-// Helper function to fetch from Firebase REST API
-async function fetchFirebase(path: string) {
-  const dbUrl = process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL;
-  const url = `${dbUrl}/${path}.json`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error('Failed to fetch from Firebase');
-  return res.json();
-}
+import { fetchFirebase } from '@/lib/fetchFirebase';
 
 export async function GET() {
   try {
+    console.log('📡 Starting customers data fetch from Firebase...');
+
     // Fetch customers from users collection - REST API returns plain JSON
     const usersData = await fetchFirebase('users');
     const userOrders = await fetchFirebase('user_orders');
@@ -52,12 +44,16 @@ export async function GET() {
     // Sort by creation date (newest first)
     customers.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
+    console.log(`✅ Returning ${customers.length} customers`);
     return NextResponse.json({ customers });
-  } catch (error) {
-    console.error('Error fetching customers:', error);
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to fetch customers' },
-      { status: 500 }
-    );
+  } catch (error: any) {
+    console.error('❌ Error in /api/admin/customers:', error);
+    console.error('Stack trace:', error.stack);
+
+    // Return empty array instead of error to allow UI to function
+    return NextResponse.json({
+      customers: [],
+      warning: 'Failed to fetch customer data from Firebase. Check server logs for details.'
+    }, { status: 200 }); // Changed to 200 to prevent UI errors
   }
 }

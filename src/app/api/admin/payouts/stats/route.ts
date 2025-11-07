@@ -1,21 +1,14 @@
 import { NextResponse } from 'next/server';
-
+import { fetchFirebase } from '@/lib/fetchFirebase';
 
 /**
  * Get payout statistics
  */
 
-// Helper function to fetch from Firebase REST API
-async function fetchFirebase(path: string) {
-  const dbUrl = process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL;
-  const url = `${dbUrl}/${path}.json`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error('Failed to fetch from Firebase');
-  return res.json();
-}
-
 export async function GET() {
   try {
+    console.log('📡 Starting payout stats fetch from Firebase...');
+
     // Fetch payout requests - REST API returns plain JSON
     const payoutsDataRaw = await fetchFirebase('payout_requests');
 
@@ -46,12 +39,22 @@ export async function GET() {
         .reduce((sum, p) => sum + (Number(p.amount) || 0), 0),
     };
 
+    console.log(`✅ Returning payout stats: ${stats.totalRequests} requests`);
     return NextResponse.json(stats);
-  } catch (error) {
-    console.error('Error fetching payout stats:', error);
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to fetch payout statistics' },
-      { status: 500 }
-    );
+  } catch (error: any) {
+    console.error('❌ Error in /api/admin/payouts/stats:', error);
+    console.error('Stack trace:', error.stack);
+
+    // Return zeros instead of error to allow UI to function
+    return NextResponse.json({
+      totalRequests: 0,
+      pendingRequests: 0,
+      approvedRequests: 0,
+      completedRequests: 0,
+      rejectedRequests: 0,
+      totalAmount: 0,
+      pendingAmount: 0,
+      warning: 'Failed to fetch payout stats from Firebase. Check server logs for details.'
+    }, { status: 200 }); // Changed to 200 to prevent UI errors
   }
 }

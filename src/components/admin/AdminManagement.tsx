@@ -18,11 +18,15 @@
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { UserManagementService } from '@/lib/userManagementService';
 import type { AdminUser } from '@/types/userManagement';
 import { UserCreateModal } from '@/components/admin/UserCreateModal';
+import { StatusChangeModal } from '@/components/admin/StatusChangeModal';
+import { ViewDetailsModal } from '@/components/admin/ViewDetailsModal';
 
 export const AdminManagement: React.FC = () => {
+  const router = useRouter();
   const [admins, setAdmins] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -32,6 +36,29 @@ export const AdminManagement: React.FC = () => {
   const [selectedAdmin, setSelectedAdmin] = useState<AdminUser | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [processing, setProcessing] = useState(false);
+
+  // New Professional Modals State
+  const [statusModal, setStatusModal] = useState<{
+    isOpen: boolean;
+    action: 'deactivate' | 'suspend' | 'reactivate';
+    itemId: string | null;
+    itemName: string;
+    currentStatus: string;
+  }>({
+    isOpen: false,
+    action: 'deactivate',
+    itemId: null,
+    itemName: '',
+    currentStatus: ''
+  });
+
+  const [viewModal, setViewModal] = useState<{
+    isOpen: boolean;
+    data: AdminUser | null;
+  }>({
+    isOpen: false,
+    data: null
+  });
 
   // Load admin users
   useEffect(() => {
@@ -68,38 +95,78 @@ export const AdminManagement: React.FC = () => {
     currentPage * pageSize
   );
 
-  const handleStatusToggle = async (admin: AdminUser) => {
-    const currentStatus = admin.status || 'inactive';
-    const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
-    if (!confirm(`${newStatus === 'active' ? 'Activate' : 'Deactivate'} admin ${admin.displayName}?`)) {
-      return;
-    }
+  // PROFESSIONAL ACTION HANDLERS
 
-    setProcessing(true);
-    try {
-      await UserManagementService.updateUserStatus(admin.userId, newStatus, 'admin');
-      alert(`Admin ${newStatus === 'active' ? 'activated' : 'deactivated'} successfully!`);
-      await loadData();
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'An error occurred';
-      alert(`Error: ${errorMessage}`);
-    } finally {
-      setProcessing(false);
-    }
+  // 1. VIEW Handler - Opens detailed view modal
+  const handleView = (admin: AdminUser) => {
+    setViewModal({
+      isOpen: true,
+      data: admin
+    });
   };
 
-  const handleDelete = async (admin: AdminUser) => {
-    if (!confirm(`Are you sure you want to delete admin ${admin.displayName}?\n\nThis action cannot be undone.`)) {
-      return;
-    }
+  // 2. EDIT Handler - Navigate to edit page
+  const handleEdit = (adminId: string) => {
+    router.push(`/admins/edit/${adminId}`);
+  };
 
-    setProcessing(true);
+  // 3. DEACTIVATE Handler - Opens status change modal
+  const handleDeactivate = (admin: AdminUser) => {
+    setStatusModal({
+      isOpen: true,
+      action: 'deactivate',
+      itemId: admin.userId,
+      itemName: admin.displayName || admin.email,
+      currentStatus: admin.status || 'unknown'
+    });
+  };
+
+  // 4. REACTIVATE Handler - Opens status change modal
+  const handleReactivate = (admin: AdminUser) => {
+    setStatusModal({
+      isOpen: true,
+      action: 'reactivate',
+      itemId: admin.userId,
+      itemName: admin.displayName || admin.email,
+      currentStatus: admin.status || 'unknown'
+    });
+  };
+
+  // 5. STATUS CHANGE CONFIRM Handler - Processes status change
+  const confirmStatusChange = async (reason?: string) => {
+    if (!statusModal.itemId) return;
+
     try {
-      await UserManagementService.deleteUser(admin.userId, 'admin');
-      alert('Admin deleted successfully!');
+      setProcessing(true);
+
+      // Determine new status
+      const newStatus = statusModal.action === 'reactivate' ? 'active' : 'inactive';
+
+      // Call API
+      await UserManagementService.updateUserStatus(statusModal.itemId, newStatus, 'admin');
+
+      // Log reason if provided
+      if (reason) {
+        console.log(`Status change reason: ${reason}`);
+      }
+
+      // Refresh data
       await loadData();
+
+      // Close modal
+      setStatusModal({
+        isOpen: false,
+        action: 'deactivate',
+        itemId: null,
+        itemName: '',
+        currentStatus: ''
+      });
+
+      console.log('✅ Admin status updated successfully');
+
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'An error occurred';
+      console.error('❌ Status change error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Status update failed';
       alert(`Error: ${errorMessage}`);
     } finally {
       setProcessing(false);
@@ -848,18 +915,58 @@ export const AdminManagement: React.FC = () => {
 
                         {/* Action icons - edit and delete */}
                         <td style={{ padding: '20px' }}>
-                          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', alignItems: 'center' }}>
+                          <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', alignItems: 'center' }}>
+
+                            {/* VIEW Button */}
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
-                                setSelectedAdmin(admin);
+                                handleView(admin);
                               }}
+                              title="View details"
                               style={{
-                                width: '32px',
-                                height: '32px',
+                                width: '36px',
+                                height: '36px',
                                 borderRadius: '8px',
-                                border: '1px solid rgba(0, 0, 0, 0.1)',
-                                backgroundColor: 'transparent',
+                                border: '1px solid rgba(0, 0, 0, 0.05)',
+                                backgroundColor: '#FFFFFF',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                transition: 'all 0.2s ease',
+                                padding: '0'
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.backgroundColor = '#3BB77E';
+                                e.currentTarget.style.borderColor = '#3BB77E';
+                                e.currentTarget.style.transform = 'translateY(-2px)';
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.backgroundColor = '#FFFFFF';
+                                e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.05)';
+                                e.currentTarget.style.transform = 'translateY(0px)';
+                              }}
+                            >
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                              </svg>
+                            </button>
+
+                            {/* EDIT Button */}
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleEdit(admin.userId);
+                              }}
+                              title="Edit admin"
+                              style={{
+                                width: '36px',
+                                height: '36px',
+                                borderRadius: '8px',
+                                border: '1px solid rgba(0, 0, 0, 0.05)',
+                                backgroundColor: '#FFFFFF',
                                 cursor: 'pointer',
                                 display: 'flex',
                                 alignItems: 'center',
@@ -870,59 +977,102 @@ export const AdminManagement: React.FC = () => {
                               onMouseEnter={(e) => {
                                 e.currentTarget.style.backgroundColor = '#0077BE';
                                 e.currentTarget.style.borderColor = '#0077BE';
+                                e.currentTarget.style.transform = 'translateY(-2px)';
                               }}
                               onMouseLeave={(e) => {
-                                e.currentTarget.style.backgroundColor = 'transparent';
-                                e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.1)';
+                                e.currentTarget.style.backgroundColor = '#FFFFFF';
+                                e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.05)';
+                                e.currentTarget.style.transform = 'translateY(0px)';
                               }}
                             >
-                              <Image
-                                src="/images/shared/icons/edit-icon.svg"
-                                alt="Edit"
-                                width={16}
-                                height={16}
-                              />
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                              </svg>
                             </button>
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleDelete(admin);
-                              }}
-                              disabled={processing}
-                              style={{
-                                width: '32px',
-                                height: '32px',
-                                borderRadius: '8px',
-                                border: '1px solid rgba(0, 0, 0, 0.1)',
-                                backgroundColor: 'transparent',
-                                cursor: processing ? 'not-allowed' : 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                transition: 'all 0.2s ease',
-                                padding: '0',
-                                opacity: processing ? 0.5 : 1
-                              }}
-                              onMouseEnter={(e) => {
-                                if (!processing) {
-                                  e.currentTarget.style.backgroundColor = '#EF4444';
-                                  e.currentTarget.style.borderColor = '#EF4444';
-                                }
-                              }}
-                              onMouseLeave={(e) => {
-                                if (!processing) {
-                                  e.currentTarget.style.backgroundColor = 'transparent';
-                                  e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.1)';
-                                }
-                              }}
-                            >
-                              <Image
-                                src="/images/shared/icons/delete-icon.svg"
-                                alt="Delete"
-                                width={16}
-                                height={16}
-                              />
-                            </button>
+
+                            {/* DEACTIVATE / REACTIVATE Button (status-based) */}
+                            {admin.status === 'active' ? (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDeactivate(admin);
+                                }}
+                                title="Deactivate admin"
+                                disabled={processing}
+                                style={{
+                                  width: '36px',
+                                  height: '36px',
+                                  borderRadius: '8px',
+                                  border: '1px solid rgba(0, 0, 0, 0.05)',
+                                  backgroundColor: '#FFFFFF',
+                                  cursor: processing ? 'not-allowed' : 'pointer',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  transition: 'all 0.2s ease',
+                                  padding: '0',
+                                  opacity: processing ? 0.5 : 1
+                                }}
+                                onMouseEnter={(e) => {
+                                  if (!processing) {
+                                    e.currentTarget.style.backgroundColor = '#F59E0B';
+                                    e.currentTarget.style.borderColor = '#F59E0B';
+                                    e.currentTarget.style.transform = 'translateY(-2px)';
+                                  }
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.backgroundColor = '#FFFFFF';
+                                  e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.05)';
+                                  e.currentTarget.style.transform = 'translateY(0px)';
+                                }}
+                              >
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2">
+                                  <rect x="6" y="4" width="4" height="16"/>
+                                  <rect x="14" y="4" width="4" height="16"/>
+                                </svg>
+                              </button>
+                            ) : (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleReactivate(admin);
+                                }}
+                                title="Reactivate admin"
+                                disabled={processing}
+                                style={{
+                                  width: '36px',
+                                  height: '36px',
+                                  borderRadius: '8px',
+                                  border: '1px solid rgba(0, 0, 0, 0.05)',
+                                  backgroundColor: '#FFFFFF',
+                                  cursor: processing ? 'not-allowed' : 'pointer',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  transition: 'all 0.2s ease',
+                                  padding: '0',
+                                  opacity: processing ? 0.5 : 1
+                                }}
+                                onMouseEnter={(e) => {
+                                  if (!processing) {
+                                    e.currentTarget.style.backgroundColor = '#22C55E';
+                                    e.currentTarget.style.borderColor = '#22C55E';
+                                    e.currentTarget.style.transform = 'translateY(-2px)';
+                                  }
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.backgroundColor = '#FFFFFF';
+                                  e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.05)';
+                                  e.currentTarget.style.transform = 'translateY(0px)';
+                                }}
+                              >
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2">
+                                  <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+                                  <path d="M21 3v5h-5"/>
+                                </svg>
+                              </button>
+                            )}
                           </div>
                         </td>
                       </tr>
@@ -1204,6 +1354,83 @@ export const AdminManagement: React.FC = () => {
         isOpen={showCreateModal}
         onClose={() => setShowCreateModal(false)}
         onUserCreated={loadData}
+      />
+
+      {/* Status Change Modal (Professional - replaces delete) */}
+      <StatusChangeModal
+        isOpen={statusModal.isOpen}
+        onClose={() => setStatusModal({
+          ...statusModal,
+          isOpen: false
+        })}
+        onConfirm={confirmStatusChange}
+        action={statusModal.action}
+        resourceType="admin"
+        resourceName={statusModal.itemName}
+        currentStatus={statusModal.currentStatus}
+        isProcessing={processing}
+      />
+
+      {/* View Details Modal (Professional detailed view) */}
+      <ViewDetailsModal
+        isOpen={viewModal.isOpen}
+        onClose={() => setViewModal({ isOpen: false, data: null })}
+        title={viewModal.data?.displayName || viewModal.data?.email || 'Admin Details'}
+        subtitle={viewModal.data?.email}
+        badge={{
+          text: viewModal.data?.status === 'active' ? 'Active' : 'Inactive',
+          color: viewModal.data?.status === 'active' ? '#22C55E' : '#EF4444',
+          bgColor: viewModal.data?.status === 'active' ? '#D1FAE5' : '#FEE2E2'
+        }}
+        sections={[
+          {
+            title: 'Basic Information',
+            icon: (
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3BB77E" strokeWidth="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+            ),
+            fields: [
+              { label: 'Full Name', value: viewModal.data?.displayName || '—' },
+              { label: 'Email', value: viewModal.data?.email || '—' },
+              { label: 'User ID', value: viewModal.data?.userId || '—', fullWidth: true },
+              { label: 'Status', value: viewModal.data?.status || 'Unknown', highlight: true },
+              { label: 'Role', value: viewModal.data?.role || 'admin' }
+            ]
+          },
+          {
+            title: 'Account Details',
+            icon: (
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3BB77E" strokeWidth="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+            ),
+            fields: [
+              {
+                label: 'Created At',
+                value: viewModal.data?.createdAt ? new Date(viewModal.data.createdAt).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit'
+                }) : '—'
+              },
+              {
+                label: 'Last Login',
+                value: viewModal.data?.lastLoginAt ? new Date(viewModal.data.lastLoginAt).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit'
+                }) : 'Never'
+              }
+            ]
+          }
+        ]}
       />
     </div>
   );

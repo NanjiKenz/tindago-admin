@@ -1,15 +1,8 @@
 import { NextResponse } from 'next/server';
+import { fetchFirebase } from '@/lib/fetchFirebase';
 
 
 
-// Helper function to fetch from Firebase REST API
-async function fetchFirebase(path: string) {
-  const dbUrl = process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL;
-  const url = `${dbUrl}/${path}.json`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error('Failed to fetch from Firebase');
-  return res.json();
-}
 
 export async function GET() {
   try {
@@ -34,7 +27,7 @@ export async function GET() {
     console.error('Error fetching stores:', error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Failed to fetch stores' },
-      { status: 500 }
+      { status: 200 }
     );
   }
 }

@@ -172,8 +172,8 @@ export class UserManagementService {
     userType: 'admin' | 'customer' | 'store_owner'
   ): Promise<void> {
     try {
-      const tableName = userType === 'admin' ? 'admins' :
-                       userType === 'customer' ? 'users' : 'store_owners';
+      // Admins are in 'admins' collection, customers and store owners are both in 'users' collection
+      const tableName = userType === 'admin' ? 'admins' : 'users';
 
       const userRef = ref(database, `${tableName}/${userId}`);
 
@@ -182,10 +182,14 @@ export class UserManagementService {
         statusUpdatedAt: new Date().toISOString()
       });
 
-      console.log(`User ${userId} status updated to: ${status}`);
+      console.log(`✅ User ${userId} (${userType}) status updated to: ${status}`);
     } catch (error) {
-      console.error('Error updating user status:', error);
-      throw error;
+      console.error(`❌ Error updating user status for ${userId}:`, error);
+      // Ensure we throw a proper Error object with a descriptive message
+      if (error instanceof Error) {
+        throw new Error(`Failed to update status: ${error.message}`);
+      }
+      throw new Error('Failed to update user status');
     }
   }
 
@@ -219,8 +223,8 @@ export class UserManagementService {
     userType: 'admin' | 'customer' | 'store_owner'
   ): Promise<void> {
     try {
-      const tableName = userType === 'admin' ? 'admins' :
-                       userType === 'customer' ? 'users' : 'store_owners';
+      // Admins are in 'admins' collection, customers and store owners are both in 'users' collection
+      const tableName = userType === 'admin' ? 'admins' : 'users';
 
       const userRef = ref(database, `${tableName}/${userId}`);
 
@@ -242,10 +246,14 @@ export class UserManagementService {
         ]);
       }
 
-      console.log(`User ${userId} deleted successfully`);
+      console.log(`✅ User ${userId} (${userType}) deleted successfully`);
     } catch (error) {
-      console.error('Error deleting user:', error);
-      throw error;
+      console.error(`❌ Error deleting user ${userId}:`, error);
+      // Ensure we throw a proper Error object
+      if (error instanceof Error) {
+        throw new Error(`Failed to delete user: ${error.message}`);
+      }
+      throw new Error('Failed to delete user');
     }
   }
 
