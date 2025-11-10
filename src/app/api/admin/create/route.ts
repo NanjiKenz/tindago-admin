@@ -12,7 +12,10 @@ import { NextResponse } from 'next/server';
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { email, password, displayName, role, status, permissions, phone, department, notes } = body;
+    const {
+      email, password, displayName, role, status, permissions,
+      phone, department, notes, dateOfBirth, country, city, postalCode
+    } = body;
 
     // Validate required fields
     if (!email || !password) {
@@ -65,16 +68,25 @@ export async function POST(request: Request) {
       );
     }
 
+    const now = new Date().toISOString();
+
     const adminData = {
       email,
       displayName: displayName || '',
       role: role || 'admin',
       status: status || 'active',
-      createdAt: new Date().toISOString(),
+      createdAt: now,
       permissions: permissions || [],
       phone: phone || '',
       department: department || '',
       notes: notes || '',
+      dateOfBirth: dateOfBirth || '',
+      country: country || '',
+      city: city || '',
+      postalCode: postalCode || '',
+      lastLogin: null,
+      lastLoginAt: null,
+      statusUpdatedAt: now
     };
 
     // Save admin data
@@ -92,6 +104,31 @@ export async function POST(request: Request) {
       );
     }
 
+    // CRITICAL FIX: Also create entry in users/{userId} collection
+    // This enables the email JOIN in AdminManagement table
+    const userData = {
+      email,
+      name: displayName || '',
+      role: role || 'admin',
+      createdAt: now,
+      dateOfBirth: dateOfBirth || '',
+      country: country || '',
+      city: city || '',
+      postalCode: postalCode || '',
+      phone: phone || ''
+    };
+
+    const userUrl = `${databaseURL}/users/${userId}.json`;
+    const userResponse = await fetch(userUrl, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(userData),
+    });
+
+    if (!userResponse.ok) {
+      console.error('Warning: Failed to create user record, but admin record exists');
+    }
+
     // Create role entry
     const roleUrl = `${databaseURL}/roles/${userId}.json`;
     await fetch(roleUrl, {
@@ -100,10 +137,16 @@ export async function POST(request: Request) {
       body: JSON.stringify('admin'),
     });
 
+    console.log(`✅ Admin user created successfully: ${userId}`);
+    console.log(`   - Firebase Auth: Created`);
+    console.log(`   - admins/${userId}: Created`);
+    console.log(`   - users/${userId}: Created`);
+    console.log(`   - roles/${userId}: Created`);
+
     return NextResponse.json({
       success: true,
       userId,
-      message: 'Admin user created successfully',
+      message: 'Admin user created successfully with complete database records',
     });
   } catch (error: any) {
     console.error('Error creating admin:', error);

@@ -78,7 +78,11 @@ export const UserCreateModal: React.FC<UserCreateModalProps> = ({
         password: formData.password,
         role: 'admin',
         status: 'active',
-        permissions: []
+        permissions: [],
+        dateOfBirth: formData.dateOfBirth,
+        country: formData.country,
+        city: formData.city,
+        postalCode: formData.postalCode
       });
 
       // Reset form

@@ -9,6 +9,7 @@
 
 import React from 'react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 interface QuickActionButton {
   title: string;
@@ -18,34 +19,53 @@ interface QuickActionButton {
 }
 
 export const QuickActions: React.FC = () => {
-  const handleAction = (actionName: string) => {
-    console.log(`${actionName} clicked`);
-    // Add actual functionality here
+  const router = useRouter();
+
+  const handleAddNewAdmin = () => {
+    // Navigate to Admin Management with action=add parameter
+    router.push('/admins?action=add');
+  };
+
+  const handleApproveStores = () => {
+    // Navigate to Store Management with view=pending parameter
+    // This triggers the pending approval cards view within Store Management
+    router.push('/stores?view=pending');
+  };
+
+  const handleGenerateReport = () => {
+    console.log('Generate Report clicked');
+    // TODO: Implement report generation
+  };
+
+  const handleSystemSettings = () => {
+    console.log('System Settings clicked');
+    // TODO: Navigate to settings page when created
+    // router.push('/settings');
   };
 
   const quickActions: QuickActionButton[] = [
     {
       title: 'Add New Admin',
       iconSrc: '/images/admin-dashboard/plus-icon.png',
-      onClick: () => handleAction('Add New Admin'),
+      onClick: handleAddNewAdmin,
       position: { x: 30.33, y: 60 }
     },
     {
       title: 'Generate Report',
       iconSrc: '/images/admin-dashboard/report-icon.png',
-      onClick: () => handleAction('Generate Report'),
+      onClick: handleGenerateReport,
       position: { x: 30.33, y: 180 }
     },
     {
       title: 'Approve Stores',
       iconSrc: '/images/admin-dashboard/shop-action-icon.png',
-      onClick: () => handleAction('Approve Stores'),
+      onClick: handleApproveStores,
       position: { x: 556.14, y: 60 }
     },
     {
       title: 'System Settings',
       iconSrc: '/images/admin-dashboard/settings-icon.png',
-      onClick: () => handleAction('System Settings'),
+      onClick: handleSystemSettings,
       position: { x: 556.14, y: 180 }
     }
   ];

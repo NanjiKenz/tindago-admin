@@ -146,7 +146,11 @@ export class UserManagementService {
           permissions: userData.permissions || [],
           phone: userData.phone,
           department: userData.department,
-          notes: userData.notes
+          notes: userData.notes,
+          dateOfBirth: (userData as any).dateOfBirth,
+          country: (userData as any).country,
+          city: (userData as any).city,
+          postalCode: (userData as any).postalCode
         }),
       });
 
