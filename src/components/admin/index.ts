@@ -21,6 +21,11 @@ export { RevenueChart } from './RevenueChart';
 export { TopProducts } from './TopProducts';
 export { UserActivity } from './UserActivity';
 
+// Report & Analytics components
+export { CommissionOverTime } from './CommissionOverTime';
+export { TopStoresByRevenue } from './TopStoresByRevenue';
+export { TransactionSummary } from './TransactionSummary';
+
 // User and customer management components
 export { UserManagement } from './UserManagement';
 export { UserCreateModal } from './UserCreateModal';

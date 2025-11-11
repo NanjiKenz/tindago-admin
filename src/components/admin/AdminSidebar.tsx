@@ -36,7 +36,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen, onClose, cur
         className={`fixed inset-y-0 left-0 z-50 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
-        style={{ width: '273px', height: '1024px' }}
+        style={{ width: '273px', minHeight: '100vh' }}
       >
         <div className="flex flex-col h-full relative overflow-hidden">
           {/* TindaGo Logo Section - Positioned as per Figma x:-48, y:-86 relative to parent */}

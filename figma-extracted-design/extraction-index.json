@@ -17,7 +17,16 @@
       "outputPath": "landing-page-585-1608",
       "folderName": "landing-page-585-1608",
       "assetCount": 6
+    },
+    {
+      "nodeId": "1337:3735",
+      "nodeName": "Report & Analytic",
+      "componentName": "ReportAnalytic",
+      "extractedAt": "2025-11-11T19:05:57.228Z",
+      "outputPath": "report-analytic-1337-3735",
+      "folderName": "report-analytic-1337-3735",
+      "assetCount": 26
     }
   ],
-  "lastUpdated": "2025-10-07T05:54:06.216Z"
+  "lastUpdated": "2025-11-11T19:05:57.228Z"
 }
