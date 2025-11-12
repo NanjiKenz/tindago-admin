@@ -56,6 +56,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen, onClose, cur
                 width={321}
                 height={321}
                 className="object-cover"
+                priority
               />
             </div>
           </div>

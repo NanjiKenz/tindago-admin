@@ -15,8 +15,11 @@ interface StoreData {
   gradient: string;
 }
 
-export const TopStoresByRevenue: React.FC = () => {
-  const [timeRange, setTimeRange] = useState('Last 7 days');
+interface TopStoresByRevenueProps {
+  timeRange?: string;
+}
+
+export const TopStoresByRevenue: React.FC<TopStoresByRevenueProps> = ({ timeRange = 'Last 7 days' }) => {
   const [transactions, setTransactions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -202,31 +205,19 @@ export const TopStoresByRevenue: React.FC = () => {
           </p>
         </div>
 
-        {/* Time Range Dropdown */}
-        <div className="relative">
-          <select
-            value={timeRange}
-            onChange={(e) => setTimeRange(e.target.value)}
-            className="appearance-none bg-white rounded-lg px-4 py-2 pr-10 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
-            style={{
-              fontFamily: 'Clash Grotesk Variable',
-              fontWeight: 500,
-              fontSize: '12px',
-              color: '#1E1E1E',
-              border: '1px solid rgba(0, 0, 0, 0.1)',
-              minWidth: '120px'
-            }}
-          >
-            <option value="Last 7 days">Last 7 days</option>
-            <option value="Last 14 days">Last 14 days</option>
-            <option value="Last 30 days">Last 30 days</option>
-            <option value="Last 90 days">Last 90 days</option>
-          </select>
-          <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-            <svg width="10" height="6" viewBox="0 0 10 6" fill="none">
-              <path d="M1 1L5 5L9 1" stroke="#1E1E1E" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </div>
+        {/* Time Range Display */}
+        <div
+          style={{
+            fontFamily: 'Clash Grotesk Variable',
+            fontWeight: 500,
+            fontSize: '12px',
+            color: 'rgba(30, 30, 30, 0.6)',
+            padding: '8px 12px',
+            backgroundColor: 'rgba(0, 0, 0, 0.03)',
+            borderRadius: '8px'
+          }}
+        >
+          {timeRange}
         </div>
       </div>
 

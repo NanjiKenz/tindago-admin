@@ -7,23 +7,103 @@
 
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 
-export const CommissionOverTime: React.FC = () => {
-  const [timeRange, setTimeRange] = useState('Last 7 days');
+interface CommissionOverTimeProps {
+  timeRange?: string;
+}
 
-  // Sample data for the bar chart (7 days)
-  const chartData = [
-    { day: 'Mon', value: 350, amount: '₱350' },
-    { day: 'Tue', value: 200, amount: '₱200' },
-    { day: 'Wed', value: 280, amount: '₱280' },
-    { day: 'Thu', value: 250, amount: '₱250' },
-    { day: 'Fri', value: 420, amount: '₱420' },
-    { day: 'Sat', value: 300, amount: '₱300' },
-    { day: 'Sun', value: 500, amount: '₱500' }
-  ];
+export const CommissionOverTime: React.FC<CommissionOverTimeProps> = ({ timeRange = 'Last 7 days' }) => {
+  const [transactions, setTransactions] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const maxValue = Math.max(...chartData.map(d => d.value));
+  // Load transactions from API
+  useEffect(() => {
+    const loadTransactions = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const res = await fetch('/api/admin/transactions', { cache: 'no-store' });
+        if (!res.ok) {
+          throw new Error('Failed to fetch transactions');
+        }
+        const data = await res.json();
+        console.log('[CommissionOverTime] Loaded transactions:', data.transactions?.length || 0);
+        console.log('[CommissionOverTime] Sample transaction:', data.transactions?.[0]);
+        setTransactions(data.transactions || []);
+        setLoading(false);
+      } catch (error) {
+        console.error('[CommissionOverTime] Error:', error);
+        setError('Failed to load data');
+        setLoading(false);
+      }
+    };
+
+    loadTransactions();
+  }, []);
+
+  // Calculate daily commission data based on time range
+  const chartData = useMemo(() => {
+    // Determine date range for filtering transactions
+    const now = new Date();
+    const cutoffDate = new Date();
+    const days = parseInt(timeRange.split(' ')[1]) || 7;
+    cutoffDate.setDate(now.getDate() - days);
+
+    // Filter paid/settled transactions within selected time range
+    const filteredTransactions = transactions.filter(t => {
+      const txDate = new Date(t.createdAt);
+      const isPaid = t.status === 'PAID' || t.status === 'SETTLED';
+      return isPaid && txDate >= cutoffDate;
+    });
+
+    console.log('[CommissionOverTime] Time Range:', timeRange);
+    console.log('[CommissionOverTime] Cutoff Date:', cutoffDate);
+    console.log('[CommissionOverTime] Total transactions:', transactions.length);
+    console.log('[CommissionOverTime] Filtered transactions:', filteredTransactions.length);
+    console.log('[CommissionOverTime] Sample filtered:', filteredTransactions[0]);
+
+    // Group by date and sum commissions
+    const dailyCommissions = new Map<string, number>();
+    filteredTransactions.forEach(t => {
+      const date = new Date(t.createdAt).toLocaleDateString('en-CA'); // YYYY-MM-DD
+      const commission = Number(t.commission || 0);
+      console.log('[CommissionOverTime] Transaction:', date, 'commission:', commission);
+      dailyCommissions.set(date, (dailyCommissions.get(date) || 0) + commission);
+    });
+
+    console.log('[CommissionOverTime] Daily commissions map:', Array.from(dailyCommissions.entries()));
+
+    // Always show current week (Sunday to Saturday)
+    const result = [];
+    const today = new Date();
+    const currentDay = today.getDay(); // 0 = Sunday, 6 = Saturday
+    
+    // Calculate the Sunday of current week
+    const sunday = new Date(today);
+    sunday.setDate(today.getDate() - currentDay);
+    
+    // Create 7 days (Sunday to Saturday)
+    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(sunday);
+      date.setDate(sunday.getDate() + i);
+      const dateStr = date.toLocaleDateString('en-CA');
+      const value = dailyCommissions.get(dateStr) || 0;
+      
+      result.push({
+        day: dayNames[i],
+        date: dateStr,
+        value: value,
+        amount: `₱${value.toFixed(2)}`
+      });
+    }
+
+    return result;
+  }, [transactions, timeRange]);
+
+  const maxValue = chartData.length > 0 ? Math.max(...chartData.map(d => d.value), 1) : 1;
 
   return (
     <div
@@ -66,36 +146,38 @@ export const CommissionOverTime: React.FC = () => {
           </p>
         </div>
 
-        {/* Time Range Dropdown */}
-        <div className="relative">
-          <select
-            value={timeRange}
-            onChange={(e) => setTimeRange(e.target.value)}
-            className="appearance-none bg-white rounded-lg px-4 py-2 pr-10 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
-            style={{
-              fontFamily: 'Clash Grotesk Variable',
-              fontWeight: 500,
-              fontSize: '12px',
-              color: '#1E1E1E',
-              border: '1px solid rgba(0, 0, 0, 0.1)',
-              minWidth: '120px'
-            }}
-          >
-            <option value="Last 7 days">Last 7 days</option>
-            <option value="Last 14 days">Last 14 days</option>
-            <option value="Last 30 days">Last 30 days</option>
-            <option value="Last 90 days">Last 90 days</option>
-          </select>
-          <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-            <svg width="10" height="6" viewBox="0 0 10 6" fill="none">
-              <path d="M1 1L5 5L9 1" stroke="#1E1E1E" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </div>
+        {/* Time Range Display */}
+        <div
+          style={{
+            fontFamily: 'Clash Grotesk Variable',
+            fontWeight: 500,
+            fontSize: '12px',
+            color: 'rgba(30, 30, 30, 0.6)',
+            padding: '8px 12px',
+            backgroundColor: 'rgba(0, 0, 0, 0.03)',
+            borderRadius: '8px'
+          }}
+        >
+          {timeRange}
         </div>
       </div>
 
       {/* Chart Area */}
       <div className="relative" style={{ height: '152px', marginTop: '20px' }}>
+        {loading ? (
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#64748B', fontFamily: 'Clash Grotesk Variable' }}>
+            Loading commission data...
+          </div>
+        ) : error ? (
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#EF4444', fontFamily: 'Clash Grotesk Variable' }}>
+            {error}
+          </div>
+        ) : chartData.length === 0 ? (
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#64748B', fontFamily: 'Clash Grotesk Variable' }}>
+            No commission data for this period
+          </div>
+        ) : (
+          <>
         <div className="flex items-end justify-between h-full gap-3 px-2">
           {chartData.map((item, index) => {
             const heightPercentage = (item.value / maxValue) * 100;
@@ -166,7 +248,11 @@ export const CommissionOverTime: React.FC = () => {
 
         {/* Y-axis labels */}
         <div className="absolute left-0 top-0 bottom-0 flex flex-col justify-between -ml-10">
-          {['₱500', '₱250', '₱0'].map((label, index) => (
+          {[
+            `₱${Math.round(maxValue).toLocaleString()}`,
+            `₱${Math.round(maxValue * 0.5).toLocaleString()}`,
+            '₱0'
+          ].map((label, index) => (
             <div
               key={index}
               style={{
@@ -181,6 +267,8 @@ export const CommissionOverTime: React.FC = () => {
             </div>
           ))}
         </div>
+        </>
+        )}
       </div>
     </div>
   );

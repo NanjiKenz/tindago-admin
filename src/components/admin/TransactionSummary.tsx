@@ -19,9 +19,14 @@ interface Transaction {
   paymentMethod: string;
   orders: number;
   sales: number;
+  createdAt: string;
 }
 
-export const TransactionSummary: React.FC = () => {
+interface TransactionSummaryProps {
+  timeRange?: string;
+}
+
+export const TransactionSummary: React.FC<TransactionSummaryProps> = ({ timeRange = 'Last 7 days' }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStore, setSelectedStore] = useState('all');
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('all');
@@ -50,7 +55,8 @@ export const TransactionSummary: React.FC = () => {
           status: (t.status === 'PAID' || t.status === 'SETTLED') ? 'Active' as const : 'Rejected' as const,
           paymentMethod: (t.method || 'online').toLowerCase(), // Normalize to lowercase
           orders: 1,
-          sales: t.amount || 0
+          sales: t.amount || 0,
+          createdAt: t.createdAt || new Date().toISOString()
         }));
         
         // Debug: Log unique payment methods
@@ -82,8 +88,27 @@ export const TransactionSummary: React.FC = () => {
 
   // Filter and group transactions by store
   const groupedStoreData = useMemo(() => {
+    // Calculate time range cutoff
+    const now = new Date();
+    const cutoffDate = new Date();
+    const days = parseInt(timeRange.split(' ')[1]) || 7; // Default to 7 days
+    cutoffDate.setDate(now.getDate() - days);
+
+    console.log('[TransactionSummary] Time Range:', timeRange);
+    console.log('[TransactionSummary] Days:', days);
+    console.log('[TransactionSummary] Cutoff Date:', cutoffDate);
+    console.log('[TransactionSummary] Total Transactions:', transactions.length);
+
     // First filter transactions
     const filtered = transactions.filter(t => {
+      // Time range filter
+      const txDate = new Date(t.createdAt);
+      const matchesTimeRange = txDate >= cutoffDate;
+      
+      if (!matchesTimeRange) {
+        console.log('[TransactionSummary] Filtered out (date):', t.store, txDate, 'cutoff:', cutoffDate);
+      }
+      
       // Search filter
       const matchesSearch = !searchQuery || 
         t.store.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -105,8 +130,11 @@ export const TransactionSummary: React.FC = () => {
         return false;
       })();
 
-      return matchesSearch && matchesStore && matchesPayment;
+      return matchesTimeRange && matchesSearch && matchesStore && matchesPayment;
     });
+
+    console.log('[TransactionSummary] Filtered Transactions:', filtered.length);
+    console.log('[TransactionSummary] Sample Filtered:', filtered.slice(0, 2));
 
     // Group by store and calculate totals
     const storeMap = new Map<string, {
@@ -147,7 +175,7 @@ export const TransactionSummary: React.FC = () => {
     // Convert to array and sort by latest date
     return Array.from(storeMap.values())
       .sort((a, b) => b.latestDate.localeCompare(a.latestDate));
-  }, [transactions, searchQuery, selectedStore, selectedPaymentMethod]);
+  }, [transactions, searchQuery, selectedStore, selectedPaymentMethod, timeRange]);
 
   return (
     <div
