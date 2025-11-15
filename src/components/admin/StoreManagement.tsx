@@ -374,8 +374,18 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
     });
   };
 
-  const handleEdit = (storeId: string) => {
-    router.push(`/stores/edit/${storeId}`);
+  const handleEdit = (store: Store) => {
+    // Route to status-specific detail page
+    const status = store.status;
+    if (status === 'active') {
+      router.push(`/stores/active/${store.storeId}?returnTo=storeManagement`);
+    } else if (status === 'pending') {
+      router.push(`/stores/pending/${store.storeId}?returnTo=storeManagement`);
+    } else if (status === 'rejected') {
+      router.push(`/stores/rejected/${store.storeId}?returnTo=storeManagement`);
+    } else if (status === 'suspended') {
+      router.push(`/stores/suspended/${store.storeId}?returnTo=storeManagement`);
+    }
   };
 
   const handleProfile = (storeId: string) => {
@@ -595,7 +605,7 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
         className="absolute w-full lg:px-5 px-4"
         style={{
           left: '0px',
-          top: '40px',
+          top: '0px',
           minHeight: '1200px'
         }}
       >
@@ -604,7 +614,7 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
           className="absolute"
           style={{
             left: '35px',
-            top: '0px',
+            top: '40px',
             width: 'calc(100% - 70px)',
             height: '80px',
             borderBottom: '1px solid rgba(0, 0, 0, 0.05)',
@@ -745,7 +755,7 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
             className="absolute"
             style={{
               left: '35px',
-              top: '120px',
+              top: '160px',
               width: '1095px',
               height: '150px'
             }}
@@ -1233,7 +1243,7 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
             className="absolute"
             style={{
               left: '35px',
-              top: '120px',
+              top: '160px',
               width: '1095px',
               minHeight: '600px'
             }}
@@ -1500,7 +1510,7 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
             className="absolute"
             style={{
               left: '35px',
-              top: '290px',
+              top: '330px',
               width: '1095px',
               height: '50px',
               display: 'flex',
@@ -1683,7 +1693,7 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
           className="absolute"
           style={{
             left: '35px',
-            top: '360px',
+            top: '400px',
             width: '1095px',
             minHeight: '600px',
             backgroundColor: '#FFFFFF',
@@ -1985,7 +1995,7 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
-                                handleEdit(store.storeId);
+                                handleEdit(store);
                               }}
                               style={{
                                 width: '40px',
@@ -2055,8 +2065,9 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
                                 }}
                               >
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                  <polyline points="3 6 5 6 21 6"/>
-                                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                  <circle cx="12" cy="12" r="10"/>
+                                  <line x1="10" y1="15" x2="10" y2="9"/>
+                                  <line x1="14" y1="15" x2="14" y2="9"/>
                                 </svg>
                               </button>
                             ) : (

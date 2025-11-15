@@ -301,8 +301,8 @@ export async function processRefund(invoiceId: string, storeId: string, reason: 
 }
 
 /**
- * Export transactions to CSV
- */
+| * Export transactions to CSV
+| */
 export function exportToCSV(transactions: Transaction[]): string {
   const headers = [
     'Transaction ID',
@@ -319,25 +319,53 @@ export function exportToCSV(transactions: Transaction[]): string {
     'Paid At',
   ];
 
+  // Helper to escape CSV values
+  const escapeCSV = (value: string | undefined | null): string => {
+    if (!value) return '';
+    const stringValue = String(value);
+    if (stringValue.includes(',') || stringValue.includes('"') || stringValue.includes('\n')) {
+      return '"' + stringValue.replace(/"/g, '""') + '"';
+    }
+    return stringValue;
+  };
+
+  // Format date - apostrophe prefix forces Excel to treat as text
+  const formatDate = (dateStr: string | undefined): string => {
+    if (!dateStr) return "'N/A";
+    try {
+      const date = new Date(dateStr);
+      if (isNaN(date.getTime())) return "'N/A";
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+      return `'${year}-${month}-${day} ${hours}:${minutes}`;
+    } catch {
+      return "'N/A";
+    }
+  };
+
   const rows = transactions.map(t => [
-    t.invoiceId,
-    t.orderNumber,
-    t.storeName,
-    t.storeId,
+    escapeCSV(t.invoiceId),
+    escapeCSV(t.orderNumber),
+    escapeCSV(t.storeName),
+    escapeCSV(t.storeId),
     t.amount.toFixed(2),
     t.commission.toFixed(2),
     `${(t.commissionRate * 100).toFixed(2)}%`,
     t.storeAmount.toFixed(2),
-    t.status,
-    t.method,
-    t.createdAt,
-    t.paidAt || 'N/A',
+    escapeCSV(t.status),
+    escapeCSV(t.method),
+    formatDate(t.createdAt),
+    formatDate(t.paidAt),
   ]);
 
+  // Start with BOM for proper Excel encoding
   const csv = [
-    headers.join(','),
+    '\uFEFF' + headers.join(','),
     ...rows.map(row => row.join(',')),
-  ].join('\n');
+  ].join('\r\n');
 
   return csv;
 }

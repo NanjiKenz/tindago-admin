@@ -393,37 +393,6 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen, onClose, cur
                         </span>
                       </div>
                     </a>
-
-                    {/* Diagnostics */}
-                    <a
-                      href="/diagnostics"
-                      className="w-full group flex items-center rounded-2xl transition-colors"
-                      style={{
-                        width: '220px',
-                        height: '40px',
-                        padding: '0 20px 0 10px',
-                        backgroundColor: currentPage === 'diagnostics' ? '#0077BE' : 'transparent'
-                      }}
-                    >
-                      <div className="flex items-center gap-2.5">
-                        <div style={{ width: '25px', height: '25px' }}>
-                          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: currentPage === 'diagnostics' ? '#FFFFFF' : '#1E1E1E' }}>
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M12 20c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8z" />
-                          </svg>
-                        </div>
-                        <span
-                          style={{
-                            fontFamily: 'Clash Grotesk Variable',
-                            fontWeight: 500,
-                            fontSize: '14px',
-                            lineHeight: '1.23em',
-                            color: currentPage === 'diagnostics' ? '#FFFFFF' : '#1E1E1E'
-                          }}
-                        >
-                          Diagnostics
-                        </span>
-                      </div>
-                    </a>
                   </div>
                 )}
               </div>

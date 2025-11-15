@@ -136,7 +136,7 @@ export const TransactionManagement: React.FC = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'PAID' | 'PENDING' | 'REFUNDED'>('all');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'PAID' | 'PENDING'>('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(10);
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
@@ -580,11 +580,96 @@ export const TransactionManagement: React.FC = () => {
               </div>
             </div>
 
+            {/* Total Commission Card */}
+            <div
+              className="absolute bg-white rounded-2xl"
+              style={{
+                left: '550px',
+                top: '0px',
+                width: '270px',
+                height: '150px',
+                boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
+                border: '1px solid rgba(0, 0, 0, 0.05)'
+              }}
+            >
+              <div className="relative w-full h-full">
+                <div
+                  className="absolute rounded-xl flex items-center justify-center"
+                  style={{
+                    right: '20px',
+                    top: '20px',
+                    width: '32px',
+                    height: '32px',
+                    backgroundColor: '#8B5CF6',
+                    color: '#FFFFFF',
+                    fontSize: '18px',
+                    fontWeight: 'bold',
+                    fontFamily: 'Clash Grotesk Variable'
+                  }}
+                >
+                  ₱
+                </div>
+                <div
+                  className="absolute"
+                  style={{
+                    left: '20px',
+                    top: '20px',
+                    width: '150px'
+                  }}
+                >
+                  <p
+                    style={{
+                      fontFamily: 'Clash Grotesk Variable',
+                      fontWeight: 500,
+                      fontSize: '14px',
+                      lineHeight: '1.2em',
+                      color: '#1E1E1E',
+                      marginBottom: '4px'
+                    }}
+                  >
+                    Commission
+                  </p>
+                </div>
+                <div
+                  className="absolute"
+                  style={{
+                    left: '20px',
+                    bottom: '20px'
+                  }}
+                >
+                  <p
+                    style={{
+                      fontFamily: 'Clash Grotesk Variable',
+                      fontWeight: 700,
+                      fontSize: '32px',
+                      lineHeight: '1.1em',
+                      color: '#1E1E1E',
+                      margin: 0
+                    }}
+                  >
+                    {stats.paid.toLocaleString()}
+                  </p>
+                  <p
+                    style={{
+                      fontFamily: 'Clash Grotesk Variable',
+                      fontWeight: 400,
+                      fontSize: '12px',
+                      color: 'rgba(30, 30, 30, 0.6)',
+                      margin: 0,
+                      marginTop: '4px'
+                    }}
+                  >
+                    {formatCurrency(stats.totalCommission)} commission
+                  </p>
+                </div>
+              </div>
+            </div>
+
             {/* Pending Transactions Card */}
             <div
               className="absolute bg-white rounded-2xl cursor-pointer transition-all duration-200 hover:shadow-lg hover:border-tindago-400"
               style={{
-                left: '550px',
+                left: '825px',
                 top: '0px',
                 width: '270px',
                 height: '150px',
@@ -666,93 +751,6 @@ export const TransactionManagement: React.FC = () => {
                 </div>
               </div>
             </div>
-
-            {/* Refunded Transactions Card */}
-            <div
-              className="absolute bg-white rounded-2xl cursor-pointer transition-all duration-200 hover:shadow-lg hover:border-tindago-400"
-              style={{
-                left: '825px',
-                top: '0px',
-                width: '270px',
-                height: '150px',
-                boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
-                border: '1px solid rgba(0, 0, 0, 0.05)'
-              }}
-              onClick={() => setStatusFilter('REFUNDED')}
-            >
-              <div className="relative w-full h-full">
-                <div
-                  className="absolute rounded-xl flex items-center justify-center"
-                  style={{
-                    right: '20px',
-                    top: '20px',
-                    width: '32px',
-                    height: '32px',
-                    backgroundColor: '#EF4444'
-                  }}
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                    <polyline points="1 4 1 10 7 10"/>
-                    <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
-                  </svg>
-                </div>
-                <div
-                  className="absolute"
-                  style={{
-                    left: '20px',
-                    top: '20px',
-                    width: '150px'
-                  }}
-                >
-                  <p
-                    style={{
-                      fontFamily: 'Clash Grotesk Variable',
-                      fontWeight: 500,
-                      fontSize: '14px',
-                      lineHeight: '1.2em',
-                      color: '#1E1E1E',
-                      marginBottom: '4px'
-                    }}
-                  >
-                    Refunded
-                  </p>
-                </div>
-                <div
-                  className="absolute"
-                  style={{
-                    left: '20px',
-                    bottom: '20px'
-                  }}
-                >
-                  <p
-                    style={{
-                      fontFamily: 'Clash Grotesk Variable',
-                      fontWeight: 700,
-                      fontSize: '32px',
-                      lineHeight: '1.1em',
-                      color: '#1E1E1E',
-                      margin: 0
-                    }}
-                  >
-                    {stats.refunded.toLocaleString()}
-                  </p>
-                  {/* Spacer for alignment with cards that have revenue */}
-                  <p
-                    style={{
-                      fontFamily: 'Clash Grotesk Variable',
-                      fontWeight: 400,
-                      fontSize: '12px',
-                      color: 'transparent',
-                      margin: 0,
-                      marginTop: '4px',
-                      userSelect: 'none'
-                    }}
-                  >
-                    &nbsp;
-                  </p>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -802,7 +800,7 @@ export const TransactionManagement: React.FC = () => {
 
             {/* Status Filter Badges */}
             <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-              {(['all', 'PAID', 'PENDING', 'REFUNDED'] as const).map((status) => {
+              {(['all', 'PAID', 'PENDING'] as const).map((status) => {
                 const isActive = statusFilter === status;
                 return (
                   <button
@@ -1285,10 +1283,44 @@ export const TransactionManagement: React.FC = () => {
               maxWidth: '600px',
               padding: '32px',
               maxHeight: '80vh',
-              overflowY: 'auto'
+              overflowY: 'auto',
+              position: 'relative'
             }}
             onClick={(e) => e.stopPropagation()}
           >
+            {/* Close X button in top right */}
+            <button
+              onClick={() => setSelectedTransaction(null)}
+              style={{
+                position: 'absolute',
+                top: '24px',
+                right: '24px',
+                width: '32px',
+                height: '32px',
+                borderRadius: '8px',
+                border: 'none',
+                backgroundColor: 'transparent',
+                color: '#6B7280',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '20px',
+                fontWeight: 400,
+                transition: 'all 0.2s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#F3F4F6';
+                e.currentTarget.style.color = '#1F2937';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent';
+                e.currentTarget.style.color = '#6B7280';
+              }}
+            >
+              ×
+            </button>
+
             <div style={{ marginBottom: '24px' }}>
               <h2 style={{
                 fontFamily: 'Clash Grotesk Variable',
@@ -1451,86 +1483,6 @@ export const TransactionManagement: React.FC = () => {
               )}
             </div>
 
-            <div style={{ marginTop: '24px', display: 'flex', gap: '12px' }}>
-              {selectedTransaction.status === 'PENDING' && (
-                <button
-                  onClick={() => setShowReplaceInvoice(true)}
-                  style={{
-                    flex: 1,
-                    padding: '12px 24px',
-                    borderRadius: '12px',
-                    border: '1px solid #3BB77E',
-                    backgroundColor: '#3BB77E',
-                    color: '#FFFFFF',
-                    cursor: 'pointer',
-                    fontFamily: 'Clash Grotesk Variable',
-                    fontWeight: 500,
-                    fontSize: '14px'
-                  }}
-                >
-                  Replace Invoice (Edit Fee)
-                </button>
-              )}
-
-              {(selectedTransaction.status === 'PAID' || selectedTransaction.status === 'SETTLED') && (
-                <button
-                  onClick={() => setShowAdjustment(true)}
-                  style={{
-                    flex: 1,
-                    padding: '12px 24px',
-                    borderRadius: '12px',
-                    border: '1px solid #3B82F6',
-                    backgroundColor: '#3B82F6',
-                    color: '#FFFFFF',
-                    cursor: 'pointer',
-                    fontFamily: 'Clash Grotesk Variable',
-                    fontWeight: 500,
-                    fontSize: '14px'
-                  }}
-                >
-                  Add Adjustment
-                </button>
-              )}
-
-              {(selectedTransaction.status === 'PAID' || selectedTransaction.status === 'SETTLED') && (
-                <button
-                  onClick={() => handleRefund(selectedTransaction)}
-                  disabled={refunding}
-                  style={{
-                    flex: 1,
-                    padding: '12px 24px',
-                    borderRadius: '12px',
-                    border: '1px solid #EF4444',
-                    backgroundColor: '#EF4444',
-                    color: '#FFFFFF',
-                    cursor: refunding ? 'not-allowed' : 'pointer',
-                    fontFamily: 'Clash Grotesk Variable',
-                    fontWeight: 500,
-                    fontSize: '14px',
-                    opacity: refunding ? 0.5 : 1
-                  }}
-                >
-                  {refunding ? 'Processing...' : 'Process Refund'}
-                </button>
-              )}
-              <button
-                onClick={() => setSelectedTransaction(null)}
-                style={{
-                  flex: 1,
-                  padding: '12px 24px',
-                  borderRadius: '12px',
-                  border: '1px solid rgba(0, 0, 0, 0.1)',
-                  backgroundColor: '#FFFFFF',
-                  color: '#1E1E1E',
-                  cursor: 'pointer',
-                  fontFamily: 'Clash Grotesk Variable',
-                  fontWeight: 500,
-                  fontSize: '14px'
-                }}
-              >
-                Close
-              </button>
-            </div>
           </div>
         </div>
       )}

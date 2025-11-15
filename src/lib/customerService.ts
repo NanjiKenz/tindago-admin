@@ -512,26 +512,52 @@ export class CustomerService {
         'Last Login'
       ];
 
-      const csvRows = [headers.join(',')];
+      // Start with BOM for proper Excel encoding
+      const csvRows = ['\uFEFF' + headers.join(',')];
+
+      // Helper to escape CSV values
+      const escapeCSV = (value: string | undefined | null): string => {
+        if (!value) return '';
+        const stringValue = String(value);
+        if (stringValue.includes(',') || stringValue.includes('"') || stringValue.includes('\n')) {
+          return '"' + stringValue.replace(/"/g, '""') + '"';
+        }
+        return stringValue;
+      };
+
+      // Format date - apostrophe prefix forces Excel to treat as text
+      const formatDate = (dateStr: string | undefined): string => {
+        if (!dateStr) return "'N/A";
+        try {
+          const date = new Date(dateStr);
+          if (isNaN(date.getTime())) return "'N/A";
+          const year = date.getFullYear();
+          const month = String(date.getMonth() + 1).padStart(2, '0');
+          const day = String(date.getDate()).padStart(2, '0');
+          return `'${year}-${month}-${day}`;
+        } catch {
+          return "'N/A";
+        }
+      };
 
       customers.forEach(customer => {
         const row = [
-          customer.userId,
-          `"${customer.displayName}"`,
-          customer.email,
-          customer.phone || '',
-          `"${customer.address || ''}"`,
-          customer.status,
-          customer.verificationStatus,
-          customer.totalOrders,
-          customer.totalSpent,
-          customer.createdAt,
-          customer.lastLoginAt || ''
+          escapeCSV(customer.userId),
+          escapeCSV(customer.displayName),
+          escapeCSV(customer.email),
+          escapeCSV(customer.phone),
+          escapeCSV(customer.address),
+          escapeCSV(customer.status),
+          escapeCSV(customer.verificationStatus),
+          customer.totalOrders || 0,
+          customer.totalSpent?.toFixed(2) || '0.00',
+          formatDate(customer.createdAt),
+          formatDate(customer.lastLoginAt)
         ];
         csvRows.push(row.join(','));
       });
 
-      return csvRows.join('\n');
+      return csvRows.join('\r\n');
     } catch (error) {
       console.error('Error exporting customers to CSV:', error);
       throw error;

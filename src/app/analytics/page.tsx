@@ -45,23 +45,57 @@ const AnalyticsPage: React.FC = () => {
         return txDate >= startDate && txDate <= endDate;
       });
 
-      // Prepare CSV data
+      // Helper to escape CSV values
+      const escapeCSV = (value: string | undefined | null): string => {
+        if (!value) return '';
+        const stringValue = String(value);
+        if (stringValue.includes(',') || stringValue.includes('"') || stringValue.includes('\n')) {
+          return '"' + stringValue.replace(/"/g, '""') + '"';
+        }
+        return stringValue;
+      };
+
+      // Helper to format date safely - use apostrophe prefix to force text in Excel
+      const formatDate = (dateStr: string | undefined): string => {
+        if (!dateStr) {
+          console.log('Date is empty/undefined');
+          return "'N/A";
+        }
+        try {
+          const date = new Date(dateStr);
+          if (isNaN(date.getTime())) {
+            console.log('Invalid date:', dateStr);
+            return "'Invalid";
+          }
+          const year = date.getFullYear();
+          const month = String(date.getMonth() + 1).padStart(2, '0');
+          const day = String(date.getDate()).padStart(2, '0');
+          // Apostrophe prefix forces Excel to treat as text
+          return `'${year}-${month}-${day}`;
+        } catch (e) {
+          console.log('Error formatting date:', dateStr, e);
+          return "'Error";
+        }
+      };
+
+      // Prepare CSV data with BOM
+      const headers = ['Invoice ID', 'Store Name', 'Amount', 'Commission', 'Store Amount', 'Payment Method', 'Status', 'Date'];
       const csvRows = [
-        ['Invoice ID', 'Store Name', 'Amount', 'Commission', 'Store Amount', 'Payment Method', 'Status', 'Date'].join(','),
+        '\uFEFF' + headers.join(','),
         ...filteredTransactions.map((t: any) => [
-          t.invoiceId,
-          `"${t.storeName}"`,
-          t.amount.toFixed(2),
-          t.commission.toFixed(2),
-          t.storeAmount.toFixed(2),
-          t.method,
-          t.status,
-          new Date(t.createdAt).toLocaleDateString('en-CA')
+          escapeCSV(t.invoiceId),
+          escapeCSV(t.storeName),
+          (t.amount || 0).toFixed(2),
+          (t.commission || 0).toFixed(2),
+          (t.storeAmount || 0).toFixed(2),
+          escapeCSV(t.method),
+          escapeCSV(t.status),
+          formatDate(t.createdAt)
         ].join(','))
       ];
 
       // Create and download CSV
-      const csvContent = csvRows.join('\n');
+      const csvContent = csvRows.join('\r\n');
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement('a');
       const url = URL.createObjectURL(blob);
@@ -122,8 +156,7 @@ const AnalyticsPage: React.FC = () => {
           style={{
             left: '0px',
             top: '80px',
-            minHeight: '944px',
-            paddingTop: '40px'
+            minHeight: '944px'
           }}
         >
           {/* Page Title Section - Standardized positioning */}
@@ -131,39 +164,42 @@ const AnalyticsPage: React.FC = () => {
             className="absolute"
             style={{
               left: '35px',
-              top: '0px',
+              top: '40px',
               width: 'calc(100% - 70px)',
-              height: 'auto',
+              height: '80px',
+              borderBottom: '1px solid rgba(0, 0, 0, 0.05)',
+              paddingBottom: '20px',
               marginBottom: '40px'
             }}
           >
-            <div>
-              <h1
-                style={{
-                  fontFamily: 'Clash Grotesk Variable',
-                  fontWeight: 500,
-                  fontSize: '48px',
-                  lineHeight: '1.2em',
-                  color: '#1E1E1E',
-                  marginBottom: '8px',
-                  margin: 0
-                }}
-              >
-                Report & Analytic
-              </h1>
-              <p
-                style={{
-                  fontFamily: 'Clash Grotesk Variable',
-                  fontWeight: 400,
-                  fontSize: '16px',
-                  color: 'rgba(30, 30, 30, 0.6)',
-                  margin: 0,
-                  marginTop: '8px',
-                  marginBottom: '32px'
-                }}
-              >
-                Comprehensive insights and data visualization for your TindaGo marketplace performance.
-              </p>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <div>
+                <h1
+                  style={{
+                    fontFamily: 'Clash Grotesk Variable',
+                    fontWeight: 500,
+                    fontSize: '48px',
+                    lineHeight: '1.2em',
+                    color: '#1E1E1E',
+                    marginBottom: '8px',
+                    margin: 0
+                  }}
+                >
+                  Report & Analytic
+                </h1>
+                <p
+                  style={{
+                    fontFamily: 'Clash Grotesk Variable',
+                    fontWeight: 400,
+                    fontSize: '16px',
+                    color: 'rgba(30, 30, 30, 0.6)',
+                    margin: 0,
+                    marginTop: '8px'
+                  }}
+                >
+                  Comprehensive insights and data visualization for your TindaGo marketplace performance.
+                </p>
+              </div>
             </div>
           </div>
 
@@ -172,7 +208,7 @@ const AnalyticsPage: React.FC = () => {
             className="absolute"
             style={{
               left: '35px',
-              top: '150px',
+              top: '120px',
               width: '1095px'
             }}
           >

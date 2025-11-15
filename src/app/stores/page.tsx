@@ -56,8 +56,7 @@ export default function StoresPage() {
           style={{
             left: '0px',
             top: '80px',
-            minHeight: '944px',
-            paddingTop: '40px'
+            minHeight: '944px'
           }}
         >
           <Suspense fallback={<div style={{ padding: '20px', fontFamily: 'Clash Grotesk Variable', color: '#1E1E1E' }}>Loading store management...</div>}>

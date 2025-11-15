@@ -59,8 +59,7 @@ const DashboardPage: React.FC = () => {
           style={{
             left: '0px',
             top: '80px',
-            minHeight: '944px',
-            paddingTop: '40px'
+            minHeight: '944px'
           }}
         >
           {/* Page Title Section - Standardized positioning */}
@@ -68,7 +67,7 @@ const DashboardPage: React.FC = () => {
             className="absolute"
             style={{
               left: '35px',
-              top: '0px',
+              top: '40px',
               width: 'calc(100% - 70px)',
               height: '80px',
               borderBottom: '1px solid rgba(0, 0, 0, 0.05)',
@@ -112,7 +111,7 @@ const DashboardPage: React.FC = () => {
             className="absolute"
             style={{
               left: '35px',
-              top: '120px',
+              top: '160px',
               width: '1095px',
               height: '150px'
             }}
@@ -125,7 +124,7 @@ const DashboardPage: React.FC = () => {
             className="absolute"
             style={{
               left: '40px',
-              top: '290px',
+              top: '330px',
               width: '620px',
               height: '300px'
             }}
@@ -138,7 +137,7 @@ const DashboardPage: React.FC = () => {
             className="absolute"
             style={{
               left: '680px',
-              top: '290px',
+              top: '330px',
               width: '447px',
               height: '300px'
             }}
@@ -151,7 +150,7 @@ const DashboardPage: React.FC = () => {
             className="absolute"
             style={{
               left: '40px',
-              top: '610px',
+              top: '650px',
               width: '1087px',
               height: '303px'
             }}

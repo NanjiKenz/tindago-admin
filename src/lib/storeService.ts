@@ -213,18 +213,20 @@ export class StoreService {
                           storeData.ownerPhone ||
                           '';
 
-        // Address: Priority order - businessInfo (address + city) > legacy address + city
+        // Address: Priority order - location.formattedAddress > businessInfo (address + city) > legacy address + city
+        const formattedAddress = storeData.location?.formattedAddress;
         const businessAddress = storeData.businessInfo?.address;
         const businessCity = storeData.businessInfo?.city;
         const legacyAddress = storeData.address || storeData.storeAddress;
         const legacyCity = storeData.city;
 
-        const address = businessAddress && businessCity
+        const address = formattedAddress ||
+                        (businessAddress && businessCity
                          ? `${businessAddress}, ${businessCity}`
                          : businessAddress ||
                            (legacyAddress && legacyCity
                              ? `${legacyAddress}, ${legacyCity}`
-                             : legacyAddress || legacyCity || storeData.location || storeData.businessAddress || '');
+                             : legacyAddress || legacyCity || storeData.businessAddress || ''));
 
         return {
           storeId,
@@ -391,18 +393,20 @@ export class StoreService {
                           registration.ownerPhone ||
                           '';
 
-        // Extract address - Priority: businessInfo (address + city) > legacy address + city
+        // Extract address - Priority: location.formattedAddress > businessInfo (address + city) > legacy address + city
+        const formattedAddress = registration.location?.formattedAddress;
         const businessAddress = registration.businessInfo?.address;
         const businessCity = registration.businessInfo?.city;
         const legacyAddress = registration.address || registration.storeAddress;
         const legacyCity = registration.city;
 
-        const address = businessAddress && businessCity
+        const address = formattedAddress ||
+                        (businessAddress && businessCity
                          ? `${businessAddress}, ${businessCity}`
                          : businessAddress ||
                            (legacyAddress && legacyCity
                              ? `${legacyAddress}, ${legacyCity}`
-                             : legacyAddress || legacyCity || '');
+                             : legacyAddress || legacyCity || ''));
 
         return {
           storeId: registration.userId,
@@ -456,18 +460,20 @@ export class StoreService {
                           registration.ownerPhone ||
                           '';
 
-        // Extract address - Priority: businessInfo (address + city) > legacy address + city
+        // Extract address - Priority: location.formattedAddress > businessInfo (address + city) > legacy address + city
+        const formattedAddress = registration.location?.formattedAddress;
         const businessAddress = registration.businessInfo?.address;
         const businessCity = registration.businessInfo?.city;
         const legacyAddress = registration.address || registration.storeAddress;
         const legacyCity = registration.city;
 
-        const address = businessAddress && businessCity
+        const address = formattedAddress ||
+                        (businessAddress && businessCity
                          ? `${businessAddress}, ${businessCity}`
                          : businessAddress ||
                            (legacyAddress && legacyCity
                              ? `${legacyAddress}, ${legacyCity}`
-                             : legacyAddress || legacyCity || '');
+                             : legacyAddress || legacyCity || ''));
 
         return {
           storeId: registration.userId,
@@ -792,29 +798,55 @@ export class StoreService {
         'Last Active'
       ];
 
-      const csvRows = [headers.join(',')];
+      // Start with BOM for proper Excel encoding
+      const csvRows = ['\uFEFF' + headers.join(',')];
+
+      // Helper to escape CSV values
+      const escapeCSV = (value: string | undefined | null): string => {
+        if (!value) return '';
+        const stringValue = String(value);
+        if (stringValue.includes(',') || stringValue.includes('"') || stringValue.includes('\n')) {
+          return '"' + stringValue.replace(/"/g, '""') + '"';
+        }
+        return stringValue;
+      };
+
+      // Format date - apostrophe prefix forces Excel to treat as text
+      const formatDate = (dateStr: string | undefined): string => {
+        if (!dateStr) return "'N/A";
+        try {
+          const date = new Date(dateStr);
+          if (isNaN(date.getTime())) return "'N/A";
+          const year = date.getFullYear();
+          const month = String(date.getMonth() + 1).padStart(2, '0');
+          const day = String(date.getDate()).padStart(2, '0');
+          return `'${year}-${month}-${day}`;
+        } catch {
+          return "'N/A";
+        }
+      };
 
       stores.forEach(store => {
         const row = [
-          store.storeId,
-          `"${store.storeName}"`,
-          `"${store.ownerName}"`,
-          store.ownerEmail,
-          store.ownerPhone || '',
-          `"${store.address}"`,
-          store.status,
-          store.businessVerification?.status || 'pending',
-          store.subscriptionStatus || 'free',
+          escapeCSV(store.storeId),
+          escapeCSV(store.storeName),
+          escapeCSV(store.ownerName),
+          escapeCSV(store.ownerEmail),
+          escapeCSV(store.ownerPhone),
+          escapeCSV(store.address),
+          escapeCSV(store.status),
+          escapeCSV(store.businessVerification?.status || 'pending'),
+          escapeCSV(store.subscriptionStatus || 'free'),
           store.performanceMetrics?.totalSales || 0,
           store.performanceMetrics?.totalOrders || 0,
           store.performanceMetrics?.rating || 0,
-          store.joinedDate,
-          store.lastActiveAt || ''
+          formatDate(store.joinedDate),
+          formatDate(store.lastActiveAt)
         ];
         csvRows.push(row.join(','));
       });
 
-      return csvRows.join('\n');
+      return csvRows.join('\r\n');
     } catch (error) {
       console.error('Error exporting stores to CSV:', error);
       throw error;
