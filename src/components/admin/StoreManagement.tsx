@@ -278,10 +278,10 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
     // Initial load
     loadCategoryData();
 
-    // Poll every 30 seconds for updates
+    // Poll every 5 minutes for updates (was 30 seconds - causing excessive reads)
     const interval = setInterval(() => {
       loadCategoryData();
-    }, 30000);
+    }, 300000);
 
     return () => {
       clearInterval(interval);

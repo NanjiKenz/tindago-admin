@@ -1,0 +1,132 @@
+{
+  "rules": {
+    ".read": true,
+    ".write": "auth != null",
+    
+    "users": {
+      ".indexOn": ["email", "role", "status"]
+    },
+    
+    "categories": {
+      ".indexOn": ["name", "status"]
+    },
+    
+    "orders": {
+      ".write": true,
+      ".indexOn": ["customerId", "storeOwnerId", "storeId", "status", "createdAt", "updatedAt", "orderNumber"]
+    },
+    
+    "products": {
+      ".indexOn": ["storeOwnerId", "storeId", "category", "categoryId", "status", "isBestSelling", "isPopular"]
+    },
+    
+    "stores": {
+      ".write": true,
+      "$storeId": {
+        "rating": {
+          ".write": "auth != null"
+        },
+        "totalReviews": {
+          ".write": "auth != null"
+        }
+      },
+      ".indexOn": ["status", "ownerId", "city", "isOpen"]
+    },
+    
+    "reviews": {
+      ".indexOn": ["storeId", "productId", "customerId", "userId", "orderId", "createdAt", "rating"]
+    },
+    
+    "carts": {
+      "$userId": {
+        ".indexOn": ["storeId", "updatedAt"]
+      }
+    },
+    
+    "walkInSales": {
+      ".indexOn": ["storeOwnerId", "storeId", "createdAt", "paymentMethod"]
+    },
+    
+    "damages": {
+      ".indexOn": ["storeOwnerId", "storeId", "createdAt", "productId"]
+    },
+    
+    "purchaseOrders": {
+      ".indexOn": ["storeOwnerId", "storeId", "status", "createdAt", "supplierId"]
+    },
+    
+    "returns": {
+      ".indexOn": ["storeOwnerId", "storeId", "customerId", "createdAt", "orderId", "status", "refundMethod"]
+    },
+    
+    "wallets": {
+      ".write": true,
+      "$storeId": {
+        ".indexOn": ["available", "pending", "lastUpdated"],
+        "transactions": {
+          ".write": true,
+          ".indexOn": ["timestamp", "type"]
+        }
+      }
+    },
+    
+    "ledgers": {
+      ".write": true,
+      "stores": {
+        ".write": true,
+        "$storeId": {
+          ".write": true,
+          "transactions": {
+            ".write": true,
+            ".indexOn": ["createdAt", "status"]
+          }
+        }
+      }
+    },
+    
+    "payout_requests": {
+      ".indexOn": ["storeId", "status", "requestedAt"]
+    },
+    
+    "notifications": {
+      ".indexOn": ["userId", "createdAt", "read", "type"]
+    },
+    
+    "settings": {
+      ".write": true
+    },
+    
+    "admins": {
+      ".write": true
+    },
+    
+    "roles": {
+      ".write": true
+    },
+    
+    "processed_webhooks": {
+      ".write": true
+    },
+    
+    "indexes": {
+      ".write": true
+    },
+    
+    "store_registrations": {
+      ".write": true,
+      ".indexOn": ["status", "createdAt", "userId"]
+    },
+    
+    "store_deletion_logs": {
+      ".write": true
+    },
+    
+    "store_status_logs": {
+      ".write": true
+    },
+    
+    "store_permanent_deletion_logs": {
+      ".write": true
+    }
+  }
+}

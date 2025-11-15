@@ -47,10 +47,25 @@ export async function POST(req: NextRequest) {
 
   if (storeId) {
     const ledgerRef = ref(database, `ledgers/stores/${storeId}/transactions/${invoiceId}`);
+    
+    // ✅ Normalize payment method: Use payment_channel (PAYMAYA/GCASH) if available, otherwise fall back
+    let paymentMethod = metadata.method || payload.payment_method;
+    if (payload.payment_channel) {
+      // Convert PAYMAYA → paymaya, GCASH → gcash
+      paymentMethod = payload.payment_channel.toLowerCase();
+    } else if (payload.ewallet_type) {
+      // Fallback: Use ewallet_type if payment_channel not available
+      paymentMethod = payload.ewallet_type.toLowerCase();
+    }
+    
     const updates: any = {
       status,
       paidAt: payload.paid_at || payload.updated || new Date().toISOString(),
-      method: payload.payment_method || metadata.method || undefined,
+      method: paymentMethod, // ✅ Now uses 'paymaya' or 'gcash' instead of 'EWALLET'
+      // ✅ Update customer info from webhook (if not already set)
+      customerName: metadata.customer_name || payload.payer_email?.split('@')[0] || undefined,
+      customerEmail: metadata.customer_email || payload.payer_email || undefined,
+      customerPhone: metadata.customer_phone || undefined,
     };
     await update(ledgerRef, updates);
 
@@ -107,17 +122,73 @@ export async function POST(req: NextRequest) {
       if (mapSnap.exists()) orderId = mapSnap.val().orderId;
     }
 
+    // ✅ Normalize payment method for order (same logic as ledger)
+    let paymentMethod = metadata.method || payload.payment_method;
+    if (payload.payment_channel) {
+      paymentMethod = payload.payment_channel.toLowerCase(); // PAYMAYA → paymaya, GCASH → gcash
+    } else if (payload.ewallet_type) {
+      paymentMethod = payload.ewallet_type.toLowerCase();
+    }
+
     // Compute paymentStatus from Xendit status
     let paymentStatus = 'pending';
     if (status === 'PAID' || status === 'SETTLED') paymentStatus = 'PAID';
     else if (status === 'REFUNDED') paymentStatus = 'REFUNDED';
     else if (status === 'EXPIRED' || status === 'VOIDED') paymentStatus = 'pending';
 
+    // Prepare order updates with normalized payment method
+    const orderUpdates: any = { 
+      paymentStatus, 
+      updatedAt: new Date().toISOString() 
+    };
+    // ✅ Only update paymentMethod if we have a valid normalized value
+    if (paymentMethod && paymentMethod !== 'EWALLET') {
+      orderUpdates.paymentMethod = paymentMethod;
+    }
+
     if (orderId) {
       const orderRef = ref(database, `orders/${orderId}`);
       const snap = await get(orderRef);
       if (snap.exists()) {
-        await update(orderRef, { paymentStatus, updatedAt: new Date().toISOString() });
+        await update(orderRef, orderUpdates);
+        
+        // ✅ Deduct stock when payment is confirmed (PAID or SETTLED)
+        if (status === 'PAID' || status === 'SETTLED') {
+          const orderData = snap.val();
+          if (orderData.items && Array.isArray(orderData.items)) {
+            console.log(`[📦 Inventory] Deducting stock for order ${orderId} with ${orderData.items.length} items`);
+            
+            for (const item of orderData.items) {
+              const productId = item.productId;
+              const orderedQty = item.quantity || 0;
+              
+              if (!productId || orderedQty <= 0) continue;
+              
+              try {
+                const productRef = ref(database, `products/${productId}`);
+                const productSnap = await get(productRef);
+                
+                if (productSnap.exists()) {
+                  const product = productSnap.val();
+                  const currentStock = product.quantity || 0;
+                  const newStock = Math.max(0, currentStock - orderedQty);
+                  
+                  await update(productRef, {
+                    quantity: newStock,
+                    status: newStock === 0 ? 'out_of_stock' : 'available',
+                    updatedAt: new Date().toISOString()
+                  });
+                  
+                  console.log(`[📦 Inventory] Product ${productId}: ${currentStock} → ${newStock} (ordered: ${orderedQty})`);
+                } else {
+                  console.warn(`[📦 Inventory] Product ${productId} not found, skipping stock deduction`);
+                }
+              } catch (stockErr: any) {
+                console.error(`[📦 Inventory] Error deducting stock for product ${productId}:`, stockErr?.message || stockErr);
+              }
+            }
+          }
+        }
       } else {
         console.warn('[Webhook] Order not found at orders/' + orderId + '; skipping orderId update');
       }
@@ -125,7 +196,7 @@ export async function POST(req: NextRequest) {
       const orderRef = ref(database, `orders/${orderNumber}`);
       const orderSnap = await get(orderRef);
       if (orderSnap.exists()) {
-        await update(orderRef, { paymentStatus, updatedAt: new Date().toISOString() });
+        await update(orderRef, orderUpdates);
       } else {
         // Fallback: legacy query by child (non-fatal if index missing)
         try {
@@ -134,7 +205,7 @@ export async function POST(req: NextRequest) {
           if (snap.exists()) {
             const orders = snap.val() as Record<string, any>;
             for (const oid of Object.keys(orders)) {
-              await update(ref(database, `orders/${oid}`), { paymentStatus, updatedAt: new Date().toISOString() });
+              await update(ref(database, `orders/${oid}`), orderUpdates);
             }
           } else {
             console.warn('[Webhook] Order not found at orders/' + orderNumber + ' and no query match; skipping order update');
