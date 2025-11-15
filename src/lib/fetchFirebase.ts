@@ -1,12 +1,20 @@
 /**
- * Shared Firebase REST API fetch utility with retry logic
+ * Shared Firebase REST API fetch utility with retry + a very small in-memory cache.
  *
  * This utility provides robust Firebase Realtime Database fetching with:
  * - Retry logic (3 attempts with exponential backoff)
  * - Timeout handling (15 seconds)
  * - Proper error logging
- * - Cache disabling
+ * - Cache disabling at the HTTP layer (next: { revalidate: 0 })
+ * - A short-lived in-process cache (to avoid hammering RTDB during bursts)
  */
+
+// Simple in-memory cache keyed by database path (per server instance)
+const firebaseCache = new Map<string, { data: any; timestamp: number }>();
+
+// How long to cache a successful response (in milliseconds).
+// Keep this small so admin changes still feel responsive.
+const CACHE_TTL_MS = 15_000; // 15 seconds
 
 /**
  * Fetch data from Firebase Realtime Database REST API
@@ -18,6 +26,13 @@
  */
 export async function fetchFirebase(path: string, retries = 3): Promise<any> {
   const dbUrl = process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL;
+
+  // Check short-lived cache first
+  const cached = firebaseCache.get(path);
+  if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
+    console.log(`🟢 Serving ${path} from in-memory cache`);
+    return cached.data;
+  }
 
   // Validate database URL
   if (!dbUrl) {
@@ -49,6 +64,9 @@ export async function fetchFirebase(path: string, retries = 3): Promise<any> {
 
       const data = await res.json();
       console.log(`✅ Successfully fetched: ${path}`);
+
+      // Update cache on successful fetch
+      firebaseCache.set(path, { data, timestamp: Date.now() });
       return data;
 
     } catch (error: any) {

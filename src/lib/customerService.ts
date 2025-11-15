@@ -469,22 +469,12 @@ export class CustomerService {
   static subscribeToCustomers(
     callback: (customers: CustomerUser[]) => void
   ): () => void {
-    const customersRef = ref(database, 'users');
+    // Single fetch instead of real-time subscription
+    this.getAllCustomers()
+      .then(callback)
+      .catch(error => console.error('Error in customer subscription:', error));
 
-    const updateCustomers = async () => {
-      try {
-        const customers = await this.getAllCustomers();
-        callback(customers);
-      } catch (error) {
-        console.error('Error in customer subscription:', error);
-      }
-    };
-
-    const unsubscribe = onValue(customersRef, updateCustomers);
-
-    return () => {
-      off(customersRef, 'value', unsubscribe);
-    };
+    return () => {};
   }
 
   /**
@@ -493,25 +483,12 @@ export class CustomerService {
   static subscribeToCustomerStats(
     callback: (stats: CustomerStats) => void
   ): () => void {
-    const customersRef = ref(database, 'users');
-    const ordersRef = ref(database, 'customer_orders');
+    // Single fetch instead of real-time subscription
+    this.getCustomerStats()
+      .then(callback)
+      .catch(error => console.error('Error in customer stats subscription:', error));
 
-    const updateStats = async () => {
-      try {
-        const stats = await this.getCustomerStats();
-        callback(stats);
-      } catch (error) {
-        console.error('Error in customer stats subscription:', error);
-      }
-    };
-
-    const unsubscribeCustomers = onValue(customersRef, updateStats);
-    const unsubscribeOrders = onValue(ordersRef, updateStats);
-
-    return () => {
-      off(customersRef, 'value', unsubscribeCustomers);
-      off(ordersRef, 'value', unsubscribeOrders);
-    };
+    return () => {};
   }
 
   /**

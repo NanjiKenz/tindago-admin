@@ -826,13 +826,21 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
                   <button
                     onClick={() => {
                       try {
-                        // Support both string (legacy) and object (new) format from React Native app
+                        // Support Cloudinary URL (new), legacy string, and object format
                         let uri: string | undefined;
 
-                        if (typeof doc.data === 'string') {
+                        // Priority 1: Check for Cloudinary URL (new - Phase 2)
+                        if (typeof doc.data === 'object' && doc.data && 'url' in doc.data) {
+                          uri = (doc.data as any).url?.trim();
+                          console.log('✅ [Cloudinary URL] Using Cloudinary URL from doc.data.url');
+                        }
+                        // Priority 2: Check for base64 URI (legacy)
+                        else if (typeof doc.data === 'string') {
                           uri = (doc.data as string).trim();
+                          console.log('✅ [Legacy String] Using base64 string');
                         } else if (typeof doc.data === 'object' && doc.data && 'uri' in doc.data) {
                           uri = (doc.data as any).uri?.trim();
+                          console.log('✅ [Legacy Object] Using base64 from doc.data.uri');
                         }
 
                         console.log(`🖼️ [View Document] Attempting to open ${doc.name}`);
@@ -851,13 +859,18 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
                         if (uri && uri.length > 0) {
                           let urlToOpen = uri;
 
+                          // Check if it's a Cloudinary URL (best performance)
+                          if (uri.startsWith('https://res.cloudinary.com/')) {
+                            console.log('✅ [Cloudinary] Cloudinary URL detected, opening directly...');
+                            // No conversion needed, Cloudinary URLs work directly
+                          }
                           // Check if it's a base64 data URL (needs conversion)
-                          if (uri.startsWith('data:')) {
+                          else if (uri.startsWith('data:')) {
                             console.log('🔄 [Converting] Base64 data URL detected, converting to Blob URL...');
                             urlToOpen = convertBase64ToBlob(uri);
                             console.log('✅ [Converted] Blob URL created:', urlToOpen);
                           } else if (uri.startsWith('http')) {
-                            console.log('✅ [Direct URL] Firebase Storage URL detected, opening directly...');
+                            console.log('✅ [Direct URL] Other storage URL detected, opening directly...');
                           }
 
                           console.log(`✅ Opening document in new tab...`);

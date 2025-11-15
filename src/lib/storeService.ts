@@ -746,25 +746,12 @@ export class StoreService {
   static subscribeToStores(
     callback: (stores: Store[]) => void
   ): () => void {
-    const storesRef = ref(database, 'stores');
-    const registrationsRef = ref(database, 'store_registrations');
+    // Single fetch instead of real-time subscription
+    this.getAllStoresWithRegistrations()
+      .then(callback)
+      .catch(error => console.error('Error in store subscription:', error));
 
-    const updateStores = async () => {
-      try {
-        const stores = await this.getAllStoresWithRegistrations();
-        callback(stores);
-      } catch (error) {
-        console.error('Error in store subscription:', error);
-      }
-    };
-
-    const storeUnsubscribe = onValue(storesRef, updateStores);
-    const registrationUnsubscribe = onValue(registrationsRef, updateStores);
-
-    return () => {
-      off(storesRef, 'value', storeUnsubscribe);
-      off(registrationsRef, 'value', registrationUnsubscribe);
-    };
+    return () => {};
   }
 
   /**
@@ -773,25 +760,12 @@ export class StoreService {
   static subscribeToStoreStats(
     callback: (stats: StoreStats) => void
   ): () => void {
-    const storesRef = ref(database, 'stores');
-    const ordersRef = ref(database, 'store_orders');
+    // Single fetch instead of real-time subscription
+    this.getStoreStats()
+      .then(callback)
+      .catch(error => console.error('Error in store stats subscription:', error));
 
-    const updateStats = async () => {
-      try {
-        const stats = await this.getStoreStats();
-        callback(stats);
-      } catch (error) {
-        console.error('Error in store stats subscription:', error);
-      }
-    };
-
-    const unsubscribeStores = onValue(storesRef, updateStats);
-    const unsubscribeOrders = onValue(ordersRef, updateStats);
-
-    return () => {
-      off(storesRef, 'value', unsubscribeStores);
-      off(ordersRef, 'value', unsubscribeOrders);
-    };
+    return () => {};
   }
 
   /**

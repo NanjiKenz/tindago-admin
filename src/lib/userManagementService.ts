@@ -337,25 +337,13 @@ export class UserManagementService {
   static subscribeToUsers(
     callback: (users: (AdminUser | CustomerUser | StoreOwnerUser)[]) => void
   ): () => void {
-    const adminsRef = ref(database, 'admins');
-    const usersRef = ref(database, 'users');
+    // Single fetch instead of real-time subscription
+    this.getAllUsers()
+      .then(callback)
+      .catch(error => console.error('Error in user subscription:', error));
 
-    const updateUsers = async () => {
-      try {
-        const users = await this.getAllUsers();
-        callback(users);
-      } catch (error) {
-        console.error('Error in user subscription:', error);
-      }
-    };
-
-    const adminUnsubscribe = onValue(adminsRef, updateUsers);
-    const usersUnsubscribe = onValue(usersRef, updateUsers);
-
-    return () => {
-      off(adminsRef, 'value', adminUnsubscribe);
-      off(usersRef, 'value', usersUnsubscribe);
-    };
+    // No-op unsubscribe so existing UI code still works
+    return () => {};
   }
 
   /**
@@ -409,28 +397,11 @@ export class UserManagementService {
   static subscribeToUserStats(
     callback: (stats: UserStats) => void
   ): () => void {
-    const updateStats = async () => {
-      try {
-        const stats = await this.getUserStats();
-        callback(stats);
-      } catch (error) {
-        console.error('Error in stats subscription:', error);
-      }
-    };
+    // Single fetch instead of real-time subscription
+    this.getUserStats()
+      .then(callback)
+      .catch(error => console.error('Error in stats subscription:', error));
 
-    // Subscribe to all user tables for stats updates
-    const adminsRef = ref(database, 'admins');
-    const usersRef = ref(database, 'users');
-    const ownersRef = ref(database, 'store_owners');
-
-    const adminUnsubscribe = onValue(adminsRef, updateStats);
-    const usersUnsubscribe = onValue(usersRef, updateStats);
-    const ownersUnsubscribe = onValue(ownersRef, updateStats);
-
-    return () => {
-      off(adminsRef, 'value', adminUnsubscribe);
-      off(usersRef, 'value', usersUnsubscribe);
-      off(ownersRef, 'value', ownersUnsubscribe);
-    };
+    return () => {};
   }
 }

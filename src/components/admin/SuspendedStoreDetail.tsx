@@ -786,16 +786,26 @@ export const SuspendedStoreDetail: React.FC<SuspendedStoreDetailProps> = ({
                     try {
                       let uri: string | undefined;
 
-                      if (typeof doc.data === 'string') {
-                        uri = (doc.data as string).trim();
-                      } else if (typeof doc.data === 'object' && doc.data && 'uri' in doc.data) {
+                      // Priority 1: Check for Cloudinary URL (doc.data.url)
+                      if (typeof doc.data === 'object' && doc.data && 'url' in doc.data) {
+                        const docData = doc.data as { url?: string };
+                        uri = docData.url?.trim();
+                      }
+                      // Priority 2: Fallback to base64 (doc.data.uri)
+                      else if (typeof doc.data === 'object' && doc.data && 'uri' in doc.data) {
                         const docData = doc.data as { uri?: string };
                         uri = docData.uri?.trim();
+                      }
+                      // Priority 3: Legacy string format
+                      else if (typeof doc.data === 'string') {
+                        uri = (doc.data as string).trim();
                       }
 
                       if (uri && uri.length > 0) {
                         let urlToOpen = uri;
 
+                        // Only convert to blob if it's base64 data
+                        // Cloudinary URLs (http/https) open directly
                         if (uri.startsWith('data:')) {
                           urlToOpen = convertBase64ToBlob(uri);
                         }

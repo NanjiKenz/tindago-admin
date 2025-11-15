@@ -685,18 +685,34 @@ export const ActiveStoreDetail: React.FC<ActiveStoreDetailProps> = ({
                 <button
                   onClick={() => {
                     try {
+                      // Support Cloudinary URL (new), legacy string, and object format
                       let uri: string | undefined;
 
-                      if (typeof doc.data === 'string') {
+                      // Priority 1: Check for Cloudinary URL (new - Phase 2)
+                      if (typeof doc.data === 'object' && doc.data && 'url' in doc.data) {
+                        uri = (doc.data as any).url?.trim();
+                        console.log('✅ [Cloudinary URL] Using Cloudinary URL from doc.data.url');
+                      }
+                      // Priority 2: Check for base64 URI (legacy)
+                      else if (typeof doc.data === 'string') {
                         uri = (doc.data as string).trim();
+                        console.log('✅ [Legacy String] Using base64 string');
                       } else if (typeof doc.data === 'object' && doc.data && 'uri' in doc.data) {
                         uri = (doc.data as any).uri?.trim();
+                        console.log('✅ [Legacy Object] Using base64 from doc.data.uri');
                       }
 
                       if (uri && uri.length > 0) {
                         let urlToOpen = uri;
 
-                        if (uri.startsWith('data:')) {
+                        // Check if it's a Cloudinary URL (best performance)
+                        if (uri.startsWith('https://res.cloudinary.com/')) {
+                          console.log('✅ [Cloudinary] Cloudinary URL detected, opening directly...');
+                          // No conversion needed
+                        }
+                        // Check if it's a base64 data URL (needs conversion)
+                        else if (uri.startsWith('data:')) {
+                          console.log('🔄 [Converting] Base64 data URL detected, converting to Blob URL...');
                           urlToOpen = convertBase64ToBlob(uri);
                         }
 
