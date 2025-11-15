@@ -103,8 +103,9 @@ export const PayoutManagement: React.FC = () => {
 
     loadPayouts();
 
-    // Refresh every 30 seconds
-    const interval = setInterval(loadPayouts, 30000);
+    // Refresh every 5 minutes (300000ms) to reduce Firebase reads
+    // Manual refresh available via UI if needed
+    const interval = setInterval(loadPayouts, 300000);
     return () => clearInterval(interval);
   }, []);
 

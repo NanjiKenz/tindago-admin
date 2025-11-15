@@ -190,8 +190,8 @@ export const TransactionManagement: React.FC = () => {
 
     loadTransactions();
 
-    // Refresh every 30 seconds
-    const interval = setInterval(loadTransactions, 30000);
+    // Refresh every 5 minutes (was 30 seconds - causing excessive reads)
+    const interval = setInterval(loadTransactions, 300000);
     return () => clearInterval(interval);
   }, []);
 

@@ -78,6 +78,10 @@ export async function POST(req: NextRequest) {
         commission,
         commission_rate: commissionRate,
         store_amount: storeAmount,
+        // ✅ Add customer info to metadata for webhook
+        customer_name: customer.name,
+        customer_email: customer.email,
+        customer_phone: customer.phone || '',
       },
     });
 
@@ -99,6 +103,11 @@ export async function POST(req: NextRequest) {
       invoiceUrl: data.invoice_url,
       expiryDate: data.expiry_date,
       storeName: store.name,
+      // ✅ Add customer information
+      customerId: orderId ? undefined : customer.email.split('@')[0], // Fallback if no orderId
+      customerName: customer.name,
+      customerEmail: customer.email,
+      customerPhone: customer.phone || '',
     });
 
     // Helpful secondary indexes

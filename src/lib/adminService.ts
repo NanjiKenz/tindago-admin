@@ -261,26 +261,34 @@ export class AdminService {
     }
   }
 
+  /**
+   * Subscribe to registrations with polling instead of a real-time listener
+   * OPTIMIZED: Uses periodic fetch to reduce Firebase bandwidth costs
+   */
   static subscribeToRegistrations(callback: (registrations: StoreRegistration[]) => void): () => void {
-    const registrationsRef = ref(database, 'store_registrations');
+    let intervalId: NodeJS.Timeout;
 
-    const unsubscribe = onValue(registrationsRef, (snapshot) => {
-      if (snapshot.exists()) {
-        const data = snapshot.val();
-        const registrations = Object.keys(data)
-          .map(userId => ({
-            userId,
-            ...data[userId]
-          }))
-          .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-
+    const fetchRegistrations = async () => {
+      try {
+        const registrations = await this.getAllStoreRegistrations();
         callback(registrations);
-      } else {
-        callback([]);
+      } catch (error) {
+        console.error('Error fetching registrations:', error);
       }
-    });
+    };
 
-    return () => off(registrationsRef, 'value', unsubscribe);
+    // Initial fetch
+    fetchRegistrations();
+
+    // Poll every 30 seconds
+    intervalId = setInterval(fetchRegistrations, 30000);
+
+    // Return cleanup function
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
   }
 
   static async reReviewStoreRegistration(userId: string): Promise<void> {
