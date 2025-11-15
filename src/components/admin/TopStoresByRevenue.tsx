@@ -19,7 +19,7 @@ interface TopStoresByRevenueProps {
   timeRange?: string;
 }
 
-export const TopStoresByRevenue: React.FC<TopStoresByRevenueProps> = ({ timeRange = 'Last 7 days' }) => {
+export const TopStoresByRevenue: React.FC<TopStoresByRevenueProps> = ({ timeRange = new Date().toLocaleString('en-US', { month: 'long' }) }) => {
   const [transactions, setTransactions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -55,31 +55,19 @@ export const TopStoresByRevenue: React.FC<TopStoresByRevenueProps> = ({ timeRang
 
   // Calculate stores data based on time range
   const storesData = useMemo(() => {
-    // Determine date cutoff based on selected time range
-    const now = new Date();
-    const cutoffDate = new Date();
-    switch (timeRange) {
-      case 'Last 7 days':
-        cutoffDate.setDate(now.getDate() - 7);
-        break;
-      case 'Last 14 days':
-        cutoffDate.setDate(now.getDate() - 14);
-        break;
-      case 'Last 30 days':
-        cutoffDate.setDate(now.getDate() - 30);
-        break;
-      case 'Last 90 days':
-        cutoffDate.setDate(now.getDate() - 90);
-        break;
-      default:
-        cutoffDate.setDate(now.getDate() - 7);
-    }
+    // Parse the selected month (e.g., "January") - assume current year
+    const monthIndex = new Date(Date.parse(timeRange + ' 1, 2025')).getMonth();
+    const year = new Date().getFullYear();
+    
+    // Get start and end dates for the selected month
+    const startDate = new Date(year, monthIndex, 1);
+    const endDate = new Date(year, monthIndex + 1, 0, 23, 59, 59);
 
     // Filter transactions by time range and status (PAID/SETTLED only)
     const filteredTransactions = transactions.filter(t => {
       const txDate = new Date(t.createdAt);
       const isPaid = t.status === 'PAID' || t.status === 'SETTLED';
-      return isPaid && txDate >= cutoffDate;
+      return isPaid && txDate >= startDate && txDate <= endDate;
     });
 
     // Calculate revenue per store (same logic as Sales table)
@@ -201,7 +189,7 @@ export const TopStoresByRevenue: React.FC<TopStoresByRevenueProps> = ({ timeRang
               marginTop: '4px'
             }}
           >
-            Best performing stores this month
+            Best performing stores in selected period
           </p>
         </div>
 

@@ -417,12 +417,14 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
 
     try {
       setProcessing(true);
-      let newStatus: 'active' | 'inactive' | 'suspended' = 'inactive';
+      let newStatus: 'active' | 'pending' | 'rejected' | 'suspended' = 'rejected';
 
       if (statusModal.action === 'reactivate') {
         newStatus = 'active';
       } else if (statusModal.action === 'suspend') {
         newStatus = 'suspended';
+      } else {
+        newStatus = 'rejected';
       }
 
       await StoreService.updateStoreStatus(statusModal.itemId, newStatus);
@@ -2208,29 +2210,71 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
         onClose={() => setStatusModal({ ...statusModal, isOpen: false })}
         onConfirm={confirmStatusChange}
         action={statusModal.action}
-        itemName={statusModal.itemName}
-        itemType="store"
+        resourceName={statusModal.itemName}
+        resourceType="store"
         currentStatus={statusModal.currentStatus}
       />
 
       <ViewDetailsModal
         isOpen={viewModal.isOpen}
         onClose={() => setViewModal({ isOpen: false, data: null })}
-        title="Store Details"
-        data={viewModal.data ? {
-          'Store ID': viewModal.data.storeId,
-          'Store Name': viewModal.data.storeName,
-          'Owner': viewModal.data.ownerName,
-          'Email': viewModal.data.ownerEmail || 'N/A',
-          'Phone': viewModal.data.ownerPhone || 'N/A',
-          'Address': viewModal.data.address || 'N/A',
-          'Status': viewModal.data.status || 'N/A',
-          'Total Sales': `₱${viewModal.data.totalSales?.toFixed(2) || '0.00'}`,
-          'Products': viewModal.data.productCount?.toString() || '0',
-          'Orders': viewModal.data.orderCount?.toString() || '0',
-          'Rating': viewModal.data.rating ? `${viewModal.data.rating.toFixed(1)} ⭐` : 'N/A',
-          'Joined': viewModal.data.joinedDate ? new Date(viewModal.data.joinedDate).toLocaleDateString() : 'N/A'
-        } : {}}
+        title={viewModal.data?.storeName || 'Store Details'}
+        subtitle={viewModal.data?.ownerEmail}
+        badge={{
+          text: viewModal.data?.status === 'active' ? 'Active' : viewModal.data?.status === 'suspended' ? 'Suspended' : viewModal.data?.status === 'rejected' ? 'Rejected' : 'Pending',
+          color: viewModal.data?.status === 'active' ? '#22C55E' : viewModal.data?.status === 'suspended' ? '#F97316' : viewModal.data?.status === 'rejected' ? '#EF4444' : '#EAB308',
+          bgColor: viewModal.data?.status === 'active' ? '#D1FAE5' : viewModal.data?.status === 'suspended' ? '#FFEDD5' : viewModal.data?.status === 'rejected' ? '#FEE2E2' : '#FEF3C7'
+        }}
+        sections={[
+          {
+            title: 'Basic Information',
+            icon: (
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3BB77E" strokeWidth="2">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                <polyline points="9 22 9 12 15 12 15 22"/>
+              </svg>
+            ),
+            fields: [
+              { label: 'Store ID', value: viewModal.data?.storeId || '—', fullWidth: true },
+              { label: 'Store Name', value: viewModal.data?.storeName || '—' },
+              { label: 'Owner', value: viewModal.data?.ownerName || '—' },
+              { label: 'Email', value: viewModal.data?.ownerEmail || '—' },
+              { label: 'Phone', value: viewModal.data?.ownerPhone || '—' },
+              { label: 'Address', value: viewModal.data?.address || '—', fullWidth: true },
+              { label: 'Category', value: viewModal.data?.storeCategory || '—' }
+            ]
+          },
+          {
+            title: 'Status & Subscription',
+            icon: (
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0077BE" strokeWidth="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+            ),
+            fields: [
+              { label: 'Status', value: viewModal.data?.status || 'Unknown', highlight: true },
+              { label: 'Subscription', value: viewModal.data?.subscriptionStatus || 'Free' },
+              { label: 'Verification', value: viewModal.data?.businessVerification?.status || 'Pending' },
+              { label: 'Joined', value: viewModal.data?.joinedDate ? new Date(viewModal.data.joinedDate).toLocaleDateString() : 'N/A' }
+            ]
+          },
+          {
+            title: 'Performance Metrics',
+            icon: (
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#EAB308" strokeWidth="2">
+                <line x1="12" y1="20" x2="12" y2="10"/>
+                <line x1="18" y1="20" x2="18" y2="4"/>
+                <line x1="6" y1="20" x2="6" y2="16"/>
+              </svg>
+            ),
+            fields: [
+              { label: 'Total Sales', value: `₱${viewModal.data?.performanceMetrics?.totalSales?.toFixed(2) || '0.00'}` },
+              { label: 'Total Orders', value: viewModal.data?.performanceMetrics?.totalOrders?.toString() || '0' },
+              { label: 'Rating', value: viewModal.data?.performanceMetrics?.rating ? `${viewModal.data.performanceMetrics.rating.toFixed(1)} ⭐` : 'N/A' },
+              { label: 'Response Time', value: viewModal.data?.performanceMetrics?.responseTime ? `${viewModal.data.performanceMetrics.responseTime.toFixed(1)}h` : 'N/A' }
+            ]
+          }
+        ]}
       />
     </div>
   );

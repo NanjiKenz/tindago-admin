@@ -78,11 +78,9 @@ export const UserCreateModal: React.FC<UserCreateModalProps> = ({
         password: formData.password,
         role: 'admin',
         status: 'active',
-        permissions: [],
-        dateOfBirth: formData.dateOfBirth,
-        country: formData.country,
-        city: formData.city,
-        postalCode: formData.postalCode
+        permissions: []
+        // Note: dateOfBirth, country, city, postalCode are collected but not stored in UserFormData
+        // These fields can be added to a future user profile extension
       });
 
       // Reset form

@@ -10,13 +10,14 @@
 import React, { useState } from 'react';
 import { AdminSidebar } from '@/components/admin/AdminSidebar';
 import { AdminHeader } from '@/components/admin/AdminHeader';
-import { CommissionOverTime } from '@/components/admin/CommissionOverTime';
 import { TopStoresByRevenue } from '@/components/admin/TopStoresByRevenue';
 import { TransactionSummary } from '@/components/admin/TransactionSummary';
 
 const AnalyticsPage: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [timeRange, setTimeRange] = useState('Last 7 days');
+  // Default to current month
+  const currentMonth = new Date().toLocaleString('en-US', { month: 'long' });
+  const [timeRange, setTimeRange] = useState(currentMonth);
   const [isGeneratingReport, setIsGeneratingReport] = useState(false);
 
   // Generate CSV report
@@ -30,15 +31,18 @@ const AnalyticsPage: React.FC = () => {
       const data = await response.json();
       const transactions = data.transactions || [];
 
-      // Filter by time range
-      const now = new Date();
-      const cutoffDate = new Date();
-      const days = parseInt(timeRange.split(' ')[1]);
-      cutoffDate.setDate(now.getDate() - days);
+      // Filter by time range (month name)
+      // Parse the selected month (e.g., "January") - assume current year
+      const monthIndex = new Date(Date.parse(timeRange + ' 1, 2025')).getMonth();
+      const year = new Date().getFullYear();
+      
+      // Filter transactions for the selected month
+      const startDate = new Date(year, monthIndex, 1);
+      const endDate = new Date(year, monthIndex + 1, 0, 23, 59, 59);
 
       const filteredTransactions = transactions.filter((t: any) => {
         const txDate = new Date(t.createdAt);
-        return txDate >= cutoffDate;
+        return txDate >= startDate && txDate <= endDate;
       });
 
       // Prepare CSV data
@@ -172,27 +176,32 @@ const AnalyticsPage: React.FC = () => {
               width: '1095px'
             }}
           >
-            {/* Filter Controls Bar */}
-            <div className="flex items-center justify-end gap-3 mb-6">
+          {/* Filter Controls Bar */}
+            <div className="flex items-center justify-end gap-5" style={{ marginBottom: '32px' }}>
               {/* Time Range Dropdown */}
               <div className="relative">
                 <select
                   value={timeRange}
                   onChange={(e) => setTimeRange(e.target.value)}
-                  className="appearance-none bg-white rounded-lg px-4 py-2.5 pr-10 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
+                  className="appearance-none cursor-pointer focus:outline-none"
                   style={{
-                    fontFamily: 'Clash Grotesk Variable',
-                    fontWeight: 500,
-                    fontSize: '14px',
-                    color: '#1E1E1E',
+                    padding: '12px 16px',
+                    borderRadius: '12px',
                     border: '1px solid rgba(0, 0, 0, 0.1)',
-                    minWidth: '150px'
+                    backgroundColor: '#FFFFFF',
+                    fontFamily: 'Clash Grotesk Variable',
+                    fontSize: '14px',
+                    fontWeight: 500,
+                    color: '#1E1E1E',
+                    minWidth: '180px',
+                    outline: 'none'
                   }}
                 >
-                  <option value="Last 7 days">Last 7 days</option>
-                  <option value="Last 14 days">Last 14 days</option>
-                  <option value="Last 30 days">Last 30 days</option>
-                  <option value="Last 90 days">Last 90 days</option>
+                  {/* Generate month options */}
+                  {['January', 'February', 'March', 'April', 'May', 'June', 
+                    'July', 'August', 'September', 'October', 'November', 'December'].map((month, i) => (
+                    <option key={i} value={month}>{month}</option>
+                  ))}
                 </select>
                 <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
                   <svg width="10" height="6" viewBox="0 0 10 6" fill="none">
@@ -206,8 +215,8 @@ const AnalyticsPage: React.FC = () => {
                 onClick={handleGenerateReport}
                 disabled={isGeneratingReport}
                 style={{
-                  padding: '8px 16px',
-                  borderRadius: '6px',
+                  padding: '12px 20px',
+                  borderRadius: '12px',
                   border: '1px solid #3BB77E',
                   backgroundColor: '#3BB77E',
                   color: '#FFFFFF',
@@ -218,8 +227,9 @@ const AnalyticsPage: React.FC = () => {
                   transition: 'all 0.2s ease',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '6px',
-                  opacity: isGeneratingReport ? 0.6 : 1
+                  gap: '8px',
+                  opacity: isGeneratingReport ? 0.6 : 1,
+                  whiteSpace: 'nowrap'
                 }}
                 onMouseEnter={(e) => {
                   if (!isGeneratingReport) {
@@ -241,16 +251,9 @@ const AnalyticsPage: React.FC = () => {
               </button>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-              {/* Commission Over Time Chart */}
-              <div>
-                <CommissionOverTime timeRange={timeRange} />
-              </div>
-
-              {/* Top Stores by Revenue Chart */}
-              <div>
-                <TopStoresByRevenue timeRange={timeRange} />
-              </div>
+            {/* Top Stores by Revenue Chart */}
+            <div className="mb-6">
+              <TopStoresByRevenue timeRange={timeRange} />
             </div>
 
             {/* Transaction Summary Table */}

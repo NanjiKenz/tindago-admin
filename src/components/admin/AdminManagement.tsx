@@ -1300,7 +1300,14 @@ export const AdminManagement: React.FC = () => {
 
             <div style={{ marginTop: '24px', display: 'flex', gap: '12px' }}>
               <button
-                onClick={() => handleStatusToggle(selectedAdmin)}
+                onClick={() => {
+                  if (selectedAdmin.status === 'active') {
+                    handleDeactivate(selectedAdmin);
+                  } else {
+                    handleReactivate(selectedAdmin);
+                  }
+                  setSelectedAdmin(null);
+                }}
                 disabled={processing}
                 style={{
                   flex: 1,
@@ -1319,14 +1326,14 @@ export const AdminManagement: React.FC = () => {
                 {processing ? 'Processing...' : selectedAdmin.status === 'active' ? 'Deactivate' : 'Activate'}
               </button>
               <button
-                onClick={() => handleDelete(selectedAdmin)}
+                onClick={() => handleEdit(selectedAdmin.userId)}
                 disabled={processing}
                 style={{
                   flex: 1,
                   padding: '12px 24px',
                   borderRadius: '12px',
-                  border: '1px solid #EF4444',
-                  backgroundColor: '#EF4444',
+                  border: '1px solid #0077BE',
+                  backgroundColor: '#0077BE',
                   color: '#FFFFFF',
                   cursor: processing ? 'not-allowed' : 'pointer',
                   fontFamily: 'Clash Grotesk Variable',
@@ -1335,7 +1342,7 @@ export const AdminManagement: React.FC = () => {
                   opacity: processing ? 0.5 : 1
                 }}
               >
-                {processing ? 'Deleting...' : 'Delete'}
+                Edit
               </button>
               <button
                 onClick={() => setSelectedAdmin(null)}

@@ -26,7 +26,7 @@ interface TransactionSummaryProps {
   timeRange?: string;
 }
 
-export const TransactionSummary: React.FC<TransactionSummaryProps> = ({ timeRange = 'Last 7 days' }) => {
+export const TransactionSummary: React.FC<TransactionSummaryProps> = ({ timeRange = new Date().toLocaleString('en-US', { month: 'long' }) }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStore, setSelectedStore] = useState('all');
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('all');
@@ -88,25 +88,27 @@ export const TransactionSummary: React.FC<TransactionSummaryProps> = ({ timeRang
 
   // Filter and group transactions by store
   const groupedStoreData = useMemo(() => {
-    // Calculate time range cutoff
-    const now = new Date();
-    const cutoffDate = new Date();
-    const days = parseInt(timeRange.split(' ')[1]) || 7; // Default to 7 days
-    cutoffDate.setDate(now.getDate() - days);
+    // Parse the selected month (e.g., "January") - assume current year
+    const monthIndex = new Date(Date.parse(timeRange + ' 1, 2025')).getMonth();
+    const year = new Date().getFullYear();
+    
+    // Get start and end dates for the selected month
+    const startDate = new Date(year, monthIndex, 1);
+    const endDate = new Date(year, monthIndex + 1, 0, 23, 59, 59);
 
     console.log('[TransactionSummary] Time Range:', timeRange);
-    console.log('[TransactionSummary] Days:', days);
-    console.log('[TransactionSummary] Cutoff Date:', cutoffDate);
+    console.log('[TransactionSummary] Start Date:', startDate);
+    console.log('[TransactionSummary] End Date:', endDate);
     console.log('[TransactionSummary] Total Transactions:', transactions.length);
 
     // First filter transactions
     const filtered = transactions.filter(t => {
       // Time range filter
       const txDate = new Date(t.createdAt);
-      const matchesTimeRange = txDate >= cutoffDate;
+      const matchesTimeRange = txDate >= startDate && txDate <= endDate;
       
       if (!matchesTimeRange) {
-        console.log('[TransactionSummary] Filtered out (date):', t.store, txDate, 'cutoff:', cutoffDate);
+        console.log('[TransactionSummary] Filtered out (date):', t.store, txDate, 'range:', startDate, '-', endDate);
       }
       
       // Search filter

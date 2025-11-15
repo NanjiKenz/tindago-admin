@@ -332,42 +332,6 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen, onClose, cur
                       </div>
                     </a>
 
-                    {/* Content Management */}
-                    <a
-                      href="/content"
-                      className="w-full group flex items-center rounded-2xl transition-colors"
-                      style={{
-                        width: '220px',
-                        height: '40px',
-                        padding: '0 20px 0 10px',
-                        backgroundColor: currentPage === 'content' ? '#0077BE' : 'transparent'
-                      }}
-                    >
-                      <div className="flex items-center gap-2.5">
-                        <div style={{ width: '25px', height: '25px' }}>
-                          <Image
-                            src="/images/admin-dashboard/content-icon.png"
-                            alt="Content Management"
-                            width={25}
-                            height={25}
-                            className="object-contain"
-                            style={{ filter: currentPage === 'content' ? 'brightness(0) invert(1)' : 'brightness(0)' }}
-                          />
-                        </div>
-                        <span
-                          style={{
-                            fontFamily: 'Clash Grotesk Variable',
-                            fontWeight: 500,
-                            fontSize: '14px',
-                            lineHeight: '1.23em',
-                            color: currentPage === 'content' ? '#FFFFFF' : '#1E1E1E'
-                          }}
-                        >
-                          Content Management
-                        </span>
-                      </div>
-                    </a>
-
                     {/* Transactions */}
                     <a
                       href="/transactions"

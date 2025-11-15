@@ -1594,28 +1594,68 @@ export const CustomerManagement: React.FC<CustomerManagementProps> = () => {
         onClose={() => setStatusModal({ ...statusModal, isOpen: false })}
         onConfirm={confirmStatusChange}
         action={statusModal.action}
-        itemName={statusModal.itemName}
-        itemType="customer"
+        resourceName={statusModal.itemName}
+        resourceType="customer"
         currentStatus={statusModal.currentStatus}
       />
 
       <ViewDetailsModal
         isOpen={viewModal.isOpen}
         onClose={() => setViewModal({ isOpen: false, data: null })}
-        title="Customer Details"
-        data={viewModal.data ? {
-          'Customer ID': viewModal.data.userId,
-          'Name': viewModal.data.displayName,
-          'Email': viewModal.data.email,
-          'Phone': viewModal.data.phone || 'N/A',
-          'Address': viewModal.data.address || 'N/A',
-          'Status': viewModal.data.status || 'N/A',
-          'Verification': viewModal.data.verificationStatus || 'N/A',
-          'Total Orders': viewModal.data.totalOrders?.toString() || '0',
-          'Total Spent': `₱${viewModal.data.totalSpent?.toFixed(2) || '0.00'}`,
-          'Joined': viewModal.data.createdAt ? new Date(viewModal.data.createdAt).toLocaleDateString() : 'N/A',
-          'Last Order': viewModal.data.lastOrderDate ? new Date(viewModal.data.lastOrderDate).toLocaleDateString() : 'N/A'
-        } : {}}
+        title={viewModal.data?.displayName || 'Customer Details'}
+        subtitle={viewModal.data?.email}
+        badge={{
+          text: viewModal.data?.status === 'active' ? 'Active' : viewModal.data?.status === 'banned' ? 'Banned' : 'Inactive',
+          color: viewModal.data?.status === 'active' ? '#22C55E' : viewModal.data?.status === 'banned' ? '#EF4444' : '#F59E0B',
+          bgColor: viewModal.data?.status === 'active' ? '#D1FAE5' : viewModal.data?.status === 'banned' ? '#FEE2E2' : '#FEF3C7'
+        }}
+        sections={[
+          {
+            title: 'Basic Information',
+            icon: (
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3BB77E" strokeWidth="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+            ),
+            fields: [
+              { label: 'Customer ID', value: viewModal.data?.userId || '—', fullWidth: true },
+              { label: 'Name', value: viewModal.data?.displayName || '—' },
+              { label: 'Email', value: viewModal.data?.email || '—' },
+              { label: 'Phone', value: viewModal.data?.phone || '—' },
+              { label: 'Address', value: viewModal.data?.address || '—', fullWidth: true }
+            ]
+          },
+          {
+            title: 'Account Status',
+            icon: (
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0077BE" strokeWidth="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+            ),
+            fields: [
+              { label: 'Status', value: viewModal.data?.status || 'Unknown', highlight: true },
+              { label: 'Verification', value: viewModal.data?.verificationStatus || 'Unknown' },
+              { label: 'Joined', value: viewModal.data?.createdAt ? new Date(viewModal.data.createdAt).toLocaleDateString() : 'N/A' },
+              { label: 'Last Login', value: viewModal.data?.lastLoginAt ? new Date(viewModal.data.lastLoginAt).toLocaleDateString() : 'N/A' }
+            ]
+          },
+          {
+            title: 'Purchase History',
+            icon: (
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#EAB308" strokeWidth="2">
+                <circle cx="9" cy="21" r="1"/>
+                <circle cx="20" cy="21" r="1"/>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+              </svg>
+            ),
+            fields: [
+              { label: 'Total Orders', value: viewModal.data?.totalOrders?.toString() || '0' },
+              { label: 'Total Spent', value: `₱${viewModal.data?.totalSpent?.toFixed(2) || '0.00'}` },
+              { label: 'Average Order', value: viewModal.data?.totalOrders ? `₱${(viewModal.data.totalSpent / viewModal.data.totalOrders).toFixed(2)}` : '₱0.00' }
+            ]
+          }
+        ]}
       />
     </div>
   );

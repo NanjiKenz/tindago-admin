@@ -14,8 +14,8 @@ export const runtime = 'nodejs';
  * with the desired fee. Updates the existing ledger row with the new invoice
  * details and keeps a previousInvoiceId pointer.
  */
-export async function POST(req: NextRequest, { params }: { params: { invoiceId: string } }) {
-  const { invoiceId } = params;
+export async function POST(req: NextRequest, { params }: { params: Promise<{ invoiceId: string }> }) {
+  const { invoiceId } = await params;
 
   try {
     // Resolve storeId and orderNumber via index

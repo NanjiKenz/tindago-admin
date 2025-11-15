@@ -62,44 +62,93 @@ export const CommissionOverTime: React.FC<CommissionOverTimeProps> = ({ timeRang
     console.log('[CommissionOverTime] Cutoff Date:', cutoffDate);
     console.log('[CommissionOverTime] Total transactions:', transactions.length);
     console.log('[CommissionOverTime] Filtered transactions:', filteredTransactions.length);
-    console.log('[CommissionOverTime] Sample filtered:', filteredTransactions[0]);
+    console.log('[CommissionOverTime] All filtered transactions:', filteredTransactions.map(t => ({
+      date: t.createdAt,
+      commission: t.commission,
+      status: t.status,
+      store: t.storeName
+    })));
 
     // Group by date and sum commissions
     const dailyCommissions = new Map<string, number>();
-    filteredTransactions.forEach(t => {
-      const date = new Date(t.createdAt).toLocaleDateString('en-CA'); // YYYY-MM-DD
+    console.log('[CommissionOverTime] Processing', filteredTransactions.length, 'filtered transactions');
+    
+    filteredTransactions.forEach((t, index) => {
+      // Parse date properly
+      const txDate = new Date(t.createdAt);
+      // Use UTC date to avoid timezone issues
+      const year = txDate.getFullYear();
+      const month = String(txDate.getMonth() + 1).padStart(2, '0');
+      const day = String(txDate.getDate()).padStart(2, '0');
+      const dateStr = `${year}-${month}-${day}`;
+      
       const commission = Number(t.commission || 0);
-      console.log('[CommissionOverTime] Transaction:', date, 'commission:', commission);
-      dailyCommissions.set(date, (dailyCommissions.get(date) || 0) + commission);
+      console.log(`[CommissionOverTime] Transaction ${index + 1}:`, t.createdAt, '→', dateStr, 'commission:', commission, 'store:', t.storeName);
+      
+      const currentTotal = dailyCommissions.get(dateStr) || 0;
+      const newTotal = currentTotal + commission;
+      dailyCommissions.set(dateStr, newTotal);
+      console.log(`[CommissionOverTime] Date ${dateStr} total: ${currentTotal} + ${commission} = ${newTotal}`);
     });
 
     console.log('[CommissionOverTime] Daily commissions map:', Array.from(dailyCommissions.entries()));
 
-    // Always show current week (Sunday to Saturday)
+    // Show 7 days (Sun-Sat) starting from the week with earliest transaction
     const result = [];
-    const today = new Date();
-    const currentDay = today.getDay(); // 0 = Sunday, 6 = Saturday
+    const daysToShow = 7;
     
-    // Calculate the Sunday of current week
-    const sunday = new Date(today);
-    sunday.setDate(today.getDate() - currentDay);
+    // Find earliest transaction date to start the week from there
+    let referenceDate = new Date();
+    if (dailyCommissions.size > 0) {
+      const dates = Array.from(dailyCommissions.keys()).sort(); // Sort dates ascending
+      referenceDate = new Date(dates[0] + 'T12:00:00'); // Earliest date with commission data
+    }
     
-    // Create 7 days (Sunday to Saturday)
-    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    for (let i = 0; i < 7; i++) {
-      const date = new Date(sunday);
-      date.setDate(sunday.getDate() + i);
-      const dateStr = date.toLocaleDateString('en-CA');
+    // Get Sunday of the week containing the earliest transaction
+    const currentDay = referenceDate.getDay();
+    const chartStart = new Date(referenceDate);
+    chartStart.setDate(referenceDate.getDate() - currentDay);
+    chartStart.setHours(0, 0, 0, 0);
+    
+    console.log('[CommissionOverTime] Earliest data date:', referenceDate.toLocaleDateString('en-CA'));
+    console.log('[CommissionOverTime] Showing week from (Sunday):', chartStart.toLocaleDateString('en-CA'));
+    
+    const chartEnd = new Date(chartStart);
+    chartEnd.setDate(chartStart.getDate() + 6); // Saturday of the week
+    console.log('[CommissionOverTime] Chart shows week from:', chartStart.toLocaleDateString('en-CA'), 'to', chartEnd.toLocaleDateString('en-CA'));
+    console.log('[CommissionOverTime] Includes commission data from:', cutoffDate.toLocaleDateString('en-CA'));
+    
+    // Create days array
+    for (let i = 0; i < daysToShow; i++) {
+      const date = new Date(chartStart);
+      date.setDate(chartStart.getDate() + i);
+      
+      // Format date consistently
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const dateStr = `${year}-${month}-${day}`;
+      
+      const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
       const value = dailyCommissions.get(dateStr) || 0;
+      console.log('[CommissionOverTime] Chart day:', dayName, 'date:', dateStr, 'commission:', value, 'has data:', dailyCommissions.has(dateStr));
+      
+      // Extra debug for Saturday
+      if (dayName === 'Sat') {
+        console.log('[CommissionOverTime] Saturday debug - looking for:', dateStr);
+        console.log('[CommissionOverTime] Available dates in map:', Array.from(dailyCommissions.keys()));
+        console.log('[CommissionOverTime] Commission value:', dailyCommissions.get(dateStr));
+      }
       
       result.push({
-        day: dayNames[i],
+        day: dayName,
         date: dateStr,
         value: value,
         amount: `₱${value.toFixed(2)}`
       });
     }
 
+    console.log('[CommissionOverTime] Final chart data:', result);
     return result;
   }, [transactions, timeRange]);
 

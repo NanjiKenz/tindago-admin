@@ -78,8 +78,7 @@ export const UserManagement: React.FC<UserManagementProps> = () => {
   });
 
   // Load real user data from Firebase
-  useEffect(() => {
-    const loadUsers = async () => {
+  const loadUsers = async () => {
       try {
         setLoading(true);
         setError(null);
@@ -146,6 +145,7 @@ export const UserManagement: React.FC<UserManagementProps> = () => {
       }
     };
 
+  useEffect(() => {
     loadUsers();
 
     // Set up real-time subscription
@@ -1795,26 +1795,53 @@ export const UserManagement: React.FC<UserManagementProps> = () => {
         onClose={() => setStatusModal({ ...statusModal, isOpen: false })}
         onConfirm={confirmStatusChange}
         action={statusModal.action}
-        itemName={statusModal.itemName}
-        itemType="user"
+        resourceName={statusModal.itemName}
+        resourceType="user"
         currentStatus={statusModal.currentStatus}
       />
 
       <ViewDetailsModal
         isOpen={viewModal.isOpen}
         onClose={() => setViewModal({ isOpen: false, data: null })}
-        title="User Details"
-        data={viewModal.data ? {
-          'User ID': viewModal.data.userId,
-          'Name': viewModal.data.displayName,
-          'Email': viewModal.data.email,
-          'Phone': viewModal.data.phone || 'N/A',
-          'Role': viewModal.data.role,
-          'User Type': viewModal.data.userType,
-          'Status': viewModal.data.status || 'N/A',
-          'Joined': viewModal.data.createdAt ? new Date(viewModal.data.createdAt).toLocaleDateString() : 'N/A',
-          'Last Login': viewModal.data.lastLoginAt ? new Date(viewModal.data.lastLoginAt).toLocaleDateString() : 'N/A'
-        } : {}}
+        title={viewModal.data?.displayName || 'User Details'}
+        subtitle={viewModal.data?.email}
+        badge={{
+          text: viewModal.data?.status === 'active' ? 'Active' : viewModal.data?.status === 'suspended' ? 'Suspended' : viewModal.data?.status === 'banned' ? 'Banned' : 'Inactive',
+          color: viewModal.data?.status === 'active' ? '#22C55E' : viewModal.data?.status === 'suspended' ? '#F97316' : viewModal.data?.status === 'banned' ? '#EF4444' : '#64748B',
+          bgColor: viewModal.data?.status === 'active' ? '#D1FAE5' : viewModal.data?.status === 'suspended' ? '#FFEDD5' : viewModal.data?.status === 'banned' ? '#FEE2E2' : '#F1F5F9'
+        }}
+        sections={[
+          {
+            title: 'Basic Information',
+            icon: (
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3BB77E" strokeWidth="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+            ),
+            fields: [
+              { label: 'User ID', value: viewModal.data?.userId || '—', fullWidth: true },
+              { label: 'Name', value: viewModal.data?.displayName || '—' },
+              { label: 'Email', value: viewModal.data?.email || '—' },
+              { label: 'Phone', value: viewModal.data?.phone || '—' }
+            ]
+          },
+          {
+            title: 'Account Information',
+            icon: (
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0077BE" strokeWidth="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+            ),
+            fields: [
+              { label: 'Role', value: viewModal.data?.role || '—' },
+              { label: 'User Type', value: viewModal.data?.userType || '—' },
+              { label: 'Status', value: viewModal.data?.status || 'Unknown', highlight: true },
+              { label: 'Joined', value: viewModal.data?.createdAt ? new Date(viewModal.data.createdAt).toLocaleDateString() : 'N/A' },
+              { label: 'Last Login', value: viewModal.data?.lastLoginAt ? new Date(viewModal.data.lastLoginAt).toLocaleDateString() : 'N/A' }
+            ]
+          }
+        ]}
       />
     </div>
   );

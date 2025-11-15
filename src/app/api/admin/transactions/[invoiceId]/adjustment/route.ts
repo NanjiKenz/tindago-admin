@@ -13,8 +13,8 @@ export const runtime = 'nodejs';
  * that changes the store's earnings without mutating the original transaction.
  * This entry is marked as SETTLED so wallet reconciliation includes it.
  */
-export async function POST(req: NextRequest, { params }: { params: { invoiceId: string } }) {
-  const { invoiceId } = params;
+export async function POST(req: NextRequest, { params }: { params: Promise<{ invoiceId: string }> }) {
+  const { invoiceId } = await params;
 
   try {
     const body = await req.json().catch(() => ({}));
