@@ -14,6 +14,13 @@ export async function GET() {
       return NextResponse.json({ stores: [] });
     }
 
+    // Fetch all ledgers and orders data upfront for performance
+    const [ledgersData, ordersData, reviewsData] = await Promise.all([
+      fetchFirebase('ledgers/stores'),
+      fetchFirebase('orders'),
+      fetchFirebase('reviews')
+    ]);
+
     // Convert to array with IDs and map fields properly
     const stores = Object.entries(storesData).map(([id, store]: [string, any]) => {
       // Search for formattedAddress in all possible locations
@@ -72,12 +79,56 @@ export async function GET() {
         }
       }
       
+      // Calculate performance metrics from ledger and orders
+      let totalSales = 0;
+      let totalOrders = 0;
+      let totalRating = 0;
+      let ratingCount = 0;
+
+      // Get sales from ledger (PAID/SETTLED transactions only)
+      if (ledgersData && ledgersData[id] && ledgersData[id].transactions) {
+        const transactions = ledgersData[id].transactions;
+        Object.values(transactions).forEach((txn: any) => {
+          if (txn.status === 'PAID' || txn.status === 'SETTLED') {
+            totalSales += txn.amount || 0;
+          }
+        });
+      }
+
+      // Get order count from orders collection
+      if (ordersData) {
+        Object.values(ordersData).forEach((order: any) => {
+          if (order.storeId === id) {
+            totalOrders++;
+          }
+        });
+      }
+
+      // Get average rating from reviews
+      if (reviewsData) {
+        Object.values(reviewsData).forEach((review: any) => {
+          if (review.storeId === id && review.rating) {
+            totalRating += review.rating;
+            ratingCount++;
+          }
+        });
+      }
+
+      const averageRating = ratingCount > 0 ? totalRating / ratingCount : 0;
+
       return {
         storeId: id,
         ...store,
         address: fullAddress,
         // Map createdAt to joinedDate for compatibility with StoreManagement component
         joinedDate: store.joinedDate || store.createdAt || store.approvedAt || new Date().toISOString(),
+        // Add accurate performance metrics
+        performanceMetrics: {
+          totalSales: totalSales,
+          totalOrders: totalOrders,
+          rating: averageRating,
+          responseTime: 0 // Removed as requested
+        }
       };
     });
 

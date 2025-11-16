@@ -12,7 +12,7 @@ import { AdminSidebar } from '@/components/admin/AdminSidebar';
 import { AdminHeader } from '@/components/admin/AdminHeader';
 import { StatsCards } from '@/components/admin/StatsCards';
 import { SalesAnalytics } from '@/components/admin/SalesAnalytics';
-import { SalesTarget } from '@/components/admin/SalesTarget';
+import { PaymentMethodDistribution } from '@/components/admin/PaymentMethodDistribution';
 import { QuickActions } from '@/components/admin/QuickActions';
 
 const DashboardPage: React.FC = () => {
@@ -132,7 +132,7 @@ const DashboardPage: React.FC = () => {
             <SalesAnalytics />
           </div>
 
-          {/* Sales Target - Exact Figma positioning */}
+          {/* Payment Method Distribution - Exact Figma positioning */}
           <div
             className="absolute"
             style={{
@@ -142,7 +142,7 @@ const DashboardPage: React.FC = () => {
               height: '300px'
             }}
           >
-            <SalesTarget />
+            <PaymentMethodDistribution />
           </div>
 
           {/* Quick Actions - Exact Figma positioning */}

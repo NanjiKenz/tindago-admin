@@ -1878,18 +1878,6 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
                             >
                               {store.address || 'Address not provided'}
                             </div>
-                            <div
-                              style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '6px',
-                                marginTop: '4px'
-                              }}
-                            >
-                              <span style={getSubscriptionBadge(store.subscriptionStatus || 'free')}>
-                                {store.subscriptionStatus || 'free'}
-                              </span>
-                            </div>
                           </div>
                         </td>
 
@@ -2256,7 +2244,7 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
             ]
           },
           {
-            title: 'Status & Subscription',
+            title: 'Status & Verification',
             icon: (
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0077BE" strokeWidth="2">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
@@ -2264,8 +2252,14 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
             ),
             fields: [
               { label: 'Status', value: viewModal.data?.status || 'Unknown', highlight: true },
-              { label: 'Subscription', value: viewModal.data?.subscriptionStatus || 'Free' },
-              { label: 'Verification', value: viewModal.data?.businessVerification?.status || 'Pending' },
+              { 
+                label: 'Verification', 
+                value: viewModal.data?.status === 'active' 
+                  ? 'Verified' 
+                  : viewModal.data?.status === 'rejected' 
+                    ? 'Rejected' 
+                    : viewModal.data?.businessVerification?.status || 'Pending'
+              },
               { label: 'Joined', value: viewModal.data?.joinedDate ? new Date(viewModal.data.joinedDate).toLocaleDateString() : 'N/A' }
             ]
           },
@@ -2281,8 +2275,7 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
             fields: [
               { label: 'Total Sales', value: `₱${viewModal.data?.performanceMetrics?.totalSales?.toFixed(2) || '0.00'}` },
               { label: 'Total Orders', value: viewModal.data?.performanceMetrics?.totalOrders?.toString() || '0' },
-              { label: 'Rating', value: viewModal.data?.performanceMetrics?.rating ? `${viewModal.data.performanceMetrics.rating.toFixed(1)} ⭐` : 'N/A' },
-              { label: 'Response Time', value: viewModal.data?.performanceMetrics?.responseTime ? `${viewModal.data.performanceMetrics.responseTime.toFixed(1)}h` : 'N/A' }
+              { label: 'Rating', value: viewModal.data?.performanceMetrics?.rating ? `${viewModal.data.performanceMetrics.rating.toFixed(1)} ⭐` : 'N/A' }
             ]
           }
         ]}
