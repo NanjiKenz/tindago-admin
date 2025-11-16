@@ -30,7 +30,7 @@ export interface Store {
     validId?: RegistrationDocument;
     storePhoto?: string | RegistrationDocument;
   };
-  registrationData?: any;
+  registrationData?: Record<string, unknown>;
   businessVerification?: {
     status: 'verified' | 'pending' | 'rejected';
     verifiedAt?: string;

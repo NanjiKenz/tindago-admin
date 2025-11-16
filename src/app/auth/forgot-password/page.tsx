@@ -29,14 +29,15 @@ export default function ForgotPasswordPage() {
     try {
       await sendPasswordResetEmail(auth, email);
       setSuccess(true);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Password reset error:', err);
-
-      if (err.code === 'auth/user-not-found') {
+      
+      const error = err as { code?: string };
+      if (error.code === 'auth/user-not-found') {
         setError('No account found with this email address.');
-      } else if (err.code === 'auth/invalid-email') {
+      } else if (error.code === 'auth/invalid-email') {
         setError('Please enter a valid email address.');
-      } else if (err.code === 'auth/too-many-requests') {
+      } else if (error.code === 'auth/too-many-requests') {
         setError('Too many requests. Please try again later.');
       } else {
         setError('Failed to send password reset email. Please try again.');
@@ -121,7 +122,7 @@ export default function ForgotPasswordPage() {
               lineHeight: '1.5'
             }}
           >
-            Enter your email address and we'll send you instructions to reset your password
+            Enter your email address and we&apos;ll send you instructions to reset your password
           </p>
         </div>
 
@@ -150,7 +151,7 @@ export default function ForgotPasswordPage() {
               </div>
               <h3 className="text-tindago-800 font-semibold text-lg mb-2">Check Your Email</h3>
               <p className="text-tindago-700 text-sm">
-                We've sent password reset instructions to <strong>{email}</strong>
+                We&apos;ve sent password reset instructions to <strong>{email}</strong>
               </p>
             </div>
 

@@ -550,11 +550,6 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
     };
   };
 
-  const handlePendingRowClick = (storeId: string) => {
-    console.log('Navigating to pending approval detail for store:', storeId);
-    router.push(`/stores/pending/${storeId}?returnTo=storeManagement`);
-  };
-
   const handleRowClick = (storeId: string, status: string) => {
     console.log('Navigating to detail page for store:', storeId, 'status:', status);
     if (status === 'active') {

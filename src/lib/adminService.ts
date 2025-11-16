@@ -213,7 +213,7 @@ export class AdminService {
 
       // Remove any undefined values to prevent Firebase errors
       const cleanStoreData = Object.fromEntries(
-        Object.entries(storeData).filter(([_, value]) => value !== undefined)
+        Object.entries(storeData).filter(([, value]) => value !== undefined)
       );
 
       await set(storeRef, cleanStoreData);
@@ -266,8 +266,6 @@ export class AdminService {
    * OPTIMIZED: Uses periodic fetch to reduce Firebase bandwidth costs
    */
   static subscribeToRegistrations(callback: (registrations: StoreRegistration[]) => void): () => void {
-    let intervalId: NodeJS.Timeout;
-
     const fetchRegistrations = async () => {
       try {
         const registrations = await this.getAllStoreRegistrations();
@@ -281,7 +279,7 @@ export class AdminService {
     fetchRegistrations();
 
     // Poll every 30 seconds
-    intervalId = setInterval(fetchRegistrations, 30000);
+    const intervalId = setInterval(fetchRegistrations, 30000);
 
     // Return cleanup function
     return () => {

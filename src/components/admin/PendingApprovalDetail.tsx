@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { AdminService, StoreRegistration } from '@/lib/adminService';
 
+type DocumentData = string | { uri?: string; url?: string; type?: string; uploaded?: boolean; name?: string };
+
 interface PendingApprovalDetailProps {
   userId: string;
   onApprove?: (userId: string) => void;
@@ -55,7 +57,7 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
   };
 
   // Helper function to check if document has valid URI
-  const hasValidUri = (docData: any): boolean => {
+  const hasValidUri = (docData: DocumentData | undefined): boolean => {
     if (!docData) return false;
 
     // String format (legacy)
@@ -146,7 +148,7 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
 
         // Try to get from store_registrations first
         const registrations = await AdminService.getAllStoreRegistrations();
-        let targetRegistration = registrations.find(reg => reg.userId === userId);
+        const targetRegistration = registrations.find(reg => reg.userId === userId);
 
         if (targetRegistration) {
           console.log(`✅ [PendingApprovalDetail] Found registration in 'store_registrations'`);
@@ -831,15 +833,17 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
 
                         // Priority 1: Check for Cloudinary URL (new - Phase 2)
                         if (typeof doc.data === 'object' && doc.data && 'url' in doc.data) {
-                          uri = (doc.data as any).url?.trim();
+                          const docWithUrl = doc.data as { url?: string };
+                          uri = docWithUrl.url?.trim();
                           console.log('✅ [Cloudinary URL] Using Cloudinary URL from doc.data.url');
                         }
                         // Priority 2: Check for base64 URI (legacy)
                         else if (typeof doc.data === 'string') {
-                          uri = (doc.data as string).trim();
+                          uri = doc.data.trim();
                           console.log('✅ [Legacy String] Using base64 string');
                         } else if (typeof doc.data === 'object' && doc.data && 'uri' in doc.data) {
-                          uri = (doc.data as any).uri?.trim();
+                          const docWithUri = doc.data as { uri?: string };
+                          uri = docWithUri.uri?.trim();
                           console.log('✅ [Legacy Object] Using base64 from doc.data.uri');
                         }
 

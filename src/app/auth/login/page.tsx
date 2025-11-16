@@ -8,7 +8,7 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { signInWithEmailAndPassword } from 'firebase/auth';
@@ -52,17 +52,18 @@ export default function LoginPage() {
 
       // Redirect to Dashboard page
       router.push('/dashboard');
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Login error:', err);
-
+      
+      const error = err as { code?: string };
       // User-friendly error messages
-      if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
+      if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
         setError('Invalid email or password. Please try again.');
-      } else if (err.code === 'auth/too-many-requests') {
+      } else if (error.code === 'auth/too-many-requests') {
         setError('Too many failed login attempts. Please try again later.');
-      } else if (err.code === 'auth/user-disabled') {
+      } else if (error.code === 'auth/user-disabled') {
         setError('This account has been disabled. Contact support for assistance.');
-      } else if (err.code === 'auth/invalid-email') {
+      } else if (error.code === 'auth/invalid-email') {
         setError('Please enter a valid email address.');
       } else {
         setError('Login failed. Please check your credentials and try again.');
@@ -400,7 +401,7 @@ export default function LoginPage() {
                 color: '#FFFFFF'
               }}
             >
-              "Quality is never an accident it is always the result of high intention, sincere effort, intelligent direction and skillful execution."
+              &quot;Quality is never an accident it is always the result of high intention, sincere effort, intelligent direction and skillful execution.&quot;
             </p>
 
             {/* Author */}
