@@ -81,7 +81,7 @@ export async function createInvoice(params: CreateInvoiceParams): Promise<Xendit
     items,
     paymentMethods = ['GCASH', 'PAYMAYA', 'CREDIT_CARD', 'DEBIT_CARD'],
     successRedirectUrl = 'tindago://payment/success',
-    failureRedirectUrl = 'tindago://payment/failure',
+    failureRedirectUrl = 'tindago://payment/failed',
     currency = 'PHP',
     invoiceDuration = 86400, // 24 hours
     fees = [],

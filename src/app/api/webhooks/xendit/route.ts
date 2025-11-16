@@ -4,6 +4,9 @@ import { database } from '@/lib/firebase.js';
 import { XENDIT_WEBHOOK_TOKEN } from '@/lib/config';
 import { roundCurrency } from '@/lib/commission';
 
+// Note: Stock deduction requires Firebase Admin SDK or proper security rules
+// For now, we'll log the deduction and handle it client-side
+
 export const runtime = 'nodejs';
 
 function ok(body?: any) {
@@ -62,11 +65,19 @@ export async function POST(req: NextRequest) {
       status,
       paidAt: payload.paid_at || payload.updated || new Date().toISOString(),
       method: paymentMethod, // ✅ Now uses 'paymaya' or 'gcash' instead of 'EWALLET'
-      // ✅ Update customer info from webhook (if not already set)
-      customerName: metadata.customer_name || payload.payer_email?.split('@')[0] || undefined,
-      customerEmail: metadata.customer_email || payload.payer_email || undefined,
-      customerPhone: metadata.customer_phone || undefined,
     };
+    
+    // ✅ Only add customer fields if they have values (avoid undefined)
+    if (metadata.customer_name || payload.payer_email) {
+      updates.customerName = metadata.customer_name || payload.payer_email?.split('@')[0];
+    }
+    if (metadata.customer_email || payload.payer_email) {
+      updates.customerEmail = metadata.customer_email || payload.payer_email;
+    }
+    if (metadata.customer_phone) {
+      updates.customerPhone = metadata.customer_phone;
+    }
+    
     await update(ledgerRef, updates);
 
     // Credit wallet on successful payment
@@ -152,43 +163,9 @@ export async function POST(req: NextRequest) {
       if (snap.exists()) {
         await update(orderRef, orderUpdates);
         
-        // ✅ Deduct stock when payment is confirmed (PAID or SETTLED)
-        if (status === 'PAID' || status === 'SETTLED') {
-          const orderData = snap.val();
-          if (orderData.items && Array.isArray(orderData.items)) {
-            console.log(`[📦 Inventory] Deducting stock for order ${orderId} with ${orderData.items.length} items`);
-            
-            for (const item of orderData.items) {
-              const productId = item.productId;
-              const orderedQty = item.quantity || 0;
-              
-              if (!productId || orderedQty <= 0) continue;
-              
-              try {
-                const productRef = ref(database, `products/${productId}`);
-                const productSnap = await get(productRef);
-                
-                if (productSnap.exists()) {
-                  const product = productSnap.val();
-                  const currentStock = product.quantity || 0;
-                  const newStock = Math.max(0, currentStock - orderedQty);
-                  
-                  await update(productRef, {
-                    quantity: newStock,
-                    status: newStock === 0 ? 'out_of_stock' : 'available',
-                    updatedAt: new Date().toISOString()
-                  });
-                  
-                  console.log(`[📦 Inventory] Product ${productId}: ${currentStock} → ${newStock} (ordered: ${orderedQty})`);
-                } else {
-                  console.warn(`[📦 Inventory] Product ${productId} not found, skipping stock deduction`);
-                }
-              } catch (stockErr: any) {
-                console.error(`[📦 Inventory] Error deducting stock for product ${productId}:`, stockErr?.message || stockErr);
-              }
-            }
-          }
-        }
+        // Note: Stock deduction is now handled client-side when payment confirmation is detected
+        // This avoids Firebase permission issues and uses transactions for safety
+        console.log(`[📦 Inventory] Payment confirmed for order ${orderId} - stock will be deducted client-side`);
       } else {
         console.warn('[Webhook] Order not found at orders/' + orderId + '; skipping orderId update');
       }

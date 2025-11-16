@@ -103,8 +103,8 @@ export async function POST(req: NextRequest) {
       invoiceUrl: data.invoice_url,
       expiryDate: data.expiry_date,
       storeName: store.name,
-      // ✅ Add customer information
-      customerId: orderId ? undefined : customer.email.split('@')[0], // Fallback if no orderId
+      // ✅ Add customer information (use orderId if available, else email prefix)
+      customerId: orderId || customer.email.split('@')[0],
       customerName: customer.name,
       customerEmail: customer.email,
       customerPhone: customer.phone || '',
