@@ -8,7 +8,7 @@
 
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import { AdminSidebar } from '@/components/admin/AdminSidebar';
 import { AdminHeader } from '@/components/admin/AdminHeader';
 import { AdminManagement } from '@/components/admin/AdminManagement';
@@ -60,7 +60,13 @@ export default function AdminManagementPage() {
             minHeight: '944px'
           }}
         >
-          <AdminManagement />
+          <Suspense fallback={
+            <div className="flex items-center justify-center h-full">
+              <div className="text-gray-600">Loading...</div>
+            </div>
+          }>
+            <AdminManagement />
+          </Suspense>
         </div>
       </div>
 
