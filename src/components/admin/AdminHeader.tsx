@@ -1,7 +1,7 @@
 /**
  * Admin Header Component - Pixel Perfect Figma Implementation
  *
- * Top header (1167x80) with search bar, notifications, and user profile
+ * Top header (1167x80) with notifications and user profile
  * Exact positioning and styling from Figma design: 281:155-281:170
  */
 
@@ -46,50 +46,6 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({ onMenuClick }) => {
           </button>
         </div>
 
-        {/* Search Bar - Positioned at x:20, y:20 with 300x40 dimensions as per Figma */}
-        <div
-          className="absolute"
-          style={{
-            left: '20px',
-            top: '20px',
-            width: '300px',
-            height: '40px'
-          }}
-        >
-          <div
-            className="relative flex items-center rounded-2xl"
-            style={{
-              backgroundColor: '#F1F1F1',
-              width: '100%',
-              height: '100%',
-              paddingLeft: '16px',
-              paddingRight: '16px'
-            }}
-          >
-            <input
-              type="text"
-              placeholder="Find something here..."
-              className="flex-1 bg-transparent border-none outline-none text-gray-900 placeholder-gray-500"
-              style={{
-                fontFamily: 'Clash Grotesk Variable',
-                fontWeight: 400,
-                fontSize: '12px',
-                lineHeight: '1.2em',
-                color: 'rgba(30, 30, 30, 0.5)'
-              }}
-            />
-            <div style={{ width: '16px', height: '16px', marginLeft: '12px' }}>
-              <Image
-                src="/images/admin-dashboard/search-icon.png"
-                alt="Search"
-                width={16}
-                height={16}
-                className="object-contain"
-              />
-            </div>
-          </div>
-        </div>
-
         {/* Right Section: Notifications and User Profile - Pixel Perfect Positioning */}
         <div
           className="absolute flex items-center gap-4"
@@ -129,29 +85,6 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({ onMenuClick }) => {
                   height={20}
                   className="object-contain"
                 />
-              </div>
-              {/* Notification Badge */}
-              <div
-                className="absolute rounded-full flex items-center justify-center"
-                style={{
-                  right: '-2px',
-                  top: '-2px',
-                  width: '15px',
-                  height: '15px',
-                  backgroundColor: '#FFBA02'
-                }}
-              >
-                <span
-                  style={{
-                    fontFamily: 'Clash Grotesk Variable',
-                    fontWeight: 500,
-                    fontSize: '8px',
-                    lineHeight: '1.23em',
-                    color: '#1E1E1E'
-                  }}
-                >
-                  3
-                </span>
               </div>
             </button>
           </div>

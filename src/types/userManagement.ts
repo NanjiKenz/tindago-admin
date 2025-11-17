@@ -71,12 +71,13 @@ export interface StoreOwnership {
 }
 
 export interface BusinessVerification {
-  status: 'verified' | 'pending' | 'rejected' | 'expired';
+  status: 'verified' | 'pending' | 'rejected' | 'expired' | 'unverified';
   businessPermit?: string;
   validId?: string;
   storePhoto?: string;
   verifiedAt?: string;
   expiresAt?: string;
+  notes?: string;
 }
 
 export interface UserPermission {

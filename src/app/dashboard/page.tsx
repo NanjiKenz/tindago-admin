@@ -11,7 +11,6 @@ import React, { useState } from 'react';
 import { AdminSidebar } from '@/components/admin/AdminSidebar';
 import { AdminHeader } from '@/components/admin/AdminHeader';
 import { StatsCards } from '@/components/admin/StatsCards';
-import { SalesAnalytics } from '@/components/admin/SalesAnalytics';
 import { PaymentMethodDistribution } from '@/components/admin/PaymentMethodDistribution';
 import { QuickActions } from '@/components/admin/QuickActions';
 
@@ -119,26 +118,13 @@ const DashboardPage: React.FC = () => {
             <StatsCards />
           </div>
 
-          {/* Sales Analytics Chart - Exact Figma positioning */}
+          {/* Payment Method Distribution - Repositioned */}
           <div
             className="absolute"
             style={{
               left: '40px',
               top: '330px',
-              width: '620px',
-              height: '300px'
-            }}
-          >
-            <SalesAnalytics />
-          </div>
-
-          {/* Payment Method Distribution - Exact Figma positioning */}
-          <div
-            className="absolute"
-            style={{
-              left: '680px',
-              top: '330px',
-              width: '447px',
+              width: '1087px',
               height: '300px'
             }}
           >
@@ -152,7 +138,7 @@ const DashboardPage: React.FC = () => {
               left: '40px',
               top: '650px',
               width: '1087px',
-              height: '303px'
+              height: '180px'
             }}
           >
             <QuickActions />

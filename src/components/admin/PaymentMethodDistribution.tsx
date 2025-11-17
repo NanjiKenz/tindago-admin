@@ -51,7 +51,7 @@ export const PaymentMethodDistribution: React.FC = () => {
     <div
       className="bg-white rounded-2xl shadow-sm"
       style={{
-        width: '447px',
+        width: '100%',
         height: '300px',
         position: 'relative',
         padding: '20px'

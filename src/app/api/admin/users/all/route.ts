@@ -11,6 +11,7 @@ export async function GET() {
     let userOrders = null;
     let verifications = null;
     let metrics = null;
+    let storesData = null;
 
     try {
       const results = await Promise.allSettled([
@@ -19,6 +20,7 @@ export async function GET() {
         fetchFirebase('user_orders'),
         fetchFirebase('business_verifications'),
         fetchFirebase('store_metrics'),
+        fetchFirebase('stores'),
       ]);
 
       adminsData = results[0].status === 'fulfilled' ? results[0].value : null;
@@ -26,10 +28,11 @@ export async function GET() {
       userOrders = results[2].status === 'fulfilled' ? results[2].value : null;
       verifications = results[3].status === 'fulfilled' ? results[3].value : null;
       metrics = results[4].status === 'fulfilled' ? results[4].value : null;
+      storesData = results[5].status === 'fulfilled' ? results[5].value : null;
 
       // Log any failures
       results.forEach((result, index) => {
-        const paths = ['admins', 'users', 'user_orders', 'business_verifications', 'store_metrics'];
+        const paths = ['admins', 'users', 'user_orders', 'business_verifications', 'store_metrics', 'stores'];
         if (result.status === 'rejected') {
           console.error(`⚠️  Failed to fetch ${paths[index]}:`, result.reason);
         }
@@ -59,11 +62,11 @@ export async function GET() {
 
         return {
           userId: uid,
-          email: userData?.email || userData?.personalInfo?.email || '',
-          displayName: userData?.name || userData?.displayName || userData?.personalInfo?.name || 'Admin User',
-          role: userData?.role || 'admin',
+          email: adminMetadata.email || userData?.email || userData?.personalInfo?.email || '',
+          displayName: adminMetadata.displayName || userData?.name || userData?.displayName || userData?.personalInfo?.name || 'Admin User',
+          role: adminMetadata.role || userData?.role || 'admin',
           status: adminMetadata.status || 'active',
-          createdAt: userData?.createdAt || new Date().toISOString(),
+          createdAt: adminMetadata.createdAt || userData?.createdAt || new Date().toISOString(),
           lastLogin: adminMetadata.lastLogin,
           lastLoginAt: adminMetadata.lastLoginAt,
         };
@@ -122,12 +125,46 @@ export async function GET() {
           });
         }
         if (u.userType === 'store_owner') {
-          const verification = (verifications && verifications[uid]) ? verifications[uid] : { status: 'pending' };
           const perf = (metrics && metrics[uid]) ? metrics[uid] : { totalSales: 0, totalOrders: 0, rating: 0, responseTime: 0 };
           const businessAddress = u.businessInfo?.address;
           const businessCity = u.businessInfo?.city;
           const legacyAddress = u.address;
           const address = businessAddress && businessCity ? `${businessAddress}, ${businessCity}` : (businessAddress || legacyAddress || '');
+          
+          // Calculate verification status based on stores
+          // Find all stores owned by this user
+          const ownerStores = storesData && typeof storesData === 'object' 
+            ? Object.values(storesData).filter((store: any) => store.ownerId === uid || store.userId === uid)
+            : [];
+          
+          // Determine verification status based on store statuses
+          let verificationStatus: 'verified' | 'pending' | 'rejected' | 'unverified' = 'unverified';
+          
+          if (ownerStores.length > 0) {
+            const hasActiveStore = ownerStores.some((store: any) => store.status === 'active');
+            const hasPendingStore = ownerStores.some((store: any) => store.status === 'pending');
+            const hasRejectedStore = ownerStores.some((store: any) => store.status === 'rejected');
+            
+            if (hasActiveStore) {
+              verificationStatus = 'verified';
+            } else if (hasPendingStore) {
+              verificationStatus = 'pending';
+            } else if (hasRejectedStore) {
+              verificationStatus = 'rejected';
+            }
+          }
+          
+          // Use manual verification record if it exists and overrides store-based status
+          const manualVerification = verifications && verifications[uid] ? verifications[uid] : null;
+          const verification = {
+            status: manualVerification?.status || verificationStatus,
+            businessPermit: manualVerification?.businessPermit || u.businessInfo?.businessPermit,
+            validId: manualVerification?.validId || u.businessInfo?.validId,
+            storePhoto: manualVerification?.storePhoto || u.businessInfo?.storePhoto,
+            verifiedAt: manualVerification?.verifiedAt,
+            notes: manualVerification?.notes || (verificationStatus === 'verified' ? 'Verified via store approval' : '')
+          };
+          
           storeOwners.push({
             userId: uid,
             email: u.personalInfo?.email || u.email || '',

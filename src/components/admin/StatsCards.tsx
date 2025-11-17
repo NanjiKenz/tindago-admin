@@ -1,7 +1,7 @@
 /**
  * Stats Cards Component - Pixel Perfect Figma Implementation
  *
- * 4 stat cards: Total Customer, Active Store, Total Sales, Monthly Revenue
+ * 4 stat cards: Total Customer, Active Store, Total Commission, Total Transactions
  * Positioned at x:308-1133, y:211 with exact dimensions from Figma: 281:174-281:225
  */
 
@@ -11,13 +11,12 @@ import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { UserManagementService } from '@/lib/userManagementService';
 import { StoreService } from '@/lib/storeService';
+import { getAllTransactions, getTransactionSummary } from '@/lib/transactionService';
 
 interface StatCard {
   title: string;
   subtitle: string;
   value: string;
-  change: string;
-  changeType: 'positive' | 'negative';
   iconSrc: string;
   iconBgColor: string;
   position: { x: number; y: number };
@@ -26,6 +25,8 @@ interface StatCard {
 export const StatsCards: React.FC = () => {
   const [totalCustomers, setTotalCustomers] = useState(0);
   const [activeStores, setActiveStores] = useState(0);
+  const [totalCommission, setTotalCommission] = useState(0);
+  const [totalTransactions, setTotalTransactions] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -45,6 +46,12 @@ export const StatsCards: React.FC = () => {
         const storeStats = await storeStatsRes.json();
         setActiveStores(storeStats.activeStores || 0);
 
+        // Load transaction stats to get total commission and transaction count
+        const transactions = await getAllTransactions();
+        const transactionSummary = getTransactionSummary(transactions);
+        setTotalCommission(transactionSummary.totalCommission);
+        setTotalTransactions(transactionSummary.totalTransactions);
+
         setLoading(false);
       } catch (error) {
         console.error('Error loading dashboard stats:', error);
@@ -60,8 +67,6 @@ export const StatsCards: React.FC = () => {
       title: 'Total Customer',
       subtitle: 'Registered users',
       value: loading ? 'Loading...' : totalCustomers.toLocaleString(),
-      change: '11%',
-      changeType: 'positive',
       iconSrc: '/images/admin-dashboard/customer-card-icon.png',
       iconBgColor: '#A855F7', // Purple
       position: { x: 308, y: 211 }
@@ -70,30 +75,24 @@ export const StatsCards: React.FC = () => {
       title: 'Active Store',
       subtitle: 'Currently active',
       value: loading ? 'Loading...' : activeStores.toLocaleString(),
-      change: '24%',
-      changeType: 'positive',
       iconSrc: '/images/admin-dashboard/shop-card-icon.png',
       iconBgColor: '#22C55E', // Green
       position: { x: 583, y: 211 }
     },
     {
-      title: 'Total Sales',
-      subtitle: 'This month',
-      value: '₱22,670',
-      change: '15%',
-      changeType: 'negative',
-      iconSrc: '/images/admin-dashboard/sales-card-icon.png',
-      iconBgColor: '#3B82F6', // Blue
+      title: 'Total Commission',
+      subtitle: 'All time',
+      value: loading ? 'Loading...' : `₱${totalCommission.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+      iconSrc: '/images/admin-dashboard/profit-card-icon.png',
+      iconBgColor: '#EAB308', // Yellow
       position: { x: 858, y: 211 }
     },
     {
-      title: 'Montly Revenue',
-      subtitle: 'This month',
-      value: '₱42,670',
-      change: '98%',
-      changeType: 'positive',
-      iconSrc: '/images/admin-dashboard/profit-card-icon.png',
-      iconBgColor: '#EAB308', // Yellow
+      title: 'Total Transactions',
+      subtitle: 'All time',
+      value: loading ? 'Loading...' : totalTransactions.toLocaleString(),
+      iconSrc: '/images/admin-dashboard/sales-card-icon.png',
+      iconBgColor: '#3B82F6', // Blue
       position: { x: 1133, y: 211 }
     }
   ];
@@ -196,59 +195,8 @@ export const StatsCards: React.FC = () => {
               >
                 {stat.value}
               </p>
-              {/* Spacer for alignment with cards that have revenue */}
-              <p
-                style={{
-                  fontFamily: 'Clash Grotesk Variable',
-                  fontWeight: 400,
-                  fontSize: '12px',
-                  color: 'transparent',
-                  margin: 0,
-                  marginTop: '4px',
-                  userSelect: 'none'
-                }}
-              >
-                &nbsp;
-              </p>
             </div>
 
-            {/* Change Indicator - Exact Figma positioning */}
-            <div
-              className="absolute flex items-center"
-              style={{
-                right: '20px',
-                bottom: '20px',
-                gap: '6px'
-              }}
-            >
-              {/* Arrow Icon - Perfect SVG matching Figma */}
-              <svg
-                width="12"
-                height="8"
-                viewBox="0 0 12 8"
-                fill="none"
-              >
-                <path
-                  d={stat.changeType === 'positive' ? 'M1 7L6 2L11 7' : 'M1 1L6 6L11 1'}
-                  stroke={stat.changeType === 'positive' ? '#22C55E' : '#EF4444'}
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-
-              <span
-                style={{
-                  fontFamily: 'Clash Grotesk Variable',
-                  fontWeight: 500,
-                  fontSize: '12px',
-                  lineHeight: '1.2em',
-                  color: stat.changeType === 'positive' ? '#22C55E' : '#EF4444'
-                }}
-              >
-                {stat.change}
-              </span>
-            </div>
           </div>
         </div>
       ))}

@@ -26,18 +26,65 @@ export const UserCreateModal: React.FC<UserCreateModalProps> = ({
     name: '',
     email: '',
     password: '',
-    dateOfBirth: '',
-    country: '',
-    city: '',
-    postalCode: ''
+    dateOfBirth: ''
   });
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [verifyingEmail, setVerifyingEmail] = useState(false);
+  const [emailVerified, setEmailVerified] = useState(false);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     if (error) setError('');
+    // Reset email verification when email changes
+    if (field === 'email') {
+      setEmailVerified(false);
+    }
+  };
+
+  const verifyEmail = async () => {
+    // Validate email format first
+    if (!formData.email.trim()) {
+      setError('Please enter an email address');
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      setError('Please enter a valid email address');
+      return;
+    }
+
+    setVerifyingEmail(true);
+    setError('');
+
+    try {
+      const response = await fetch('/api/admin/verify-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: formData.email })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.message || data.error || 'Failed to verify email');
+        setEmailVerified(false);
+        return;
+      }
+
+      if (data.exists) {
+        setError(data.message || 'This email is already registered');
+        setEmailVerified(false);
+      } else {
+        setEmailVerified(true);
+      }
+    } catch (error) {
+      console.error('Error verifying email:', error);
+      setError('Failed to verify email. Please try again.');
+      setEmailVerified(false);
+    } finally {
+      setVerifyingEmail(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -56,16 +103,16 @@ export const UserCreateModal: React.FC<UserCreateModalProps> = ({
       setError('Please enter a valid email address');
       return;
     }
+    if (!emailVerified) {
+      setError('Please verify the email address first');
+      return;
+    }
     if (!formData.password || formData.password.length < 6) {
       setError('Password must be at least 6 characters');
       return;
     }
     if (!formData.dateOfBirth.trim()) {
       setError('Date of Birth is required');
-      return;
-    }
-    if (!formData.country.trim()) {
-      setError('Country is required');
       return;
     }
 
@@ -88,11 +135,9 @@ export const UserCreateModal: React.FC<UserCreateModalProps> = ({
         name: '',
         email: '',
         password: '',
-        dateOfBirth: '',
-        country: '',
-        city: '',
-        postalCode: ''
+        dateOfBirth: ''
       });
+      setEmailVerified(false);
 
       onUserCreated();
       onClose();
@@ -103,6 +148,14 @@ export const UserCreateModal: React.FC<UserCreateModalProps> = ({
       setLoading(false);
     }
   };
+
+  // Reset verification state when modal closes
+  React.useEffect(() => {
+    if (!isOpen) {
+      setEmailVerified(false);
+      setError('');
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -273,28 +326,90 @@ export const UserCreateModal: React.FC<UserCreateModalProps> = ({
                 >
                   Email
                 </label>
-                <input
-                  type="email"
-                  placeholder="admin@gmail.com"
-                  value={formData.email}
-                  onChange={(e) => handleInputChange('email', e.target.value)}
-                  style={{
-                    width: '100%',
-                    height: '50px',
-                    backgroundColor: '#FFFFFF',
-                    borderRadius: '16px',
-                    border: 'none',
-                    padding: '0 20px',
-                    fontFamily: 'Clash Grotesk Variable',
-                    fontWeight: 400,
-                    fontSize: '16px',
-                    lineHeight: '19.68px',
-                    color: '#1E1E1E',
-                    outline: 'none',
-                    boxSizing: 'border-box'
-                  }}
-                  className="placeholder:text-gray-400"
-                />
+                <div style={{ position: 'relative', display: 'flex', gap: '8px', alignItems: 'center' }}>
+                  <input
+                    type="email"
+                    placeholder="admin@gmail.com"
+                    value={formData.email}
+                    onChange={(e) => handleInputChange('email', e.target.value)}
+                    style={{
+                      flex: 1,
+                      height: '50px',
+                      backgroundColor: '#FFFFFF',
+                      borderRadius: '16px',
+                      border: emailVerified ? '2px solid #3BB77E' : 'none',
+                      padding: '0 20px',
+                      fontFamily: 'Clash Grotesk Variable',
+                      fontWeight: 400,
+                      fontSize: '16px',
+                      lineHeight: '19.68px',
+                      color: '#1E1E1E',
+                      outline: 'none',
+                      boxSizing: 'border-box'
+                    }}
+                    className="placeholder:text-gray-400"
+                  />
+                  <button
+                    type="button"
+                    onClick={verifyEmail}
+                    disabled={verifyingEmail || !formData.email || emailVerified}
+                    style={{
+                      height: '50px',
+                      padding: '0 20px',
+                      backgroundColor: emailVerified ? '#3BB77E' : '#2563EB',
+                      borderRadius: '16px',
+                      border: 'none',
+                      fontFamily: 'Clash Grotesk Variable',
+                      fontWeight: 600,
+                      fontSize: '14px',
+                      color: '#FFFFFF',
+                      cursor: (verifyingEmail || !formData.email || emailVerified) ? 'not-allowed' : 'pointer',
+                      transition: 'all 0.2s ease',
+                      opacity: (verifyingEmail || !formData.email || emailVerified) ? 0.6 : 1,
+                      minWidth: '100px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!verifyingEmail && formData.email && !emailVerified) {
+                        e.currentTarget.style.backgroundColor = '#1D4ED8';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!verifyingEmail && formData.email && !emailVerified) {
+                        e.currentTarget.style.backgroundColor = '#2563EB';
+                      }
+                    }}
+                  >
+                    {verifyingEmail ? (
+                      'Verifying...'
+                    ) : emailVerified ? (
+                      <>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                        Verified
+                      </>
+                    ) : (
+                      'Verify'
+                    )}
+                  </button>
+                </div>
+                {emailVerified && (
+                  <div
+                    style={{
+                      marginTop: '8px',
+                      fontSize: '13px',
+                      color: '#3BB77E',
+                      fontFamily: 'Clash Grotesk Variable',
+                      fontWeight: 500
+                    }}
+                  >
+                    ✓ Email is available and verified
+                  </div>
+                )}
               </div>
 
               {/* Password Field */}
@@ -337,7 +452,7 @@ export const UserCreateModal: React.FC<UserCreateModalProps> = ({
               </div>
 
               {/* Date of Birth Field */}
-              <div style={{ marginBottom: '20px' }}>
+              <div style={{ marginBottom: '32px' }}>
                 <label
                   style={{
                     display: 'block',
@@ -352,8 +467,7 @@ export const UserCreateModal: React.FC<UserCreateModalProps> = ({
                   Date of Birth
                 </label>
                 <input
-                  type="text"
-                  placeholder="MM/DD/YYYY"
+                  type="date"
                   value={formData.dateOfBirth}
                   onChange={(e) => handleInputChange('dateOfBirth', e.target.value)}
                   style={{
@@ -373,126 +487,6 @@ export const UserCreateModal: React.FC<UserCreateModalProps> = ({
                   }}
                   className="placeholder:text-gray-400"
                 />
-              </div>
-
-              {/* Country Field */}
-              <div style={{ marginBottom: '20px' }}>
-                <label
-                  style={{
-                    display: 'block',
-                    fontFamily: 'Clash Grotesk Variable',
-                    fontWeight: 600,
-                    fontSize: '16px',
-                    lineHeight: '19.68px',
-                    color: '#1E1E1E',
-                    marginBottom: '8px'
-                  }}
-                >
-                  Country
-                </label>
-                <input
-                  type="text"
-                  placeholder="Philippines"
-                  value={formData.country}
-                  onChange={(e) => handleInputChange('country', e.target.value)}
-                  style={{
-                    width: '100%',
-                    height: '50px',
-                    backgroundColor: '#FFFFFF',
-                    borderRadius: '16px',
-                    border: 'none',
-                    padding: '0 20px',
-                    fontFamily: 'Clash Grotesk Variable',
-                    fontWeight: 400,
-                    fontSize: '16px',
-                    lineHeight: '19.68px',
-                    color: '#1E1E1E',
-                    outline: 'none',
-                    boxSizing: 'border-box'
-                  }}
-                  className="placeholder:text-gray-400"
-                />
-              </div>
-
-              {/* City and Postal Code in Row */}
-              <div style={{ display: 'flex', gap: '16px', marginBottom: '32px' }}>
-                {/* City Field */}
-                <div style={{ flex: 1 }}>
-                  <label
-                    style={{
-                      display: 'block',
-                      fontFamily: 'Clash Grotesk Variable',
-                      fontWeight: 600,
-                      fontSize: '16px',
-                      lineHeight: '19.68px',
-                      color: '#1E1E1E',
-                      marginBottom: '8px'
-                    }}
-                  >
-                    City
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Enter city"
-                    value={formData.city}
-                    onChange={(e) => handleInputChange('city', e.target.value)}
-                    style={{
-                      width: '100%',
-                      height: '50px',
-                      backgroundColor: '#FFFFFF',
-                      borderRadius: '16px',
-                      border: 'none',
-                      padding: '0 20px',
-                      fontFamily: 'Clash Grotesk Variable',
-                      fontWeight: 400,
-                      fontSize: '16px',
-                      lineHeight: '19.68px',
-                      color: '#1E1E1E',
-                      outline: 'none',
-                      boxSizing: 'border-box'
-                    }}
-                    className="placeholder:text-gray-400"
-                  />
-                </div>
-
-                {/* Postal Code Field */}
-                <div style={{ flex: 1 }}>
-                  <label
-                    style={{
-                      display: 'block',
-                      fontFamily: 'Clash Grotesk Variable',
-                      fontWeight: 600,
-                      fontSize: '16px',
-                      lineHeight: '19.68px',
-                      color: '#1E1E1E',
-                      marginBottom: '8px'
-                    }}
-                  >
-                    Postal Code
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Enter postal code"
-                    value={formData.postalCode}
-                    onChange={(e) => handleInputChange('postalCode', e.target.value)}
-                    style={{
-                      width: '100%',
-                      height: '50px',
-                      backgroundColor: '#FFFFFF',
-                      borderRadius: '16px',
-                      border: 'none',
-                      padding: '0 20px',
-                      fontFamily: 'Clash Grotesk Variable',
-                      fontWeight: 400,
-                      fontSize: '16px',
-                      lineHeight: '19.68px',
-                      color: '#1E1E1E',
-                      outline: 'none',
-                      boxSizing: 'border-box'
-                    }}
-                    className="placeholder:text-gray-400"
-                  />
-                </div>
               </div>
 
               {/* Action Buttons */}

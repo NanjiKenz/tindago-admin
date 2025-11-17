@@ -26,10 +26,9 @@ export { CommissionOverTime } from './CommissionOverTime';
 export { TopStoresByRevenue } from './TopStoresByRevenue';
 export { TransactionSummary } from './TransactionSummary';
 
-// User and customer management components
+// User management components
 export { UserManagement } from './UserManagement';
 export { UserCreateModal } from './UserCreateModal';
-export { CustomerManagement } from './CustomerManagement';
 
 // Store management components
 export { StoreManagement } from './StoreManagement';

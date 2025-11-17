@@ -1,7 +1,7 @@
 /**
  * Quick Actions Component - Pixel Perfect Figma Implementation
  *
- * Quick Actions section (1087x303) with 4 interactive buttons in 2x2 grid
+ * Quick Actions section (1087x180) with 2 interactive buttons in a row
  * Positioned at x:313, y:701 from Figma design: 281:284-281:302
  */
 
@@ -32,17 +32,6 @@ export const QuickActions: React.FC = () => {
     router.push('/stores?view=pending');
   };
 
-  const handleGenerateReport = () => {
-    console.log('Generate Report clicked');
-    // TODO: Implement report generation
-  };
-
-  const handleSystemSettings = () => {
-    console.log('System Settings clicked');
-    // TODO: Navigate to settings page when created
-    // router.push('/settings');
-  };
-
   const quickActions: QuickActionButton[] = [
     {
       title: 'Add New Admin',
@@ -51,22 +40,10 @@ export const QuickActions: React.FC = () => {
       position: { x: 30.33, y: 60 }
     },
     {
-      title: 'Generate Report',
-      iconSrc: '/images/admin-dashboard/report-icon.png',
-      onClick: handleGenerateReport,
-      position: { x: 30.33, y: 180 }
-    },
-    {
       title: 'Approve Stores',
       iconSrc: '/images/admin-dashboard/shop-action-icon.png',
       onClick: handleApproveStores,
       position: { x: 556.14, y: 60 }
-    },
-    {
-      title: 'System Settings',
-      iconSrc: '/images/admin-dashboard/settings-icon.png',
-      onClick: handleSystemSettings,
-      position: { x: 556.14, y: 180 }
     }
   ];
 
@@ -75,7 +52,7 @@ export const QuickActions: React.FC = () => {
       className="bg-white rounded-2xl shadow-sm"
       style={{
         width: '1087px',
-        height: '303px',
+        height: '180px',
         position: 'relative'
       }}
     >
