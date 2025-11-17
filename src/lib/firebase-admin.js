@@ -19,12 +19,23 @@ if (!admin.apps.length) {
       databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL
     });
   } else {
-    // Initialize with API key (development - less secure but works)
+    // Initialize with individual env vars (development/production)
+    const privateKey = process.env.FIREBASE_PRIVATE_KEY;
+    const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+    const clientEmail = process.env.FIREBASE_CLIENT_EMAIL || `firebase-adminsdk@${projectId}.iam.gserviceaccount.com`;
+
+    if (!privateKey || !projectId) {
+      throw new Error(
+        'Firebase Admin: Missing required environment variables. ' +
+        'Set FIREBASE_PRIVATE_KEY and NEXT_PUBLIC_FIREBASE_PROJECT_ID in Vercel.'
+      );
+    }
+
     adminApp = admin.initializeApp({
       credential: admin.credential.cert({
-        projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-        clientEmail: `firebase-adminsdk@${process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID}.iam.gserviceaccount.com`,
-        privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n')
+        projectId,
+        clientEmail,
+        privateKey: privateKey.replace(/\\n/g, '\n')
       }),
       databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL
     });
@@ -40,4 +51,6 @@ if (!admin.apps.length) {
 }
 
 export { adminApp, adminAuth, adminDb, admin };
+// Export database as alias for adminDb for compatibility
+export const database = adminDb;
 export default admin;
