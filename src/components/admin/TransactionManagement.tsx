@@ -21,6 +21,7 @@ import { ref, onValue, off } from 'firebase/database';
 import { database } from '@/lib/firebase.js';
 import { processRefund, exportToCSV, formatCurrency } from '@/lib/transactionService';
 import { getCommissionRate, setCommissionRate } from '@/lib/commission';
+import { RefreshButton } from '@/components/ui/RefreshButton';
 
 // Payment Method Logo Components - Styled badges matching Figma design
 const GCashLogo = () => (
@@ -171,22 +172,23 @@ export const TransactionManagement: React.FC = () => {
   }, []);
 
   // Load transactions from API route (bypasses Firebase security rules)
-  useEffect(() => {
-    const loadTransactions = async () => {
-      try {
-        setLoading(true);
-        const res = await fetch('/api/admin/transactions', { cache: 'no-store' });
-        if (!res.ok) {
-          throw new Error('Failed to fetch transactions');
-        }
-        const data = await res.json();
-        setTransactions(data.transactions || []);
-        setLoading(false);
-      } catch (error) {
-        console.error('Error loading transactions:', error);
-        setLoading(false);
+  const loadTransactions = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch('/api/admin/transactions', { cache: 'no-store' });
+      if (!res.ok) {
+        throw new Error('Failed to fetch transactions');
       }
-    };
+      const data = await res.json();
+      setTransactions(data.transactions || []);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error loading transactions:', error);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
 
     loadTransactions();
 
@@ -332,8 +334,15 @@ export const TransactionManagement: React.FC = () => {
               </p>
             </div>
 
-            {/* Commission Fee Status and Edit Fee Button */}
+            {/* Refresh Button and Commission Fee Section */}
             <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+              {/* Refresh Button */}
+              <RefreshButton 
+                onClick={() => loadTransactions()} 
+                loading={loading} 
+              />
+
+              {/* Commission Fee Status and Edit Fee Button */}
               {/* Commission Fee Status Button */}
               <div
                 style={{

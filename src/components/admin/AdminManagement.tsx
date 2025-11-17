@@ -24,6 +24,7 @@ import type { AdminUser } from '@/types/userManagement';
 import { UserCreateModal } from '@/components/admin/UserCreateModal';
 import { StatusChangeModal } from '@/components/admin/StatusChangeModal';
 import { ViewDetailsModal } from '@/components/admin/ViewDetailsModal';
+import { RefreshButton } from '@/components/ui/RefreshButton';
 
 export const AdminManagement: React.FC = () => {
   const router = useRouter();
@@ -244,9 +245,17 @@ export const AdminManagement: React.FC = () => {
               </p>
             </div>
 
-            {/* Add Admin Button */}
-            <button
-              onClick={() => setShowCreateModal(true)}
+            {/* Action Buttons */}
+            <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+              {/* Refresh Button */}
+              <RefreshButton 
+                onClick={() => loadData()} 
+                loading={loading} 
+              />
+
+              {/* Add Admin Button */}
+              <button
+                onClick={() => setShowCreateModal(true)}
               style={{
                 padding: '12px 24px',
                 borderRadius: '12px',
@@ -278,6 +287,7 @@ export const AdminManagement: React.FC = () => {
               />
               Add Admin
             </button>
+            </div>
           </div>
         </div>
 

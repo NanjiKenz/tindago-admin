@@ -24,6 +24,7 @@ import { StoreService } from '@/lib/storeService';
 import { AdminService } from '@/lib/adminService';
 import { StatusChangeModal } from '@/components/admin/StatusChangeModal';
 import { ViewDetailsModal } from '@/components/admin/ViewDetailsModal';
+import { RefreshButton } from '@/components/ui/RefreshButton';
 
 interface StoreManagementProps {
   className?: string;
@@ -735,6 +736,12 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
                 </p>
               </div>
             </div>
+
+            {/* Refresh Button */}
+            <RefreshButton 
+              onClick={() => loadCategoryData()} 
+              loading={loading} 
+            />
 
             {/* Error Display */}
             {error && (

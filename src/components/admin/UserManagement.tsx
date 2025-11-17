@@ -23,6 +23,7 @@ import { UserManagementService } from '@/lib/userManagementService';
 import { UserStats } from '@/types/userManagement';
 import { StatusChangeModal } from '@/components/admin/StatusChangeModal';
 import { ViewDetailsModal } from '@/components/admin/ViewDetailsModal';
+import { RefreshButton } from '@/components/ui/RefreshButton';
 
 
 interface UserDisplay {
@@ -467,6 +468,12 @@ export const UserManagement: React.FC<UserManagementProps> = () => {
                 Manage users, roles, and permissions across the TindaGo platform
               </p>
             </div>
+
+            {/* Refresh Button */}
+            <RefreshButton 
+              onClick={() => loadUsers()} 
+              loading={loading} 
+            />
 
             {/* Error Display */}
             {error && (
