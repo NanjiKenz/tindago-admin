@@ -12,6 +12,7 @@ import { AdminSidebar } from '@/components/admin/AdminSidebar';
 import { AdminHeader } from '@/components/admin/AdminHeader';
 import { TopStoresByRevenue } from '@/components/admin/TopStoresByRevenue';
 import { TransactionSummary } from '@/components/admin/TransactionSummary';
+import { RefreshButton } from '@/components/ui/RefreshButton';
 
 const AnalyticsPage: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -19,6 +20,16 @@ const AnalyticsPage: React.FC = () => {
   const currentMonth = new Date().toLocaleString('en-US', { month: 'long' });
   const [timeRange, setTimeRange] = useState(currentMonth);
   const [isGeneratingReport, setIsGeneratingReport] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    // Force all components to remount by changing the key
+    setRefreshKey(prev => prev + 1);
+    // Simulate refresh delay
+    setTimeout(() => setRefreshing(false), 500);
+  };
 
   // Generate CSV report
   const handleGenerateReport = async () => {
@@ -200,6 +211,12 @@ const AnalyticsPage: React.FC = () => {
                   Comprehensive insights and data visualization for your TindaGo marketplace performance.
                 </p>
               </div>
+
+              {/* Refresh Button */}
+              <RefreshButton 
+                onClick={handleRefresh} 
+                loading={refreshing} 
+              />
             </div>
           </div>
 
@@ -289,12 +306,12 @@ const AnalyticsPage: React.FC = () => {
 
             {/* Top Stores by Revenue Chart */}
             <div className="mb-6">
-              <TopStoresByRevenue timeRange={timeRange} />
+              <TopStoresByRevenue key={`stores-${refreshKey}`} timeRange={timeRange} />
             </div>
 
             {/* Transaction Summary Table */}
             <div style={{ marginTop: '24px' }}>
-              <TransactionSummary timeRange={timeRange} />
+              <TransactionSummary key={`transactions-${refreshKey}`} timeRange={timeRange} />
             </div>
           </div>
         </div>

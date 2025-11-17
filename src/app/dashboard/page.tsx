@@ -13,9 +13,20 @@ import { AdminHeader } from '@/components/admin/AdminHeader';
 import { StatsCards } from '@/components/admin/StatsCards';
 import { PaymentMethodDistribution } from '@/components/admin/PaymentMethodDistribution';
 import { QuickActions } from '@/components/admin/QuickActions';
+import { RefreshButton } from '@/components/ui/RefreshButton';
 
 const DashboardPage: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    // Force all components to remount by changing the key
+    setRefreshKey(prev => prev + 1);
+    // Simulate refresh delay
+    setTimeout(() => setRefreshing(false), 500);
+  };
 
   return (
     <div
@@ -102,6 +113,12 @@ const DashboardPage: React.FC = () => {
                   Welcome back! Here&apos;s what&apos;s happening with your TindaGo today.
                 </p>
               </div>
+
+              {/* Refresh Button */}
+              <RefreshButton 
+                onClick={handleRefresh} 
+                loading={refreshing} 
+              />
             </div>
           </div>
 
@@ -115,7 +132,7 @@ const DashboardPage: React.FC = () => {
               height: '150px'
             }}
           >
-            <StatsCards />
+            <StatsCards key={refreshKey} />
           </div>
 
           {/* Payment Method Distribution - Repositioned */}
