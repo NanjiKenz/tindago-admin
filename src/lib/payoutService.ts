@@ -15,8 +15,11 @@ export interface PayoutRequest {
   requestedAt: string;
   processedAt?: string;
   processedBy?: string; // Admin user ID
-  paymentMethod: 'bank' | 'gcash' | 'paymaya';
-  accountDetails: string; // Bank account or mobile number
+  paymentMethod?: 'bank' | 'gcash' | 'paymaya'; // Legacy field
+  method?: 'bank' | 'gcash' | 'paymaya'; // New field
+  accountDetails?: string; // Legacy field - Bank account or mobile number
+  accountName?: string; // New field
+  accountNumber?: string; // New field
   notes?: string;
   adminNotes?: string;
 }
@@ -176,6 +179,7 @@ export async function getStorePayoutRequests(storeId: string): Promise<PayoutReq
 
 /**
  * Approve a payout request
+ * Updates both 'payout_requests' (legacy) and 'payouts' (new structure)
  */
 export async function approvePayoutRequest(params: {
   payoutId: string;
@@ -185,15 +189,29 @@ export async function approvePayoutRequest(params: {
   const { payoutId, adminUserId, adminNotes } = params;
 
   try {
-    // Get payout details
-    const payoutRef = ref(database, `payout_requests/${payoutId}`);
-    const snapshot = await get(payoutRef);
-
-    if (!snapshot.exists()) {
-      throw new Error('Payout request not found');
+    // Try new structure first
+    const newPayoutRef = ref(database, `payouts/${payoutId}`);
+    const newSnapshot = await get(newPayoutRef);
+    
+    let payoutRef;
+    let payout;
+    
+    if (newSnapshot.exists()) {
+      // Use new structure
+      payoutRef = newPayoutRef;
+      payout = newSnapshot.val();
+    } else {
+      // Fallback to legacy structure
+      const legacyPayoutRef = ref(database, `payout_requests/${payoutId}`);
+      const legacySnapshot = await get(legacyPayoutRef);
+      
+      if (!legacySnapshot.exists()) {
+        throw new Error('Payout request not found');
+      }
+      
+      payoutRef = legacyPayoutRef;
+      payout = legacySnapshot.val();
     }
-
-    const payout = snapshot.val();
 
     if (payout.status !== 'pending') {
       throw new Error('Payout already processed');
@@ -204,16 +222,52 @@ export async function approvePayoutRequest(params: {
       storeId: payout.storeId,
       amount: payout.amount,
       payoutId,
-      description: `Payout approved - ${payout.paymentMethod}`,
+      description: `Payout approved - ${payout.paymentMethod || payout.method}`,
     });
 
-    // Update payout status
-    await update(payoutRef, {
+    const timestamp = new Date().toISOString();
+    const updates: Record<string, any> = {};
+
+    // Update main payout record
+    updates[`payouts/${payoutId}/status`] = 'approved';
+    updates[`payouts/${payoutId}/approvedBy`] = adminUserId;
+    updates[`payouts/${payoutId}/approvedAt`] = timestamp;
+    
+    // Update status history
+    const statusHistory = payout.statusHistory || [];
+    statusHistory.push({
       status: 'approved',
-      processedAt: new Date().toISOString(),
-      processedBy: adminUserId,
-      adminNotes: adminNotes || '',
+      timestamp,
+      note: adminNotes || 'Approved by admin',
+      actionBy: adminUserId,
     });
+    updates[`payouts/${payoutId}/statusHistory`] = statusHistory;
+
+    // Update indexed data
+    updates[`payouts_by_store/${payout.storeId}/${payoutId}/status`] = 'approved';
+    
+    // Move from pending to approved in status index
+    updates[`payouts_by_status/pending/${payoutId}`] = null;
+    updates[`payouts_by_status/approved/${payoutId}`] = {
+      storeId: payout.storeId,
+      storeName: payout.storeName || payout.storeId || 'Unknown',
+      amount: payout.amount,
+      createdAt: payout.createdAt || payout.requestedAt || new Date().toISOString(),
+    };
+
+    await update(ref(database), updates);
+    
+    // Also update legacy structure if it exists
+    const legacyRef = ref(database, `payout_requests/${payoutId}`);
+    const legacyExists = await get(legacyRef);
+    if (legacyExists.exists()) {
+      await update(legacyRef, {
+        status: 'approved',
+        processedAt: timestamp,
+        processedBy: adminUserId,
+        adminNotes: adminNotes || '',
+      });
+    }
   } catch (error) {
     console.error('Error approving payout:', error);
     throw error;
@@ -222,6 +276,7 @@ export async function approvePayoutRequest(params: {
 
 /**
  * Reject a payout request
+ * Updates both 'payout_requests' (legacy) and 'payouts' (new structure)
  */
 export async function rejectPayoutRequest(params: {
   payoutId: string;
@@ -231,26 +286,74 @@ export async function rejectPayoutRequest(params: {
   const { payoutId, adminUserId, adminNotes } = params;
 
   try {
-    const payoutRef = ref(database, `payout_requests/${payoutId}`);
-    const snapshot = await get(payoutRef);
-
-    if (!snapshot.exists()) {
-      throw new Error('Payout request not found');
+    // Try new structure first
+    const newPayoutRef = ref(database, `payouts/${payoutId}`);
+    const newSnapshot = await get(newPayoutRef);
+    
+    let payout;
+    
+    if (newSnapshot.exists()) {
+      payout = newSnapshot.val();
+    } else {
+      // Fallback to legacy structure
+      const legacyPayoutRef = ref(database, `payout_requests/${payoutId}`);
+      const legacySnapshot = await get(legacyPayoutRef);
+      
+      if (!legacySnapshot.exists()) {
+        throw new Error('Payout request not found');
+      }
+      
+      payout = legacySnapshot.val();
     }
-
-    const payout = snapshot.val();
 
     if (payout.status !== 'pending') {
       throw new Error('Payout already processed');
     }
 
-    // Update payout status
-    await update(payoutRef, {
+    const timestamp = new Date().toISOString();
+    const updates: Record<string, any> = {};
+
+    // Update main payout record
+    updates[`payouts/${payoutId}/status`] = 'rejected';
+    updates[`payouts/${payoutId}/rejectedBy`] = adminUserId;
+    updates[`payouts/${payoutId}/rejectedAt`] = timestamp;
+    updates[`payouts/${payoutId}/rejectionReason`] = adminNotes;
+    
+    // Update status history
+    const statusHistory = payout.statusHistory || [];
+    statusHistory.push({
       status: 'rejected',
-      processedAt: new Date().toISOString(),
-      processedBy: adminUserId,
-      adminNotes,
+      timestamp,
+      note: adminNotes,
+      actionBy: adminUserId,
     });
+    updates[`payouts/${payoutId}/statusHistory`] = statusHistory;
+
+    // Update indexed data
+    updates[`payouts_by_store/${payout.storeId}/${payoutId}/status`] = 'rejected';
+    
+    // Move from pending to rejected in status index
+    updates[`payouts_by_status/pending/${payoutId}`] = null;
+    updates[`payouts_by_status/rejected/${payoutId}`] = {
+      storeId: payout.storeId,
+      storeName: payout.storeName || payout.storeId || 'Unknown',
+      amount: payout.amount,
+      createdAt: payout.createdAt || payout.requestedAt || new Date().toISOString(),
+    };
+
+    await update(ref(database), updates);
+    
+    // Also update legacy structure if it exists
+    const legacyRef = ref(database, `payout_requests/${payoutId}`);
+    const legacyExists = await get(legacyRef);
+    if (legacyExists.exists()) {
+      await update(legacyRef, {
+        status: 'rejected',
+        processedAt: timestamp,
+        processedBy: adminUserId,
+        adminNotes,
+      });
+    }
   } catch (error) {
     console.error('Error rejecting payout:', error);
     throw error;
@@ -259,26 +362,82 @@ export async function rejectPayoutRequest(params: {
 
 /**
  * Mark payout as completed (money transferred)
+ * Updates both 'payout_requests' (legacy) and 'payouts' (new structure)
  */
-export async function completePayoutRequest(payoutId: string): Promise<void> {
+export async function completePayoutRequest(params: {
+  payoutId: string;
+  adminUserId?: string;
+  completionNote?: string;
+}): Promise<void> {
+  const { payoutId, adminUserId, completionNote } = params;
+  
   try {
-    const payoutRef = ref(database, `payout_requests/${payoutId}`);
-    const snapshot = await get(payoutRef);
-
-    if (!snapshot.exists()) {
-      throw new Error('Payout request not found');
+    // Try new structure first
+    const newPayoutRef = ref(database, `payouts/${payoutId}`);
+    const newSnapshot = await get(newPayoutRef);
+    
+    let payout;
+    
+    if (newSnapshot.exists()) {
+      payout = newSnapshot.val();
+    } else {
+      // Fallback to legacy structure
+      const legacyPayoutRef = ref(database, `payout_requests/${payoutId}`);
+      const legacySnapshot = await get(legacyPayoutRef);
+      
+      if (!legacySnapshot.exists()) {
+        throw new Error('Payout request not found');
+      }
+      
+      payout = legacySnapshot.val();
     }
-
-    const payout = snapshot.val();
 
     if (payout.status !== 'approved') {
       throw new Error('Payout must be approved first');
     }
 
-    await update(payoutRef, {
+    const timestamp = new Date().toISOString();
+    const updates: Record<string, any> = {};
+
+    // Update main payout record
+    updates[`payouts/${payoutId}/status`] = 'completed';
+    updates[`payouts/${payoutId}/completedBy`] = adminUserId || null;
+    updates[`payouts/${payoutId}/completedAt`] = timestamp;
+    updates[`payouts/${payoutId}/completionNote`] = completionNote || null;
+    
+    // Update status history
+    const statusHistory = payout.statusHistory || [];
+    statusHistory.push({
       status: 'completed',
-      completedAt: new Date().toISOString(),
+      timestamp,
+      note: completionNote || 'Payout completed - funds transferred',
+      actionBy: adminUserId || 'system',
     });
+    updates[`payouts/${payoutId}/statusHistory`] = statusHistory;
+
+    // Update indexed data
+    updates[`payouts_by_store/${payout.storeId}/${payoutId}/status`] = 'completed';
+    
+    // Move from approved to completed in status index
+    updates[`payouts_by_status/approved/${payoutId}`] = null;
+    updates[`payouts_by_status/completed/${payoutId}`] = {
+      storeId: payout.storeId,
+      storeName: payout.storeName || payout.storeId || 'Unknown',
+      amount: payout.amount,
+      createdAt: payout.createdAt || payout.requestedAt || new Date().toISOString(),
+    };
+
+    await update(ref(database), updates);
+    
+    // Also update legacy structure if it exists
+    const legacyRef = ref(database, `payout_requests/${payoutId}`);
+    const legacyExists = await get(legacyRef);
+    if (legacyExists.exists()) {
+      await update(legacyRef, {
+        status: 'completed',
+        completedAt: timestamp,
+      });
+    }
   } catch (error) {
     console.error('Error completing payout:', error);
     throw error;

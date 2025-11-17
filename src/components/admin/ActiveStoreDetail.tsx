@@ -7,6 +7,7 @@ import { Store } from '@/types/storeManagement';
 
 interface ActiveStoreDetailProps {
   storeId: string;
+  onEdit?: (storeId: string) => void;
   onSuspend?: (storeId: string, reason?: string) => void;
   onBack?: () => void;
 }
@@ -15,6 +16,7 @@ type DocumentData = string | { uri?: string; url?: string; type?: string; upload
 
 export const ActiveStoreDetail: React.FC<ActiveStoreDetailProps> = ({
   storeId,
+  onEdit,
   onSuspend,
   onBack
 }) => {

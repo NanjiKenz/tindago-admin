@@ -26,39 +26,99 @@ import { useNotifications } from '@/hooks/useNotifications';
 import { NotificationContainer } from '@/components/ui/NotificationToast';
 import type { PayoutRequest } from '@/lib/payoutService';
 
-// Payment Method Badge Components
-const BankBadge = () => (
-  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 10px', backgroundColor: '#3B82F6', borderRadius: '6px' }}>
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
-      <path d="M2 20h20v2H2v-2zm2-8h2v7H4v-7zm5 0h2v7H9v-7zm4 0h2v7h-2v-7zm5 0h2v7h-2v-7zM2 7l10-5 10 5v3H2V7z"/>
-    </svg>
-    <span style={{ color: 'white', fontSize: '11px', fontWeight: 600, fontFamily: 'Clash Grotesk Variable' }}>Bank</span>
-  </div>
-);
-
+// Payment Method Badge Components - Matching Transaction Management style
 const GCashBadge = () => (
-  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 10px', backgroundColor: '#007DFF', borderRadius: '6px' }}>
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
-      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
-      <path d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z" fill="white"/>
-    </svg>
-    <span style={{ color: 'white', fontSize: '11px', fontWeight: 600, fontFamily: 'Clash Grotesk Variable' }}>GCash</span>
+  <div style={{ 
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '6px 16px',
+    backgroundColor: '#2F7FED',
+    borderRadius: '8px',
+    minWidth: '110px',
+    height: '32px'
+  }}>
+    {/* GCash G icon */}
+    <div style={{
+      width: '20px',
+      height: '20px',
+      borderRadius: '50%',
+      backgroundColor: '#1E5FCC',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontWeight: 700,
+      fontSize: '14px',
+      color: 'white',
+      fontFamily: 'sans-serif'
+    }}>
+      G
+    </div>
+    <span style={{ 
+      color: 'white', 
+      fontSize: '14px', 
+      fontWeight: 600, 
+      fontFamily: 'sans-serif'
+    }}>Gcash</span>
   </div>
 );
 
 const PayMayaBadge = () => (
-  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 10px', backgroundColor: '#00D632', borderRadius: '6px' }}>
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
-      <path d="M19 14V6c0-1.1-.9-2-2-2H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zm-9-1c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm13-6v11c0 1.1-.9 2-2 2H4v-2h17V7h2z"/>
-    </svg>
-    <span style={{ color: 'white', fontSize: '11px', fontWeight: 600, fontFamily: 'Clash Grotesk Variable' }}>PayMaya</span>
+  <div style={{ 
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '6px 16px',
+    backgroundColor: '#00D632',
+    borderRadius: '8px',
+    minWidth: '120px',
+    height: '32px'
+  }}>
+    {/* maya text watermark */}
+    <span style={{ 
+      color: 'rgba(255, 255, 255, 0.4)', 
+      fontSize: '11px', 
+      fontWeight: 600, 
+      fontFamily: 'sans-serif',
+      fontStyle: 'italic'
+    }}>maya</span>
+    <span style={{ 
+      color: 'white', 
+      fontSize: '14px', 
+      fontWeight: 600, 
+      fontFamily: 'sans-serif'
+    }}>PayMaya</span>
   </div>
 );
 
-const getPaymentMethodBadge = (method: string) => {
+const BankBadge = () => (
+  <div style={{ 
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '6px',
+    padding: '6px 16px',
+    backgroundColor: '#6B7280',
+    borderRadius: '8px',
+    minWidth: '100px',
+    height: '32px'
+  }}>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
+      <path d="M2 20h20v2H2v-2zm2-8h2v7H4v-7zm5 0h2v7H9v-7zm4 0h2v7h-2v-7zm5 0h2v7h-2v-7zM2 7l10-5 10 5v3H2V7z"/>
+    </svg>
+    <span style={{ 
+      color: 'white', 
+      fontSize: '14px', 
+      fontWeight: 600, 
+      fontFamily: 'sans-serif'
+    }}>Bank</span>
+  </div>
+);
+
+const getPaymentMethodBadge = (method: string | undefined) => {
+  if (!method) return <BankBadge />;
   const methodLower = method.toLowerCase();
-  if (methodLower === 'gcash') return <GCashBadge />;
-  if (methodLower === 'paymaya') return <PayMayaBadge />;
+  if (methodLower === 'gcash' || methodLower.includes('gcash')) return <GCashBadge />;
+  if (methodLower === 'paymaya' || methodLower.includes('paymaya')) return <PayMayaBadge />;
   return <BankBadge />;
 };
 
@@ -77,6 +137,13 @@ export const PayoutManagement: React.FC = () => {
   const [processing, setProcessing] = useState(false);
   const [selectedPayouts, setSelectedPayouts] = useState<Set<string>>(new Set());
   const [bulkProcessing, setBulkProcessing] = useState(false);
+  
+  // Modal states
+  const [showApproveModal, setShowApproveModal] = useState(false);
+  const [showRejectModal, setShowRejectModal] = useState(false);
+  const [payoutToApprove, setPayoutToApprove] = useState<PayoutRequest | null>(null);
+  const [payoutToReject, setPayoutToReject] = useState<PayoutRequest | null>(null);
+  const [rejectionReason, setRejectionReason] = useState('');
 
   // Role check
   useEffect(() => {
@@ -103,9 +170,8 @@ export const PayoutManagement: React.FC = () => {
 
     loadPayouts();
 
-    // Refresh every 5 minutes (300000ms) to reduce Firebase reads
-    // Manual refresh available via UI if needed
-    const interval = setInterval(loadPayouts, 300000);
+    // Refresh every 30 seconds for near real-time updates
+    const interval = setInterval(loadPayouts, 30000);
     return () => clearInterval(interval);
   }, []);
 
@@ -129,10 +195,11 @@ export const PayoutManagement: React.FC = () => {
 
   // Filter payouts
   const filteredPayouts = payouts.filter(p => {
+    const accountInfo = p.accountNumber || p.accountDetails || '';
     const matchesSearch = !searchTerm ||
-      p.storeName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.storeId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.accountDetails.toLowerCase().includes(searchTerm.toLowerCase());
+      p.storeName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      p.storeId?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      accountInfo.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || p.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
@@ -167,22 +234,30 @@ export const PayoutManagement: React.FC = () => {
   };
 
   const handleApprove = async (payout: PayoutRequest) => {
-    if (!isAdmin) { alert('Admins only'); return; }
-    if (!confirm(`Approve payout of ${formatPayoutAmount(payout.amount)} for ${payout.storeName}?\n\nThis will debit the store wallet.`)) {
-      return;
-    }
+    setPayoutToApprove(payout);
+    setShowApproveModal(true);
+  };
+  
+  const confirmApprove = async () => {
+    if (!isAdmin || !payoutToApprove) return;
+    
+    const payoutId = (payoutToApprove as any).payoutId || payoutToApprove.id;
+    console.log('Approving payout:', { payoutId, storeId: payoutToApprove.storeId, amount: payoutToApprove.amount });
 
     setProcessing(true);
     try {
       await approvePayoutRequest({
-        payoutId: payout.id,
-        adminUserId: 'admin',
+        payoutId: payoutId,
+        adminUserId: user?.uid || 'admin',
         adminNotes: 'Approved by admin',
       });
-      success('Payout approved', `${payout.storeName} • ${formatPayoutAmount(payout.amount)}`);
+      success('Payout approved', `${payoutToApprove.storeName || payoutToApprove.storeId} • ${formatPayoutAmount(payoutToApprove.amount)}`);
+      setShowApproveModal(false);
+      setPayoutToApprove(null);
       setSelectedPayout(null);
       await loadData();
     } catch (err) {
+      console.error('Approval error:', err);
       const errorMessage = err instanceof Error ? err.message : 'An error occurred';
       error('Approval failed', errorMessage);
     } finally {
@@ -191,21 +266,35 @@ export const PayoutManagement: React.FC = () => {
   };
 
   const handleReject = async (payout: PayoutRequest) => {
-    if (!isAdmin) { alert('Admins only'); return; }
-    const reason = prompt('Reason for rejection:');
-    if (!reason) return;
+    setPayoutToReject(payout);
+    setRejectionReason('');
+    setShowRejectModal(true);
+  };
+  
+  const confirmReject = async () => {
+    if (!isAdmin || !payoutToReject || !rejectionReason.trim()) {
+      error('Validation failed', 'Please provide a rejection reason');
+      return;
+    }
+
+    const payoutId = (payoutToReject as any).payoutId || payoutToReject.id;
+    console.log('Rejecting payout:', { payoutId, storeId: payoutToReject.storeId, reason: rejectionReason });
 
     setProcessing(true);
     try {
       await rejectPayoutRequest({
-        payoutId: payout.id,
-        adminUserId: 'admin',
-        adminNotes: reason,
+        payoutId: payoutId,
+        adminUserId: user?.uid || 'admin',
+        adminNotes: rejectionReason,
       });
-      warning('Payout rejected', `${payout.storeName} • ${formatPayoutAmount(payout.amount)}`);
+      warning('Payout rejected', `${payoutToReject.storeName || payoutToReject.storeId} • ${formatPayoutAmount(payoutToReject.amount)}`);
+      setShowRejectModal(false);
+      setPayoutToReject(null);
+      setRejectionReason('');
       setSelectedPayout(null);
       await loadData();
     } catch (err) {
+      console.error('Rejection error:', err);
       const errorMessage = err instanceof Error ? err.message : 'An error occurred';
       error('Rejection failed', errorMessage);
     } finally {
@@ -253,10 +342,18 @@ export const PayoutManagement: React.FC = () => {
       alert('Payout must be approved before completing.');
       return;
     }
+    
+    const note = prompt('Completion note (optional):', 'Funds transferred successfully');
+    if (note === null) return; // User cancelled
+    
     if (!confirm(`Mark payout of ${formatPayoutAmount(payout.amount)} for ${payout.storeName} as COMPLETED?`)) return;
     setProcessing(true);
     try {
-      await import('@/lib/payoutService').then(m => m.completePayoutRequest(payout.id));
+      await import('@/lib/payoutService').then(m => m.completePayoutRequest({
+        payoutId: payout.id,
+        adminUserId: 'admin',
+        completionNote: note,
+      }));
       success('Payout completed', `${payout.storeName} • ${formatPayoutAmount(payout.amount)}`);
       setSelectedPayout(null);
       await loadData();
@@ -329,6 +426,44 @@ export const PayoutManagement: React.FC = () => {
                 Manage store payout requests and approve fund transfers
               </p>
             </div>
+
+            {/* Refresh Button */}
+            {selectedPayouts.size === 0 && (
+              <button
+                onClick={loadData}
+                disabled={loading}
+                style={{
+                  padding: '12px 20px',
+                  borderRadius: '12px',
+                  border: '1px solid #E2E8F0',
+                  backgroundColor: '#FFFFFF',
+                  color: '#1E1E1E',
+                  cursor: loading ? 'not-allowed' : 'pointer',
+                  fontFamily: 'Clash Grotesk Variable',
+                  fontWeight: 500,
+                  fontSize: '14px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  opacity: loading ? 0.5 : 1,
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseEnter={(e) => {
+                  if (!loading) {
+                    e.currentTarget.style.backgroundColor = '#F8F9FA';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = '#FFFFFF';
+                }}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <polyline points="23 4 23 10 17 10"></polyline>
+                  <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                </svg>
+                {loading ? 'Refreshing...' : 'Refresh'}
+              </button>
+            )}
 
             {/* Bulk Actions */}
             {selectedPayouts.size > 0 && (
@@ -1064,7 +1199,7 @@ export const PayoutManagement: React.FC = () => {
                               color: '#1E1E1E',
                               margin: 0
                             }}>
-                              {payout.storeName}
+                              {payout.storeName || payout.storeId || 'Unknown Store'}
                             </p>
                             <p style={{
                               fontFamily: 'Clash Grotesk Variable',
@@ -1074,23 +1209,35 @@ export const PayoutManagement: React.FC = () => {
                               margin: 0,
                               marginTop: '4px'
                             }}>
-                              {payout.storeId.slice(0, 16)}...
+                              ID: {payout.storeId || 'N/A'}
                             </p>
                           </div>
                         </td>
                         <td style={{ padding: '20px' }}>
-                          {getPaymentMethodBadge(payout.paymentMethod)}
+                          {getPaymentMethodBadge(payout.method || payout.paymentMethod)}
                         </td>
                         <td style={{ padding: '20px' }}>
-                          <p style={{
-                            fontFamily: 'Clash Grotesk Variable',
-                            fontWeight: 400,
-                            fontSize: '14px',
-                            color: '#1E1E1E',
-                            margin: 0
-                          }}>
-                            {payout.accountDetails}
-                          </p>
+                          <div>
+                            <p style={{
+                              fontFamily: 'Clash Grotesk Variable',
+                              fontWeight: 500,
+                              fontSize: '14px',
+                              color: '#1E1E1E',
+                              margin: 0
+                            }}>
+                              {payout.accountName || 'N/A'}
+                            </p>
+                            <p style={{
+                              fontFamily: 'Clash Grotesk Variable',
+                              fontWeight: 400,
+                              fontSize: '12px',
+                              color: 'rgba(30, 30, 30, 0.6)',
+                              margin: 0,
+                              marginTop: '4px'
+                            }}>
+                              {payout.accountNumber || payout.accountDetails || 'N/A'}
+                            </p>
+                          </div>
                         </td>
                         <td style={{ padding: '20px' }}>
                           <p style={{
@@ -1207,30 +1354,7 @@ export const PayoutManagement: React.FC = () => {
                               </button>
                             </div>
                           )}
-                          {payout.status === 'approved' && (
-                            <button
-                              onClick={(e) => { e.stopPropagation(); handleComplete(payout); }}
-                              disabled={processing}
-                              style={{
-                                padding: '6px 12px',
-                                borderRadius: '8px',
-                                border: '1px solid #3B82F6',
-                                backgroundColor: 'transparent',
-                                color: '#3B82F6',
-                                cursor: processing ? 'not-allowed' : 'pointer',
-                                fontFamily: 'Clash Grotesk Variable',
-                                fontWeight: 500,
-                                fontSize: '12px',
-                                transition: 'all 0.2s ease',
-                                opacity: processing ? 0.5 : 1
-                              }}
-                              onMouseEnter={(e) => { if (!processing) { e.currentTarget.style.backgroundColor = '#3B82F6'; e.currentTarget.style.color = '#FFFFFF'; } }}
-                              onMouseLeave={(e) => { if (!processing) { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = '#3B82F6'; } }}
-                            >
-                              Mark Completed
-                            </button>
-                          )}
-                          {payout.status !== 'pending' && (
+                          {(payout.status === 'approved' || payout.status === 'rejected' || payout.status === 'completed') && (
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
@@ -1406,9 +1530,9 @@ export const PayoutManagement: React.FC = () => {
                   fontSize: '12px',
                   color: 'rgba(30, 30, 30, 0.6)',
                   display: 'block',
-                  marginBottom: '4px'
+                  marginBottom: '8px'
                 }}>Payment Method</label>
-                <div>{getPaymentMethodBadge(selectedPayout.paymentMethod)}</div>
+                <div>{getPaymentMethodBadge((selectedPayout as any).method || selectedPayout.paymentMethod)}</div>
               </div>
 
               <div>
@@ -1422,11 +1546,19 @@ export const PayoutManagement: React.FC = () => {
                 }}>Account Details</label>
                 <p style={{
                   fontFamily: 'Clash Grotesk Variable',
-                  fontWeight: 400,
+                  fontWeight: 600,
                   fontSize: '14px',
                   color: '#1E1E1E',
+                  margin: 0,
+                  marginBottom: '4px'
+                }}>{(selectedPayout as any).accountName || 'N/A'}</p>
+                <p style={{
+                  fontFamily: 'Clash Grotesk Variable',
+                  fontWeight: 400,
+                  fontSize: '13px',
+                  color: 'rgba(30, 30, 30, 0.6)',
                   margin: 0
-                }}>{selectedPayout.accountDetails}</p>
+                }}>{(selectedPayout as any).accountNumber || selectedPayout.accountDetails || 'N/A'}</p>
               </div>
 
               <div>
@@ -1538,24 +1670,6 @@ export const PayoutManagement: React.FC = () => {
               )}
             </div>
 
-            {/* Event log */}
-            <div style={{ marginTop: '16px' }}>
-              <label style={{ fontFamily: 'Clash Grotesk Variable', fontWeight: 600, fontSize: '14px', color: '#1E1E1E' }}>Events</label>
-              <div style={{ marginTop: '8px', padding: '12px', border: '1px solid #E2E8F0', borderRadius: '12px', maxHeight: '160px', overflowY: 'auto' }}>
-                {events.length === 0 ? (
-                  <p style={{ fontFamily: 'Clash Grotesk Variable', fontSize: '12px', color: '#64748B', margin: 0 }}>No events</p>
-                ) : (
-                  <ul style={{ margin: 0, paddingLeft: '16px' }}>
-                    {events.map(e => (
-                      <li key={e.ts} style={{ fontFamily: 'Clash Grotesk Variable', fontSize: '12px', color: '#1E293B', marginBottom: '4px' }}>
-                        {new Date(e.ts).toLocaleString()} • {e.action}{typeof e.amount === 'number' ? ` • ₱${e.amount.toFixed(2)}` : ''}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            </div>
-
             <div style={{ marginTop: '24px', display: 'flex', gap: '12px' }}>
               {selectedPayout.status === 'pending' && (
                 <>
@@ -1599,27 +1713,6 @@ export const PayoutManagement: React.FC = () => {
                   </button>
                 </>
               )}
-              {selectedPayout.status === 'approved' && (
-                <button
-                  onClick={() => handleComplete(selectedPayout)}
-                  disabled={processing}
-                  style={{
-                    flex: 1,
-                    padding: '12px 24px',
-                    borderRadius: '12px',
-                    border: '1px solid #3B82F6',
-                    backgroundColor: '#3B82F6',
-                    color: '#FFFFFF',
-                    cursor: processing ? 'not-allowed' : 'pointer',
-                    fontFamily: 'Clash Grotesk Variable',
-                    fontWeight: 500,
-                    fontSize: '14px',
-                    opacity: processing ? 0.5 : 1
-                  }}
-                >
-                  {processing ? 'Processing...' : 'Mark Completed'}
-                </button>
-              )}
               <button
                 onClick={() => setSelectedPayout(null)}
                 style={{
@@ -1636,6 +1729,309 @@ export const PayoutManagement: React.FC = () => {
                 }}
               >
                 Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Approve Modal */}
+      {showApproveModal && payoutToApprove && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000
+        }}>
+          <div style={{
+            backgroundColor: '#FFFFFF',
+            borderRadius: '20px',
+            padding: '32px',
+            maxWidth: '500px',
+            width: '90%',
+            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
+          }}>
+            <h3 style={{
+              fontFamily: 'Clash Grotesk Variable',
+              fontWeight: 600,
+              fontSize: '24px',
+              color: '#1E1E1E',
+              margin: 0,
+              marginBottom: '16px'
+            }}>Approve Payout Request</h3>
+            
+            <div style={{
+              padding: '16px',
+              backgroundColor: '#FEF3C7',
+              borderRadius: '12px',
+              marginBottom: '24px',
+              border: '1px solid #FCD34D'
+            }}>
+              <p style={{
+                fontFamily: 'Clash Grotesk Variable',
+                fontSize: '14px',
+                color: '#92400E',
+                margin: 0,
+                marginBottom: '8px',
+                fontWeight: 600
+              }}>⚠️ Important</p>
+              <p style={{
+                fontFamily: 'Clash Grotesk Variable',
+                fontSize: '13px',
+                color: '#78350F',
+                margin: 0
+              }}>This will debit the store's wallet. Please verify the details before approving.</p>
+            </div>
+
+            <div style={{
+              padding: '16px',
+              backgroundColor: '#F8FAFC',
+              borderRadius: '12px',
+              marginBottom: '24px'
+            }}>
+              <div style={{ marginBottom: '12px' }}>
+                <label style={{
+                  fontFamily: 'Clash Grotesk Variable',
+                  fontSize: '12px',
+                  color: '#64748B',
+                  display: 'block',
+                  marginBottom: '4px'
+                }}>Store</label>
+                <p style={{
+                  fontFamily: 'Clash Grotesk Variable',
+                  fontSize: '14px',
+                  fontWeight: 500,
+                  color: '#1E1E1E',
+                  margin: 0
+                }}>{payoutToApprove.storeName || payoutToApprove.storeId}</p>
+              </div>
+              
+              <div style={{ marginBottom: '12px' }}>
+                <label style={{
+                  fontFamily: 'Clash Grotesk Variable',
+                  fontSize: '12px',
+                  color: '#64748B',
+                  display: 'block',
+                  marginBottom: '4px'
+                }}>Amount</label>
+                <p style={{
+                  fontFamily: 'Clash Grotesk Variable',
+                  fontSize: '20px',
+                  fontWeight: 600,
+                  color: '#22C55E',
+                  margin: 0
+                }}>{formatPayoutAmount(payoutToApprove.amount)}</p>
+              </div>
+
+              <div>
+                <label style={{
+                  fontFamily: 'Clash Grotesk Variable',
+                  fontSize: '12px',
+                  color: '#64748B',
+                  display: 'block',
+                  marginBottom: '4px'
+                }}>Payment Method</label>
+                {getPaymentMethodBadge((payoutToApprove as any).method || (payoutToApprove as any).paymentMethod)}
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <button
+                onClick={() => {
+                  setShowApproveModal(false);
+                  setPayoutToApprove(null);
+                }}
+                disabled={processing}
+                style={{
+                  flex: 1,
+                  padding: '12px 24px',
+                  borderRadius: '12px',
+                  border: '1px solid #E2E8F0',
+                  backgroundColor: '#FFFFFF',
+                  color: '#1E1E1E',
+                  cursor: processing ? 'not-allowed' : 'pointer',
+                  fontFamily: 'Clash Grotesk Variable',
+                  fontWeight: 500,
+                  fontSize: '14px',
+                  opacity: processing ? 0.5 : 1
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmApprove}
+                disabled={processing}
+                style={{
+                  flex: 1,
+                  padding: '12px 24px',
+                  borderRadius: '12px',
+                  border: 'none',
+                  backgroundColor: '#22C55E',
+                  color: '#FFFFFF',
+                  cursor: processing ? 'not-allowed' : 'pointer',
+                  fontFamily: 'Clash Grotesk Variable',
+                  fontWeight: 500,
+                  fontSize: '14px',
+                  opacity: processing ? 0.5 : 1
+                }}
+              >
+                {processing ? 'Processing...' : 'Confirm Approval'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Reject Modal */}
+      {showRejectModal && payoutToReject && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000
+        }}>
+          <div style={{
+            backgroundColor: '#FFFFFF',
+            borderRadius: '20px',
+            padding: '32px',
+            maxWidth: '500px',
+            width: '90%',
+            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
+          }}>
+            <h3 style={{
+              fontFamily: 'Clash Grotesk Variable',
+              fontWeight: 600,
+              fontSize: '24px',
+              color: '#1E1E1E',
+              margin: 0,
+              marginBottom: '16px'
+            }}>Reject Payout Request</h3>
+            
+            <div style={{
+              padding: '16px',
+              backgroundColor: '#F8FAFC',
+              borderRadius: '12px',
+              marginBottom: '20px'
+            }}>
+              <div style={{ marginBottom: '12px' }}>
+                <label style={{
+                  fontFamily: 'Clash Grotesk Variable',
+                  fontSize: '12px',
+                  color: '#64748B',
+                  display: 'block',
+                  marginBottom: '4px'
+                }}>Store</label>
+                <p style={{
+                  fontFamily: 'Clash Grotesk Variable',
+                  fontSize: '14px',
+                  fontWeight: 500,
+                  color: '#1E1E1E',
+                  margin: 0
+                }}>{payoutToReject.storeName || payoutToReject.storeId}</p>
+              </div>
+              
+              <div>
+                <label style={{
+                  fontFamily: 'Clash Grotesk Variable',
+                  fontSize: '12px',
+                  color: '#64748B',
+                  display: 'block',
+                  marginBottom: '4px'
+                }}>Amount</label>
+                <p style={{
+                  fontFamily: 'Clash Grotesk Variable',
+                  fontSize: '20px',
+                  fontWeight: 600,
+                  color: '#EF4444',
+                  margin: 0
+                }}>{formatPayoutAmount(payoutToReject.amount)}</p>
+              </div>
+            </div>
+
+            <div style={{ marginBottom: '24px' }}>
+              <label style={{
+                fontFamily: 'Clash Grotesk Variable',
+                fontSize: '14px',
+                fontWeight: 500,
+                color: '#1E1E1E',
+                display: 'block',
+                marginBottom: '8px'
+              }}>Rejection Reason *</label>
+              <textarea
+                value={rejectionReason}
+                onChange={(e) => setRejectionReason(e.target.value)}
+                placeholder="Provide a reason for rejection..."
+                disabled={processing}
+                style={{
+                  width: '100%',
+                  minHeight: '100px',
+                  padding: '12px',
+                  borderRadius: '12px',
+                  border: '1px solid #E2E8F0',
+                  fontFamily: 'Clash Grotesk Variable',
+                  fontSize: '14px',
+                  color: '#1E1E1E',
+                  resize: 'vertical',
+                  outline: 'none',
+                  boxSizing: 'border-box'
+                }}
+              />
+            </div>
+
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <button
+                onClick={() => {
+                  setShowRejectModal(false);
+                  setPayoutToReject(null);
+                  setRejectionReason('');
+                }}
+                disabled={processing}
+                style={{
+                  flex: 1,
+                  padding: '12px 24px',
+                  borderRadius: '12px',
+                  border: '1px solid #E2E8F0',
+                  backgroundColor: '#FFFFFF',
+                  color: '#1E1E1E',
+                  cursor: processing ? 'not-allowed' : 'pointer',
+                  fontFamily: 'Clash Grotesk Variable',
+                  fontWeight: 500,
+                  fontSize: '14px',
+                  opacity: processing ? 0.5 : 1
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmReject}
+                disabled={processing || !rejectionReason.trim()}
+                style={{
+                  flex: 1,
+                  padding: '12px 24px',
+                  borderRadius: '12px',
+                  border: 'none',
+                  backgroundColor: '#EF4444',
+                  color: '#FFFFFF',
+                  cursor: (processing || !rejectionReason.trim()) ? 'not-allowed' : 'pointer',
+                  fontFamily: 'Clash Grotesk Variable',
+                  fontWeight: 500,
+                  fontSize: '14px',
+                  opacity: (processing || !rejectionReason.trim()) ? 0.5 : 1
+                }}
+              >
+                {processing ? 'Processing...' : 'Confirm Rejection'}
               </button>
             </div>
           </div>

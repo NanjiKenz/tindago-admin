@@ -170,10 +170,19 @@ export async function debitWallet(params: {
       throw new Error('Wallet not found');
     }
 
-    const currentAvailable = snapshot.val().available || 0;
+    const walletData = snapshot.val();
+    const currentAvailable = walletData.available || 0;
+    
+    console.log('💰 Wallet Debit Check:', {
+      storeId,
+      walletData,
+      currentAvailable,
+      requestedAmount: amount,
+      hasEnough: currentAvailable >= amount
+    });
 
     if (currentAvailable < amount) {
-      throw new Error('Insufficient balance');
+      throw new Error(`Insufficient balance. Available: ₱${currentAvailable.toFixed(2)}, Required: ₱${amount.toFixed(2)}`);
     }
 
     const newAvailable = currentAvailable - amount;
