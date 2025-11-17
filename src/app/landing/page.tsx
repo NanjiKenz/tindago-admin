@@ -174,8 +174,7 @@ export default function LandingPage() {
               margin: 0
             }}
           >
-            Bili kahit saan<br />
-            kuha kahit kailan!
+            Stocked for your sudden needs.
           </h1>
         </div>
 
@@ -233,7 +232,8 @@ export default function LandingPage() {
           style={{
             left: '120px',
             top: '563px',
-            zIndex: 10
+            zIndex: 10,
+            display: 'none'
           }}
         >
           {/* Apple App Store Button - 170x50px */}
@@ -358,8 +358,7 @@ export default function LandingPage() {
             color: '#000000'
           }}
         >
-          Bili kahit saan<br />
-          kuha kahit kailan!
+          Stocked for your sudden needs.
         </h1>
 
         {/* Mobile Subheading */}
@@ -377,7 +376,7 @@ export default function LandingPage() {
         </p>
 
         {/* Mobile App Store Buttons */}
-        <div className="flex flex-col gap-4 w-full max-w-xs">
+        <div className="flex flex-col gap-4 w-full max-w-xs" style={{ display: 'none' }}>
           <div className="rounded-[20px] flex items-center justify-center border-2 border-black bg-white p-3">
             <div className="flex items-center gap-3">
               <Image

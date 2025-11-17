@@ -9,6 +9,7 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { AdminProfileDropdown } from './AdminProfileDropdown';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -18,13 +19,23 @@ interface AdminHeaderProps {
 
 export const AdminHeader: React.FC<AdminHeaderProps> = ({ onMenuClick }) => {
   const [showUserMenu, setShowUserMenu] = useState(false);
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
+  const router = useRouter();
 
   // Use auth user data if available
   const displayName = user?.displayName || 'Admin User';
   const displayRole = user?.role === 'super_admin' ? 'Super Admin' : (user?.role === 'admin' ? 'Admin' : 'Admin');
   const photoURL = user?.photoURL;
   const initials = displayName?.split(' ').map(n => n[0]).join('').toUpperCase() || 'AU';
+
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      router.push('/landing');
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
+  };
 
   return (
     <header
@@ -175,10 +186,7 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({ onMenuClick }) => {
             <AdminProfileDropdown
               isOpen={showUserMenu}
               onClose={() => setShowUserMenu(false)}
-              onLogoutClick={() => {
-                console.log('Logout clicked');
-                // TODO: Implement logout functionality
-              }}
+              onLogoutClick={handleLogout}
             />
           </div>
         </div>
