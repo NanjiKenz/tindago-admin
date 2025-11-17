@@ -4,9 +4,20 @@ import admin from 'firebase-admin';
 let adminApp;
 let adminAuth;
 let adminDb;
+let initialized = false;
 
-// Initialize Firebase Admin SDK
-if (!admin.apps.length) {
+// Lazy initialization - only initialize when actually needed (at runtime, not build time)
+function initializeFirebaseAdmin() {
+  if (initialized) return;
+  
+  if (admin.apps.length > 0) {
+    adminApp = admin.app();
+    adminAuth = admin.auth();
+    adminDb = admin.database();
+    initialized = true;
+    return;
+  }
+
   // Use service account from environment or default credentials
   const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT 
     ? JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)
@@ -43,14 +54,35 @@ if (!admin.apps.length) {
   
   adminAuth = admin.auth();
   adminDb = admin.database();
+  initialized = true;
   console.log('[Firebase Admin] Initialized successfully');
-} else {
-  adminApp = admin.app();
-  adminAuth = admin.auth();
-  adminDb = admin.database();
 }
 
-export { adminApp, adminAuth, adminDb, admin };
-// Export database as alias for adminDb for compatibility
-export const database = adminDb;
+// Getter functions that initialize on first access
+function getAdminApp() {
+  initializeFirebaseAdmin();
+  return adminApp;
+}
+
+function getAdminAuth() {
+  initializeFirebaseAdmin();
+  return adminAuth;
+}
+
+function getAdminDb() {
+  initializeFirebaseAdmin();
+  return adminDb;
+}
+
+// Create proxy object that initializes on property access
+const databaseProxy = new Proxy({}, {
+  get(target, prop) {
+    initializeFirebaseAdmin();
+    return adminDb[prop];
+  }
+});
+
+export { getAdminApp as adminApp, getAdminAuth as adminAuth, getAdminDb as adminDb, admin };
+// Export database as proxy that initializes lazily
+export const database = databaseProxy;
 export default admin;
