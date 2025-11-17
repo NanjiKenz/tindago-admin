@@ -56,18 +56,25 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
     }
   };
 
-  // Helper function to check if document has valid URI
+  // Helper function to check if document has valid URI or URL
   const hasValidUri = (docData: DocumentData | undefined): boolean => {
     if (!docData) return false;
 
-    // String format (legacy)
+    // String format (legacy base64)
     if (typeof docData === 'string') {
       return docData.trim().length > 0;
     }
 
     // Object format (React Native app)
-    if (typeof docData === 'object' && 'uri' in docData) {
-      return !!(docData.uri && docData.uri.trim().length > 0);
+    if (typeof docData === 'object') {
+      // Check for Cloudinary URL (new - Phase 2)
+      if ('url' in docData && docData.url) {
+        return docData.url.trim().length > 0;
+      }
+      // Check for base64 URI (legacy)
+      if ('uri' in docData && docData.uri) {
+        return docData.uri.trim().length > 0;
+      }
     }
 
     return false;
@@ -124,11 +131,14 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
 
       if (doc.data && typeof doc.data === 'object') {
         console.log(`  └─ Object details:`, {
+          hasUrl: 'url' in doc.data,
+          urlLength: doc.data.url?.length || 0,
           hasUri: 'uri' in doc.data,
           uriLength: doc.data.uri?.length || 0,
           type: doc.data.type || '(empty)',
           uploaded: doc.data.uploaded,
-          name: doc.data.name
+          name: doc.data.name,
+          isCloudinary: doc.data.url?.startsWith('https://res.cloudinary.com/') || false
         });
       }
     });
@@ -164,15 +174,30 @@ export const PendingApprovalDetail: React.FC<PendingApprovalDetailProps> = ({
           if (targetRegistration.documents) {
             console.log('\n🧪 [Document Validation Test]');
             Object.entries(targetRegistration.documents).forEach(([key, value]) => {
-              if (value && typeof value === 'object' && 'uri' in value) {
-                const uri = value.uri;
-                console.log(`  ${key}:`, {
-                  hasUri: !!uri,
-                  uriLength: uri?.length || 0,
-                  isBase64Image: uri?.startsWith('data:image/') || false,
-                  imageFormat: uri?.substring(5, 15) || 'unknown',
-                  canOpen: !!(uri && uri.length > 0)
-                });
+              if (value && typeof value === 'object') {
+                // Check for Cloudinary URL (new)
+                if ('url' in value) {
+                  const url = value.url;
+                  console.log(`  ${key}:`, {
+                    hasUrl: !!url,
+                    urlLength: url?.length || 0,
+                    isCloudinaryURL: url?.startsWith('https://res.cloudinary.com/') || false,
+                    canOpen: !!(url && url.length > 0),
+                    uploaded: value.uploaded,
+                    type: value.type || 'unknown'
+                  });
+                }
+                // Check for base64 URI (legacy)
+                else if ('uri' in value) {
+                  const uri = value.uri;
+                  console.log(`  ${key}:`, {
+                    hasUri: !!uri,
+                    uriLength: uri?.length || 0,
+                    isBase64Image: uri?.startsWith('data:image/') || false,
+                    imageFormat: uri?.substring(5, 15) || 'unknown',
+                    canOpen: !!(uri && uri.length > 0)
+                  });
+                }
               } else if (typeof value === 'string') {
                 console.log(`  ${key}:`, {
                   hasUri: !!value,

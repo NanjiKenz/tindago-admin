@@ -13,21 +13,23 @@ export default function PendingApprovalDetailPage() {
 
   const handleApprove = (userId: string) => {
     console.log('✅ Store registration approved for user:', userId);
-    // Navigate to Active view after approval
+    // Navigate to Active view after approval and force reload to show updated data
     if (returnTo === 'storeManagement') {
-      router.push('/stores?view=active');
+      // Use window.location to force full page reload with fresh data
+      window.location.href = '/stores?view=active';
     } else {
-      router.push('/stores');
+      window.location.href = '/stores';
     }
   };
 
   const handleReject = (userId: string, reason?: string) => {
     console.log('❌ Store registration rejected for user:', userId, 'Reason:', reason);
-    // Navigate to Rejected view after rejection
+    // Navigate to Rejected view after rejection and force reload to show updated data
     if (returnTo === 'storeManagement') {
-      router.push('/stores?view=rejected');
+      // Use window.location to force full page reload with fresh data
+      window.location.href = '/stores?view=rejected';
     } else {
-      router.push('/stores');
+      window.location.href = '/stores';
     }
   };
 

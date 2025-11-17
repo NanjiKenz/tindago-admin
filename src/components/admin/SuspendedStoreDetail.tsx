@@ -23,6 +23,8 @@ export const SuspendedStoreDetail: React.FC<SuspendedStoreDetailProps> = ({
   const [processing, setProcessing] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showReactivateModal, setShowReactivateModal] = useState(false);
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
+  const [statusHistory, setStatusHistory] = useState<any[]>([]);
 
   // Helper function to convert base64 data URL to Blob URL
   const convertBase64ToBlob = (dataUrl: string): string => {
@@ -54,19 +56,27 @@ export const SuspendedStoreDetail: React.FC<SuspendedStoreDetailProps> = ({
     }
   };
 
-  // Helper function to check if document has valid URI
+  // Helper function to check if document has valid URI or URL
   const hasValidUri = (docData: unknown): boolean => {
     if (!docData) return false;
 
-    // String format (legacy)
+    // String format (legacy base64)
     if (typeof docData === 'string') {
       return docData.trim().length > 0;
     }
 
     // Object format (React Native app)
-    if (typeof docData === 'object' && docData !== null && 'uri' in docData) {
-      const doc = docData as { uri?: string };
-      return !!(doc.uri && doc.uri.trim().length > 0);
+    if (typeof docData === 'object' && docData !== null) {
+      // Check for Cloudinary URL (new)
+      if ('url' in docData) {
+        const doc = docData as { url?: string };
+        return !!(doc.url && doc.url.trim().length > 0);
+      }
+      // Check for base64 URI (legacy)
+      if ('uri' in docData) {
+        const doc = docData as { uri?: string };
+        return !!(doc.uri && doc.uri.trim().length > 0);
+      }
     }
 
     return false;
@@ -114,15 +124,25 @@ export const SuspendedStoreDetail: React.FC<SuspendedStoreDetailProps> = ({
         setLoading(true);
         console.log(`🔍 [SuspendedStoreDetail] Fetching store data for storeId: ${storeId}`);
 
-        const storeData = await StoreService.getStoreById(storeId);
+        const storeData = await StoreService.getStoreByIdComplete(storeId);
 
         if (storeData) {
           console.log(`✅ [SuspendedStoreDetail] Found store data:`, {
             storeId: storeData.storeId,
             status: storeData.status,
-            storeName: storeData.storeName
+            storeName: storeData.storeName,
+            hasDocuments: !!storeData.documents,
+            documentsKeys: storeData.documents ? Object.keys(storeData.documents) : [],
+            hasBusinessInfo: !!storeData.businessInfo,
+            businessDescription: storeData.businessInfo?.description || storeData.storeDescription,
+            fullStoreData: storeData
           });
           setStore(storeData);
+          
+          // Fetch suspension history
+          const history = await StoreService.getStoreStatusHistory(storeId);
+          console.log(`📜 [SuspendedStoreDetail] Status history:`, history);
+          setStatusHistory(history);
         } else {
           console.log(`⚠️ [SuspendedStoreDetail] Store not found for ID: ${storeId}`);
         }
@@ -227,7 +247,7 @@ export const SuspendedStoreDetail: React.FC<SuspendedStoreDetailProps> = ({
   const uploadedDocs = getUploadedDocumentsList(store);
   const documentCount = uploadedDocs.length;
   const docsHeight = documentCount === 0 ? 140 : Math.max(140, 70 + (documentCount * 50) + 30);
-  // Add height for suspension reason section (120px)
+  // No more history height since it's in a modal
   const totalHeight = 700 + 120 + docsHeight + 70 + 80;
 
   // Get suspension reason from store data
@@ -366,6 +386,44 @@ export const SuspendedStoreDetail: React.FC<SuspendedStoreDetailProps> = ({
         >
           Suspension Reason
         </h2>
+
+        {/* Suspension History Button */}
+        {statusHistory.length > 0 && (
+          <button
+            onClick={() => setShowHistoryModal(true)}
+            className="absolute flex items-center gap-2 hover:opacity-80 transition-all"
+            style={{
+              right: '20px',
+              top: '20px',
+              padding: '8px 16px',
+              backgroundColor: '#3b82f6',
+              borderRadius: '8px',
+              border: 'none',
+              cursor: 'pointer'
+            }}
+          >
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="white"
+              strokeWidth="2"
+            >
+              <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span
+              style={{
+                fontFamily: 'Clash Grotesk Variable',
+                fontWeight: 500,
+                fontSize: '13px',
+                color: 'white'
+              }}
+            >
+              View History
+            </span>
+          </button>
+        )}
 
         {/* Suspension Reason Text */}
         <p
@@ -634,7 +692,7 @@ export const SuspendedStoreDetail: React.FC<SuspendedStoreDetailProps> = ({
             color: '#1e1e1e'
           }}
         >
-          {store.storeDescription || 'No business description provided.'}
+          {store.businessInfo?.description || store.storeDescription || 'No business description provided.'}
         </p>
       </div>
 
@@ -1044,6 +1102,213 @@ export const SuspendedStoreDetail: React.FC<SuspendedStoreDetailProps> = ({
                 }}
               >
                 {processing ? 'Deleting...' : 'Delete Permanently'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Suspension History Modal */}
+      {showHistoryModal && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+          onClick={() => setShowHistoryModal(false)}
+        >
+          <div
+            className="bg-white rounded-2xl shadow-xl"
+            style={{
+              width: '700px',
+              maxHeight: '600px',
+              padding: '32px'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div
+                  className="flex items-center justify-center"
+                  style={{
+                    width: '48px',
+                    height: '48px',
+                    backgroundColor: '#eff6ff',
+                    borderRadius: '50%'
+                  }}
+                >
+                  <svg
+                    width="28"
+                    height="28"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#3b82f6"
+                    strokeWidth="2"
+                  >
+                    <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div>
+                  <h3
+                    style={{
+                      fontFamily: 'Clash Grotesk Variable',
+                      fontWeight: 600,
+                      fontSize: '24px',
+                      color: '#1E1E1E',
+                      marginBottom: '4px'
+                    }}
+                  >
+                    Suspension History
+                  </h3>
+                  <p
+                    style={{
+                      fontFamily: 'Clash Grotesk Variable',
+                      fontWeight: 400,
+                      fontSize: '14px',
+                      color: 'rgba(30, 30, 30, 0.6)'
+                    }}
+                  >
+                    {statusHistory.filter(log => log.newStatus === 'suspended').length} suspension{statusHistory.filter(log => log.newStatus === 'suspended').length !== 1 ? 's' : ''} recorded
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowHistoryModal(false)}
+                className="hover:opacity-70 transition-opacity"
+                style={{
+                  padding: '8px',
+                  border: 'none',
+                  background: 'none',
+                  cursor: 'pointer'
+                }}
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2">
+                  <path d="M18 6L6 18M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* History Timeline */}
+            <div
+              style={{
+                maxHeight: '450px',
+                overflowY: 'auto',
+                paddingRight: '8px'
+              }}
+            >
+              {statusHistory.filter(log => log.newStatus === 'suspended').map((log, index) => (
+                <div
+                  key={log.timestamp}
+                  style={{
+                    padding: '16px',
+                    marginBottom: '12px',
+                    backgroundColor: '#f9fafb',
+                    borderRadius: '12px',
+                    borderLeft: '4px solid #d97706',
+                    position: 'relative'
+                  }}
+                >
+                  {/* Status Badge */}
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: '16px',
+                      right: '16px',
+                      fontFamily: 'Clash Grotesk Variable',
+                      fontSize: '12px',
+                      color: '#d97706',
+                      backgroundColor: '#fef3c7',
+                      padding: '6px 12px',
+                      borderRadius: '8px',
+                      fontWeight: 500
+                    }}
+                  >
+                    Suspended
+                  </div>
+
+                  {/* Reason */}
+                  <div
+                    style={{
+                      fontFamily: 'Clash Grotesk Variable',
+                      fontWeight: 600,
+                      fontSize: '15px',
+                      color: '#1e1e1e',
+                      marginBottom: '8px',
+                      paddingRight: '100px'
+                    }}
+                  >
+                    {log.reason || 'No reason provided'}
+                  </div>
+
+                  {/* Date and Time */}
+                  <div
+                    style={{
+                      fontFamily: 'Clash Grotesk Variable',
+                      fontWeight: 400,
+                      fontSize: '13px',
+                      color: '#6b7280',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px'
+                    }}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2">
+                      <path d="M8 2v4m8-4v4M3 10h18M5 4h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z" />
+                    </svg>
+                    {new Date(log.date).toLocaleString('en-US', {
+                      month: 'long',
+                      day: 'numeric',
+                      year: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
+                  </div>
+
+                  {/* Updated By */}
+                  {log.updatedBy && (
+                    <div
+                      style={{
+                        fontFamily: 'Clash Grotesk Variable',
+                        fontWeight: 400,
+                        fontSize: '12px',
+                        color: '#9ca3af',
+                        marginTop: '8px'
+                      }}
+                    >
+                      Suspended by: {log.updatedBy}
+                    </div>
+                  )}
+                </div>
+              ))}
+
+              {statusHistory.filter(log => log.newStatus === 'suspended').length === 0 && (
+                <div
+                  style={{
+                    padding: '40px',
+                    textAlign: 'center',
+                    color: '#6b7280',
+                    fontFamily: 'Clash Grotesk Variable',
+                    fontSize: '14px'
+                  }}
+                >
+                  No suspension history found
+                </div>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="mt-6 pt-4 border-t border-gray-200">
+              <button
+                onClick={() => setShowHistoryModal(false)}
+                className="w-full py-3 px-4 bg-gray-100 hover:bg-gray-200 transition-colors rounded-lg"
+                style={{
+                  fontFamily: 'Clash Grotesk Variable',
+                  fontWeight: 500,
+                  fontSize: '14px',
+                  color: '#1E1E1E',
+                  border: 'none',
+                  cursor: 'pointer'
+                }}
+              >
+                Close
               </button>
             </div>
           </div>

@@ -228,12 +228,25 @@ export class AdminService {
   static async rejectStoreRegistration(userId: string, reason?: string): Promise<void> {
     try {
       const registrationRef = ref(database, `store_registrations/${userId}`);
+      const storeRef = ref(database, `stores/${userId}`);
 
+      // Update registration status
       await update(registrationRef, {
         status: 'rejected',
         rejectedAt: new Date().toISOString(),
         rejectionReason: reason || 'No reason provided'
       });
+
+      // Also update the stores collection if the store exists there
+      const storeSnapshot = await get(storeRef);
+      if (storeSnapshot.exists()) {
+        await update(storeRef, {
+          status: 'rejected',
+          rejectedAt: new Date().toISOString(),
+          rejectionReason: reason || 'No reason provided'
+        });
+        console.log(`✅ Updated store status to 'rejected' in stores collection`);
+      }
 
       console.log(`Store registration rejected for user: ${userId}`);
     } catch (error) {

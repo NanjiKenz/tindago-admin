@@ -54,18 +54,25 @@ export const ActiveStoreDetail: React.FC<ActiveStoreDetailProps> = ({
     }
   };
 
-  // Helper function to check if document has valid URI
+  // Helper function to check if document has valid URI or URL
   const hasValidUri = (docData: DocumentData | undefined): boolean => {
     if (!docData) return false;
 
-    // String format (legacy)
+    // String format (legacy base64)
     if (typeof docData === 'string') {
       return docData.trim().length > 0;
     }
 
     // Object format (React Native app)
-    if (typeof docData === 'object' && 'uri' in docData) {
-      return !!(docData.uri && docData.uri.trim().length > 0);
+    if (typeof docData === 'object') {
+      // Check for Cloudinary URL (new)
+      if ('url' in docData && docData.url) {
+        return docData.url.trim().length > 0;
+      }
+      // Check for base64 URI (legacy)
+      if ('uri' in docData && docData.uri) {
+        return docData.uri.trim().length > 0;
+      }
     }
 
     return false;
@@ -113,13 +120,18 @@ export const ActiveStoreDetail: React.FC<ActiveStoreDetailProps> = ({
         setLoading(true);
         console.log(`🔍 [ActiveStoreDetail] Fetching store data for storeId: ${storeId}`);
 
-        const storeData = await StoreService.getStoreById(storeId);
+        const storeData = await StoreService.getStoreByIdComplete(storeId);
 
         if (storeData) {
           console.log(`✅ [ActiveStoreDetail] Found store data:`, {
             storeId: storeData.storeId,
             status: storeData.status,
-            storeName: storeData.storeName
+            storeName: storeData.storeName,
+            hasDocuments: !!storeData.documents,
+            documentsKeys: storeData.documents ? Object.keys(storeData.documents) : [],
+            hasBusinessInfo: !!storeData.businessInfo,
+            businessDescription: storeData.businessInfo?.description || storeData.storeDescription,
+            fullStoreData: storeData
           });
           setStore(storeData);
         } else {
@@ -535,7 +547,7 @@ export const ActiveStoreDetail: React.FC<ActiveStoreDetailProps> = ({
             color: '#1e1e1e'
           }}
         >
-          {store.storeDescription || 'No business description provided.'}
+          {store.businessInfo?.description || store.storeDescription || 'No business description provided.'}
         </p>
       </div>
 

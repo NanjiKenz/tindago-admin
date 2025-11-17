@@ -110,9 +110,41 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
             pendingStatuses.includes(reg.status) || !reg.status
           );
           console.log('🔍 Pending registrations from store_registrations collection:', filteredRegs.length);
+          
+          // Debug: Log first registration's raw data from API
+          if (filteredRegs.length > 0) {
+            console.log('📦 [API RAW DATA]:', {
+              userId: filteredRegs[0].userId,
+              hasPersonalInfo: !!filteredRegs[0].personalInfo,
+              hasBusinessInfo: !!filteredRegs[0].businessInfo,
+              flatStoreName: filteredRegs[0].storeName,
+              flatOwnerName: filteredRegs[0].ownerName,
+              nestedStoreName: filteredRegs[0].businessInfo?.storeName,
+              nestedOwnerName: filteredRegs[0].personalInfo?.name,
+              fullData: filteredRegs[0]
+            });
+          }
 
-          // 3. Use stores collection data directly (already in Store format)
-          data = [...pendingFromStores];
+          // 3. Map stores collection data to extract nested businessInfo/personalInfo fields
+          data = pendingFromStores.map(store => {
+            // If store has nested businessInfo/personalInfo, extract those fields
+            if (store.businessInfo || store.personalInfo) {
+              return {
+                ...store,
+                storeName: store.storeName || store.businessInfo?.storeName || store.businessName || 'Unknown Store',
+                ownerName: store.ownerName || store.personalInfo?.name || 'Owner Name Not Available',
+                ownerEmail: store.ownerEmail || store.personalInfo?.email || 'Email Not Available',
+                ownerPhone: store.ownerPhone || store.personalInfo?.mobile || store.personalInfo?.phone || '',
+                // Keep address as-is if it exists, otherwise construct from businessInfo
+                address: store.address || 
+                        (store.businessInfo?.address && store.businessInfo?.city 
+                          ? `${store.businessInfo.address}, ${store.businessInfo.city}` 
+                          : store.businessInfo?.address || store.businessInfo?.city || 'Address not provided')
+              };
+            }
+            // If no nested data, return as-is
+            return store;
+          });
 
           // 4. Add stores from store_registrations that aren't in stores collection
           const storeIds = new Set(pendingFromStores.map(s => s.storeId));
@@ -186,6 +218,18 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
             fromStoresCollection: pendingFromStores.length,
             fromRegistrations: additionalFromRegistrations.length
           });
+          
+          // Debug: Log first store's data to verify mapping
+          if (data.length > 0) {
+            console.log('📋 [TABLE DATA SAMPLE]:', {
+              storeId: data[0].storeId,
+              storeName: data[0].storeName,
+              ownerName: data[0].ownerName,
+              ownerEmail: data[0].ownerEmail,
+              address: data[0].address,
+              status: data[0].status
+            });
+          }
           break;
 
         case 'rejected':
@@ -1422,11 +1466,11 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
                                   fontFamily: 'Clash Grotesk Variable',
                                   fontWeight: 500,
                                   fontSize: '16px',
-                                  color: '#1E1E1E',
+                                  color: item.storeName ? '#1E1E1E' : '#EF4444',
                                   marginBottom: '4px'
                                 }}
                               >
-                                {item.storeName}
+                                {item.storeName || '⚠️ Store Name Missing - Re-register from mobile app'}
                               </div>
                               <div
                                 style={{
@@ -1449,11 +1493,11 @@ export const StoreManagement: React.FC<StoreManagementProps> = () => {
                                   fontFamily: 'Clash Grotesk Variable',
                                   fontWeight: 500,
                                   fontSize: '14px',
-                                  color: '#1E1E1E',
+                                  color: item.ownerName ? '#1E1E1E' : '#EF4444',
                                   marginBottom: '4px'
                                 }}
                               >
-                                {item.ownerName}
+                                {item.ownerName || '⚠️ Owner Name Missing'}
                               </div>
                               <div
                                 style={{

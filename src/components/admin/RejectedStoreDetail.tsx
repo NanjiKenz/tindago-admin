@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { AdminService, StoreRegistration } from '@/lib/adminService';
+import { StoreService } from '@/lib/storeService';
 
 interface RejectedStoreDetailProps {
   userId: string;
@@ -53,19 +54,27 @@ export const RejectedStoreDetail: React.FC<RejectedStoreDetailProps> = ({
     }
   };
 
-  // Helper function to check if document has valid URI
+  // Helper function to check if document has valid URI or URL
   const hasValidUri = (docData: unknown): boolean => {
     if (!docData) return false;
 
-    // String format (legacy)
+    // String format (legacy base64)
     if (typeof docData === 'string') {
       return docData.trim().length > 0;
     }
 
     // Object format (React Native app)
-    if (typeof docData === 'object' && docData !== null && 'uri' in docData) {
-      const doc = docData as { uri?: string };
-      return !!(doc.uri && doc.uri.trim().length > 0);
+    if (typeof docData === 'object' && docData !== null) {
+      // Check for Cloudinary URL (new)
+      if ('url' in docData) {
+        const doc = docData as { url?: string };
+        return !!(doc.url && doc.url.trim().length > 0);
+      }
+      // Check for base64 URI (legacy)
+      if ('uri' in docData) {
+        const doc = docData as { uri?: string };
+        return !!(doc.uri && doc.uri.trim().length > 0);
+      }
     }
 
     return false;
@@ -142,28 +151,40 @@ export const RejectedStoreDetail: React.FC<RejectedStoreDetailProps> = ({
     const fetchRegistration = async () => {
       try {
         setLoading(true);
-        console.log(`🔍 [RejectedStoreDetail] Fetching registration for userId: ${userId}`);
+        console.log(`🔍 [RejectedStoreDetail] Fetching complete data for userId: ${userId}`);
 
-        // Get from store_registrations
-        const registrations = await AdminService.getAllStoreRegistrations();
-        const targetRegistration = registrations.find(reg => reg.userId === userId);
+        // Use getStoreByIdComplete to get merged data from both stores and store_registrations
+        const storeData = await StoreService.getStoreByIdComplete(userId);
 
-        if (targetRegistration) {
-          console.log(`✅ [RejectedStoreDetail] Found registration in 'store_registrations'`);
-          console.log(`📋 [Registration Data]`, {
-            userId: targetRegistration.userId,
-            status: targetRegistration.status,
-            hasDocuments: !!targetRegistration.documents,
-            documentKeys: targetRegistration.documents ? Object.keys(targetRegistration.documents) : [],
-            documents: targetRegistration.documents
+        if (storeData) {
+          console.log(`✅ [RejectedStoreDetail] Found complete store data`);
+          console.log(`📋 [Store Data]`, {
+            userId: storeData.storeId,
+            status: storeData.status,
+            hasDocuments: !!storeData.documents,
+            documentsKeys: storeData.documents ? Object.keys(storeData.documents) : [],
+            hasBusinessInfo: !!storeData.businessInfo,
+            businessDescription: storeData.businessInfo?.description || storeData.storeDescription,
+            fullData: storeData
           });
+          
+          // Convert Store to StoreRegistration format for compatibility
+          const registrationData: StoreRegistration = {
+            userId: storeData.storeId,
+            personalInfo: storeData.personalInfo,
+            businessInfo: storeData.businessInfo,
+            documents: storeData.documents,
+            status: storeData.status as any,
+            createdAt: storeData.joinedDate
+          };
+          
+          setRegistration(registrationData);
         } else {
-          console.log(`⚠️ [RejectedStoreDetail] Registration not found for userId: ${userId}`);
+          console.log(`⚠️ [RejectedStoreDetail] Store not found for userId: ${userId}`);
+          setRegistration(null);
         }
-
-        setRegistration(targetRegistration || null);
       } catch (error) {
-        console.error('❌ [RejectedStoreDetail] Error fetching registration:', error);
+        console.error('❌ [RejectedStoreDetail] Error fetching data:', error);
       } finally {
         setLoading(false);
       }

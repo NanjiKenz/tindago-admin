@@ -120,6 +120,11 @@ export async function GET() {
         storeId: id,
         ...store,
         address: fullAddress,
+        // Extract flat fields from nested businessInfo/personalInfo for table display
+        storeName: store.storeName || store.businessInfo?.storeName || store.businessName || store.name || 'Unknown Store',
+        ownerName: store.ownerName || store.personalInfo?.name || store.owner || 'Owner Name Not Available',
+        ownerEmail: store.ownerEmail || store.personalInfo?.email || store.email || 'Email Not Available',
+        ownerPhone: store.ownerPhone || store.personalInfo?.mobile || store.personalInfo?.phone || store.phone || '',
         // Map createdAt to joinedDate for compatibility with StoreManagement component
         joinedDate: store.joinedDate || store.createdAt || store.approvedAt || new Date().toISOString(),
         // Add accurate performance metrics

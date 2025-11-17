@@ -162,7 +162,129 @@ export class StoreService {
   }
 
   /**
-   * Get store by ID with detailed information
+   * Get store by ID with COMPLETE data - merges stores + store_registrations
+   * This ensures we get documents and business description even for old stores
+   */
+  static async getStoreByIdComplete(storeId: string): Promise<Store | null> {
+    try {
+      // Fetch from both collections in parallel
+      const [storeSnapshot, registrationSnapshot] = await Promise.all([
+        get(ref(database, `stores/${storeId}`)),
+        get(ref(database, `store_registrations/${storeId}`))
+      ]);
+
+      if (!storeSnapshot.exists()) {
+        return null;
+      }
+
+      const storeData = storeSnapshot.val();
+      const registrationData = registrationSnapshot.exists() ? registrationSnapshot.val() : null;
+
+      console.log(`🔍 [getStoreByIdComplete] Fetching complete data for store: ${storeId}`, {
+        hasStore: storeSnapshot.exists(),
+        hasRegistration: registrationSnapshot.exists(),
+        storeHasDocuments: !!storeData.documents,
+        registrationHasDocuments: !!registrationData?.documents
+      });
+
+      // Get additional store data
+      const [ordersSnapshot, verificationSnapshot, subscriptionSnapshot] = await Promise.all([
+        get(ref(database, `store_orders/${storeId}`)),
+        get(ref(database, `store_verifications/${storeId}`)),
+        get(ref(database, `store_subscriptions/${storeId}`))
+      ]);
+
+      const orders = ordersSnapshot.exists() ? Object.values(ordersSnapshot.val()) : [];
+      const verification = verificationSnapshot.exists() ? verificationSnapshot.val() : null;
+      const subscription = subscriptionSnapshot.exists() ? subscriptionSnapshot.val() : null;
+
+      // Merge documents: prioritize store data, fallback to registration
+      const documents = storeData.documents || registrationData?.documents || {};
+
+      // Merge business info: combine both sources
+      const businessInfo = {
+        ...registrationData?.businessInfo,
+        ...storeData.businessInfo
+      };
+
+      const personalInfo = {
+        ...registrationData?.personalInfo,
+        ...storeData.personalInfo
+      };
+
+      // Extract data with merged sources
+      const storeName = businessInfo?.storeName ||
+                       storeData.storeName ||
+                       registrationData?.storeName ||
+                       'Unknown Store';
+
+      const ownerName = personalInfo?.name ||
+                       storeData.ownerName ||
+                       registrationData?.ownerName ||
+                       'Unknown Owner';
+
+      const ownerEmail = personalInfo?.email ||
+                        storeData.ownerEmail ||
+                        registrationData?.email ||
+                        '';
+
+      const ownerPhone = personalInfo?.mobile ||
+                        storeData.ownerPhone ||
+                        registrationData?.phone ||
+                        '';
+
+      const address = storeData.location?.formattedAddress ||
+                      (businessInfo?.address && businessInfo?.city
+                       ? `${businessInfo.address}, ${businessInfo.city}`
+                       : businessInfo?.address) ||
+                      storeData.address ||
+                      '';
+
+      const storeDescription = businessInfo?.description ||
+                              storeData.storeDescription ||
+                              registrationData?.businessInfo?.description ||
+                              '';
+
+      return {
+        storeId,
+        storeName,
+        ownerName,
+        ownerEmail,
+        ownerPhone,
+        address,
+        status: storeData.status || 'pending',
+        statusReason: storeData.statusReason,
+        joinedDate: storeData.joinedDate || storeData.createdAt || new Date().toISOString(),
+        lastActiveAt: storeData.lastActiveAt,
+        businessHours: storeData.businessHours,
+        documents, // Merged documents from both sources
+        businessInfo, // Merged businessInfo
+        personalInfo, // Merged personalInfo
+        businessVerification: verification ? {
+          status: verification.status || 'pending',
+          verifiedAt: verification.verifiedAt,
+          notes: verification.notes
+        } : { status: 'pending' },
+        performanceMetrics: {
+          totalSales: (orders as Record<string, unknown>[]).reduce((sum: number, order: Record<string, unknown>) => sum + ((order.total as number) || 0), 0),
+          totalOrders: orders.length,
+          rating: storeData.rating || 4.5,
+          responseTime: storeData.responseTime || 15
+        },
+        locationCoordinates: storeData.locationCoordinates,
+        storeCategory: storeData.storeCategory || storeData.category,
+        storeDescription, // Merged description
+        subscriptionStatus: subscription?.plan || 'free',
+        subscriptionExpiry: subscription?.endDate
+      };
+    } catch (error) {
+      console.error('Error fetching complete store data:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get store by ID with detailed information (LEGACY - use getStoreByIdComplete instead)
    */
   static async getStoreById(storeId: string): Promise<Store | null> {
     try {
@@ -276,6 +398,12 @@ export class StoreService {
     reason?: string
   ): Promise<void> {
     try {
+      console.log(`🔄 [updateStoreStatus] Starting update for store ${storeId}:`, {
+        newStatus: status,
+        reason: reason || 'No reason provided',
+        path: `stores/${storeId}`
+      });
+
       const storeRef = ref(database, `stores/${storeId}`);
 
       const updateData: Record<string, unknown> = {
@@ -287,7 +415,24 @@ export class StoreService {
         updateData.statusReason = reason;
       }
 
+      console.log(`📝 [updateStoreStatus] Update data:`, updateData);
+
       await update(storeRef, updateData);
+
+      console.log(`✅ [updateStoreStatus] Successfully updated stores/${storeId} with status: ${status}`);
+
+      // Verify the update by reading back
+      const verifySnapshot = await get(storeRef);
+      if (verifySnapshot.exists()) {
+        const verifiedData = verifySnapshot.val();
+        console.log(`✓ [updateStoreStatus] Verified status in database:`, {
+          status: verifiedData.status,
+          statusReason: verifiedData.statusReason,
+          statusUpdatedAt: verifiedData.statusUpdatedAt
+        });
+      } else {
+        console.warn(`⚠️ [updateStoreStatus] Store ${storeId} not found after update!`);
+      }
 
       // Log the status change
       const logRef = ref(database, `store_status_logs/${storeId}/${Date.now()}`);
@@ -299,10 +444,37 @@ export class StoreService {
         updatedBy: 'admin' // Could be dynamic based on current admin user
       });
 
-      console.log(`Store ${storeId} status updated to: ${status}`);
+      console.log(`📜 [updateStoreStatus] Status change logged to store_status_logs`);
     } catch (error) {
-      console.error('Error updating store status:', error);
+      console.error('❌ [updateStoreStatus] Error updating store status:', error);
       throw error;
+    }
+  }
+
+  /**
+   * Get suspension history for a store
+   */
+  static async getStoreStatusHistory(storeId: string): Promise<any[]> {
+    try {
+      const logsRef = ref(database, `store_status_logs/${storeId}`);
+      const snapshot = await get(logsRef);
+
+      if (snapshot.exists()) {
+        const logs = snapshot.val();
+        // Convert to array and sort by timestamp (newest first)
+        return Object.entries(logs)
+          .map(([timestamp, log]: [string, any]) => ({
+            timestamp: parseInt(timestamp),
+            ...log,
+            date: new Date(parseInt(timestamp)).toISOString()
+          }))
+          .sort((a, b) => b.timestamp - a.timestamp);
+      }
+
+      return [];
+    } catch (error) {
+      console.error('Error fetching store status history:', error);
+      return [];
     }
   }
 
