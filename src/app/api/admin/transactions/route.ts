@@ -42,6 +42,10 @@ export async function GET() {
           createdAt: tx.createdAt || '',
           paidAt: tx.paidAt,
           invoiceUrl: tx.invoiceUrl,
+          customerId: tx.customerId,
+          customerName: tx.customerName,
+          customerEmail: tx.customerEmail,
+          customerPhone: tx.customerPhone,
         });
       }
     }

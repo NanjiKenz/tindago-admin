@@ -131,6 +131,10 @@ interface Transaction {
   createdAt: string;
   paidAt?: string;
   invoiceUrl?: string;
+  customerId?: string;
+  customerName?: string;
+  customerEmail?: string;
+  customerPhone?: string;
 }
 
 export const TransactionManagement: React.FC = () => {
@@ -1388,6 +1392,26 @@ export const TransactionManagement: React.FC = () => {
                   margin: 0
                 }}>{selectedTransaction.storeName}</p>
               </div>
+
+              {selectedTransaction.customerName && (
+                <div>
+                  <label style={{
+                    fontFamily: 'Clash Grotesk Variable',
+                    fontWeight: 500,
+                    fontSize: '12px',
+                    color: 'rgba(30, 30, 30, 0.6)',
+                    display: 'block',
+                    marginBottom: '4px'
+                  }}>Customer Name</label>
+                  <p style={{
+                    fontFamily: 'Clash Grotesk Variable',
+                    fontWeight: 400,
+                    fontSize: '14px',
+                    color: '#1E1E1E',
+                    margin: 0
+                  }}>{selectedTransaction.customerName}</p>
+                </div>
+              )}
 
               <div>
                 <label style={{
