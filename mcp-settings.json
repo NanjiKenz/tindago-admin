@@ -2,13 +2,13 @@
   "mcpServers": {
     "Framelink Figma MCP": {
       "command": "cmd",
-      "args": ["/c", "npx", "-y", "figma-developer-mcp", "--figma-api-key=figd_sLmh5gxm2iQVY7w4DDXd5qgpvSOoyPeOjfUEY9PL", "--stdio"],
+      "args": ["/c", "npx", "-y", "figma-developer-mcp", "--figma-api-key=figd_ObQgz20L8sghXs83yKfU1Xy0gaAVVM5k6QEvaMRM", "--stdio"],
       "env": {
         "FIGMA_PIXEL_PERFECT": "true",
         "FIGMA_COORDINATE_PRESERVATION": "true",
         "FIGMA_EXACT_POSITIONING": "true",
         "FIGMA_FILE_ID": "8I1Nr3vQZllDDknSevstvH",
-        "FIGMA_ACCESS_TOKEN": "figd_sLmh5gxm2iQVY7w4DDXd5qgpvSOoyPeOjfUEY9PL",
+        "FIGMA_ACCESS_TOKEN": "figd_ObQgz20L8sghXs83yKfU1Xy0gaAVVM5k6QEvaMRM",
         "FIGMA_COMPONENT_GENERATION": "true",
         "FIGMA_TAILWIND_CSS": "true",
         "FIGMA_REACT_GENERATION": "true"
@@ -16,7 +16,7 @@
     },
     "Figma Context MCP": {
       "command": "cmd",
-      "args": ["/c", "npx", "-y", "figma-context-mcp", "--figma-api-key=figd_sLmh5gxm2iQVY7w4DDXd5qgpvSOoyPeOjfUEY9PL", "--stdio"],
+      "args": ["/c", "npx", "-y", "figma-context-mcp", "--figma-api-key=figd_ObQgz20L8sghXs83yKfU1Xy0gaAVVM5k6QEvaMRM", "--stdio"],
       "env": {
         "FIGMA_ADMIN_MODE": "true",
         "FIGMA_ASSET_PATH": "public/images/admin-dashboard/",
@@ -24,13 +24,13 @@
         "FIGMA_BASELINE_HEIGHT": "1024",
         "FIGMA_SIDEBAR_WIDTH": "273",
         "FIGMA_FILE_ID": "8I1Nr3vQZllDDknSevstvH",
-        "FIGMA_ACCESS_TOKEN": "figd_sLmh5gxm2iQVY7w4DDXd5qgpvSOoyPeOjfUEY9PL",
+        "FIGMA_ACCESS_TOKEN": "figd_ObQgz20L8sghXs83yKfU1Xy0gaAVVM5k6QEvaMRM",
         "FIGMA_SCRIPT_INTEGRATION": "true"
       }
     },
     "TindaGo Admin Figma": {
       "command": "cmd",
-      "args": ["/c", "npx", "-y", "figma-developer-mcp", "--figma-api-key=figd_sLmh5gxm2iQVY7w4DDXd5qgpvSOoyPeOjfUEY9PL", "--stdio"],
+      "args": ["/c", "npx", "-y", "figma-developer-mcp", "--figma-api-key=figd_ObQgz20L8sghXs83yKfU1Xy0gaAVVM5k6QEvaMRM", "--stdio"],
       "env": {
         "FIGMA_FILE_ID": "8I1Nr3vQZllDDknSevstvH",
         "FIGMA_ADMIN_DASHBOARD": "true",
@@ -40,7 +40,7 @@
         "FIGMA_ABSOLUTE_POSITIONING": "true",
         "FIGMA_EXACT_COORDINATES": "true",
         "FIGMA_DOWNLOAD_PATH": "public/images/admin-dashboard/",
-        "FIGMA_ACCESS_TOKEN": "figd_sLmh5gxm2iQVY7w4DDXd5qgpvSOoyPeOjfUEY9PL",
+        "FIGMA_ACCESS_TOKEN": "figd_ObQgz20L8sghXs83yKfU1Xy0gaAVVM5k6QEvaMRM",
         "FIGMA_DESIGN_EXTRACTOR": "true",
         "FIGMA_TOKEN_SYNC": "true",
         "FIGMA_COMPONENT_CREATION": "true",
@@ -51,7 +51,7 @@
       "command": "cmd",
       "args": ["/c", "node", "scripts/figma-design-extractor.js"],
       "env": {
-        "FIGMA_ACCESS_TOKEN": "figd_sLmh5gxm2iQVY7w4DDXd5qgpvSOoyPeOjfUEY9PL",
+        "FIGMA_ACCESS_TOKEN": "figd_ObQgz20L8sghXs83yKfU1Xy0gaAVVM5k6QEvaMRM",
         "FIGMA_FILE_ID": "8I1Nr3vQZllDDknSevstvH",
         "FIGMA_SCRIPT_MODE": "true",
         "FIGMA_OUTPUT_PATH": "figma-extracted-design",
@@ -62,7 +62,7 @@
       "command": "cmd",
       "args": ["/c", "node", "scripts/figma-sync.js"],
       "env": {
-        "FIGMA_ACCESS_TOKEN": "figd_sLmh5gxm2iQVY7w4DDXd5qgpvSOoyPeOjfUEY9PL",
+        "FIGMA_ACCESS_TOKEN": "figd_ObQgz20L8sghXs83yKfU1Xy0gaAVVM5k6QEvaMRM",
         "FIGMA_FILE_ID": "8I1Nr3vQZllDDknSevstvH",
         "FIGMA_SYNC_MODE": "true",
         "FIGMA_OUTPUT_CSS": "src/styles/design-tokens.css"

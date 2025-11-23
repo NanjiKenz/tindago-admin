@@ -721,7 +721,7 @@ const useDashboardData = () => {
 **Required Environment Variables**:
 ```bash
 # Basic Figma API Access
-FIGMA_ACCESS_TOKEN=figd_Qow2KUHJ6s6vuXbduOs9Wj001_5mg7m8XNFCTnmN
+FIGMA_ACCESS_TOKEN=figd_ObQgz20L8sghXs83yKfU1Xy0gaAVVM5k6QEvaMRM
 FIGMA_FILE_ID=8I1Nr3vQZllDDknSevstvH
 ```
 

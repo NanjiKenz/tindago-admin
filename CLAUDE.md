@@ -600,7 +600,7 @@ The project uses MCP (Model Context Protocol) servers for Figma integration:
   "mcpServers": {
     "Framelink Figma MCP": {
       "command": "cmd",
-      "args": ["/c", "npx", "-y", "figma-developer-mcp", "--figma-api-key=figd_Qow2KUHJ6s6vuXbduOs9Wj001_5mg7m8XNFCTnmN", "--stdio"]
+      "args": ["/c", "npx", "-y", "figma-developer-mcp", "--figma-api-key=figd_ObQgz20L8sghXs83yKfU1Xy0gaAVVM5k6QEvaMRM", "--stdio"]
     }
   }
 }
