@@ -18,6 +18,7 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { RefreshButton } from '@/components/ui/RefreshButton';
+import { Button } from '@/components/ui/Button';
 
 // Payment Method Logo Components - Styled badges matching Figma design
 const GCashLogo = () => (
@@ -146,6 +147,7 @@ interface PurchaseOrder {
   totalQuantity?: number;
   createdAt: string;
   receivedDate?: string; // Date when order was marked as received
+  invoiceUrl?: string; // Xendit invoice URL if payment was made via Xendit
   storeInfo?: {
     name: string;
     address: string;
@@ -996,10 +998,14 @@ export default function PurchaseOrderManagement() {
                     </td>
                     <td style={{ padding: '16px 20px' }}>
                       <span style={{
+                        display: 'inline-block',
+                        padding: '6px 14px',
+                        backgroundColor: po.status === 'received' ? '#22C55E' : po.status === 'cancelled' ? '#EF4444' : '#F59E0B',
+                        borderRadius: '8px',
                         fontFamily: 'Clash Grotesk Variable',
                         fontSize: '13px',
                         fontWeight: 600,
-                        color: po.status === 'received' ? '#10B981' : po.status === 'cancelled' ? '#EF4444' : '#F59E0B'
+                        color: 'white'
                       }}>
                         {po.status === 'received' ? 'DELIVERED' : po.status === 'cancelled' ? 'CANCELLED' : 'PENDING'}
                       </span>
@@ -1018,19 +1024,26 @@ export default function PurchaseOrderManagement() {
                         })}
                       </span>
                     </td>
-                    <td style={{ padding: '16px 20px', textAlign: 'center' }}>
+                    <td style={{ padding: '16px 20px', textAlign: 'right' }}>
                       <button
                         onClick={() => setSelectedOrder(po)}
                         style={{
                           padding: '8px 16px',
-                          backgroundColor: '#3B82F6',
-                          color: 'white',
-                          border: 'none',
+                          backgroundColor: 'transparent',
+                          color: '#3BB77E',
+                          border: '2px solid #3BB77E',
                           borderRadius: '8px',
-                          fontSize: '13px',
+                          fontSize: '14px',
                           fontWeight: 600,
                           fontFamily: 'Clash Grotesk Variable',
-                          cursor: 'pointer'
+                          cursor: 'pointer',
+                          transition: 'all 0.2s ease'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = '#F0FDF4';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = 'transparent';
                         }}
                       >
                         View
@@ -1055,113 +1068,152 @@ export default function PurchaseOrderManagement() {
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.6)',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            zIndex: 1000
+            zIndex: 1000,
+            padding: '20px'
           }}
           onClick={() => setSelectedOrder(null)}
         >
           <div
             style={{
               backgroundColor: 'white',
-              borderRadius: '20px',
-              padding: '32px',
-              maxWidth: '700px',
-              width: '90%',
-              maxHeight: '80vh',
-              overflow: 'auto'
+              borderRadius: '16px',
+              padding: '0',
+              maxWidth: '540px',
+              width: '100%',
+              maxHeight: '90vh',
+              overflow: 'auto',
+              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
+              fontFamily: 'Clash Grotesk Variable'
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            <h2 style={{
-              marginBottom: '24px',
-              fontSize: '24px',
-              fontWeight: 700,
-              fontFamily: 'Clash Grotesk Variable',
-              color: '#1E293B'
+            {/* Header */}
+            <div style={{
+              padding: '24px 32px',
+              borderBottom: '1px solid #E5E7EB',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between'
             }}>
-              Purchase Order Details
-            </h2>
-
-            <div style={{ marginBottom: '16px' }}>
-              <strong style={{ fontFamily: 'Clash Grotesk Variable' }}>PO Number:</strong>{' '}
-              <span style={{ fontFamily: 'Clash Grotesk Variable', color: '#64748B' }}>
-                {selectedOrder.purchaseOrderNumber}
-              </span>
-            </div>
-            <div style={{ marginBottom: '16px' }}>
-              <strong style={{ fontFamily: 'Clash Grotesk Variable' }}>Store:</strong>{' '}
-              <span style={{ fontFamily: 'Clash Grotesk Variable', color: '#64748B' }}>
-                {selectedOrder.storeInfo?.name || selectedOrder.storeName}
-              </span>
-            </div>
-            <div style={{ marginBottom: '16px' }}>
-              <strong style={{ fontFamily: 'Clash Grotesk Variable' }}>Supplier:</strong>{' '}
-              <span style={{ fontFamily: 'Clash Grotesk Variable', color: '#64748B' }}>
-                {selectedOrder.supplierName}
-              </span>
-            </div>
-            <div style={{ marginBottom: '16px' }}>
-              <strong style={{ fontFamily: 'Clash Grotesk Variable' }}>Payment Method:</strong>{' '}
-              {getPaymentMethodLogo(selectedOrder.paymentMethod)}
-            </div>
-            <div style={{ marginBottom: '16px' }}>
-              <strong style={{ fontFamily: 'Clash Grotesk Variable' }}>Total Amount:</strong>{' '}
-              <span style={{ fontFamily: 'Clash Grotesk Variable', fontSize: '20px', fontWeight: 700, color: '#1E293B' }}>
-                ₱{selectedOrder.totalCost?.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
-              </span>
-            </div>
-
-            <h3 style={{
-              marginTop: '24px',
-              marginBottom: '16px',
-              fontSize: '18px',
-              fontWeight: 600,
-              fontFamily: 'Clash Grotesk Variable',
-              color: '#1E293B'
-            }}>
-              Items ({selectedOrder.items?.length || 0})
-            </h3>
-            <div style={{ maxHeight: '300px', overflow: 'auto' }}>
-              {selectedOrder.items?.map((item, idx) => (
-                <div
-                  key={idx}
-                  style={{
-                    padding: '12px 16px',
-                    backgroundColor: '#F8FAFC',
-                    borderRadius: '12px',
-                    marginBottom: '8px',
-                    fontFamily: 'Clash Grotesk Variable'
-                  }}
-                >
-                  <div style={{ fontWeight: 600, color: '#1E293B' }}>{item.productName}</div>
-                  <div style={{ fontSize: '14px', color: '#64748B', marginTop: '4px' }}>
-                    Qty: {item.quantity} × ₱{item.costPerUnit?.toFixed(2)} = ₱{item.totalCost?.toFixed(2)}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <button
-              onClick={() => setSelectedOrder(null)}
-              style={{
-                marginTop: '24px',
-                padding: '12px 24px',
-                backgroundColor: '#3B82F6',
-                color: 'white',
-                border: 'none',
-                borderRadius: '12px',
-                fontSize: '14px',
-                fontWeight: 600,
+              <h2 style={{
+                fontSize: '24px',
+                fontWeight: 700,
                 fontFamily: 'Clash Grotesk Variable',
-                cursor: 'pointer',
-                width: '100%'
-              }}
-            >
-              Close
-            </button>
+                color: '#1F2937',
+                margin: 0
+              }}>
+                Purchase Order Details
+              </h2>
+              <button
+                onClick={() => setSelectedOrder(null)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  fontSize: '20px',
+                  color: '#9CA3AF',
+                  cursor: 'pointer',
+                  padding: '0',
+                  lineHeight: 1,
+                  fontWeight: 300
+                }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Content */}
+            <div style={{ padding: '24px 32px' }}>
+              {/* ID */}
+              <div style={{ marginBottom: '20px', fontSize: '14px', color: '#6B7280' }}>
+                {selectedOrder.purchaseOrderNumber}
+              </div>
+
+              {/* Order Number */}
+              <div style={{ marginBottom: '16px' }}>
+                <div style={{ fontSize: '13px', color: '#6B7280', marginBottom: '4px' }}>Order Number</div>
+                <div style={{ fontSize: '15px', color: '#111827', fontWeight: 500 }}>{selectedOrder.purchaseOrderNumber}</div>
+              </div>
+
+              {/* Store */}
+              <div style={{ marginBottom: '16px' }}>
+                <div style={{ fontSize: '13px', color: '#6B7280', marginBottom: '4px' }}>Store</div>
+                <div style={{ fontSize: '15px', color: '#111827', fontWeight: 500 }}>{selectedOrder.storeInfo?.name || selectedOrder.storeName}</div>
+              </div>
+
+              {/* Supplier */}
+              <div style={{ marginBottom: '16px' }}>
+                <div style={{ fontSize: '13px', color: '#6B7280', marginBottom: '4px' }}>Supplier</div>
+                <div style={{ fontSize: '15px', color: '#111827', fontWeight: 500 }}>{selectedOrder.supplierName}</div>
+              </div>
+
+              {/* Amount */}
+              <div style={{ marginBottom: '16px' }}>
+                <div style={{ fontSize: '13px', color: '#6B7280', marginBottom: '4px' }}>Amount</div>
+                <div style={{ fontSize: '32px', fontWeight: 700, color: '#111827' }}>
+                  ₱{selectedOrder.totalCost?.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
+                </div>
+              </div>
+
+              {/* Status */}
+              <div style={{ marginBottom: '16px' }}>
+                <div style={{ fontSize: '13px', color: '#6B7280', marginBottom: '8px' }}>Status</div>
+                <span style={{
+                  display: 'inline-block',
+                  padding: '6px 16px',
+                  backgroundColor: selectedOrder.paymentStatus === 'paid' ? '#22C55E' : '#EF4444',
+                  borderRadius: '8px',
+                  fontSize: '13px',
+                  fontWeight: 600,
+                  color: 'white',
+                  textTransform: 'uppercase'
+                }}>
+                  {selectedOrder.paymentStatus}
+                </span>
+              </div>
+
+              {/* Created At */}
+              <div style={{ marginBottom: '20px' }}>
+                <div style={{ fontSize: '13px', color: '#6B7280', marginBottom: '4px' }}>Created At</div>
+                <div style={{ fontSize: '15px', color: '#111827', fontWeight: 500 }}>
+                  {selectedOrder.createdAt ? new Date(selectedOrder.createdAt).toLocaleString('en-US', {
+                    month: '2-digit',
+                    day: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: true
+                  }) : '—'}
+                </div>
+              </div>
+
+              {/* Xendit Invoice Link */}
+              {selectedOrder.paymentInfo?.invoiceUrl && (
+                <div style={{ marginBottom: '20px' }}>
+                  <div style={{ fontSize: '13px', color: '#6B7280', marginBottom: '4px' }}>Xendit Invoice</div>
+                  <a 
+                    href={selectedOrder.paymentInfo.invoiceUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    style={{
+                      color: '#3BB77E',
+                      textDecoration: 'underline',
+                      fontSize: '15px',
+                      fontWeight: 500,
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '4px'
+                    }}
+                  >
+                    View Xendit Invoice →
+                  </a>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}
