@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
   // Token verification
   const token = req.headers.get('x-callback-token') || '';
   console.log('[Webhook] Received POST, token:', token ? 'present' : 'missing', 'expected:', XENDIT_WEBHOOK_TOKEN ? 'set' : 'missing');
-  
+
   if (!XENDIT_WEBHOOK_TOKEN || token !== XENDIT_WEBHOOK_TOKEN) {
     console.error('[Webhook] Token mismatch. Received:', token, 'Expected:', XENDIT_WEBHOOK_TOKEN);
     return new Response('Unauthorized', { status: 401 });
@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
 
   const payload = await req.json();
   console.log('[Webhook] Full payload:', JSON.stringify(payload, null, 2));
-  
+
   const invoiceId: string = payload.id;
   const status: string = payload.status;
   const amount: number = payload.amount;
@@ -41,6 +41,79 @@ export async function POST(req: NextRequest) {
   const processedSnap = await get(processedRef);
   if (processedSnap.exists()) return ok({ idempotent: true });
 
+  // ====================================
+  // ✅ PURCHASE ORDER PAYMENT HANDLING
+  // ====================================
+  const isPurchaseOrder = payload.external_id?.startsWith('PO-') || metadata.purchase_order_number;
+
+  if (isPurchaseOrder) {
+    console.log('[Webhook] Processing Purchase Order payment:', payload.external_id);
+
+    // Get purchase order ID from metadata or index
+    let purchaseOrderId: string | undefined = metadata.purchase_order_id;
+    if (!purchaseOrderId) {
+      const poIdxSnap = await get(ref(database, `indexes/invoice_to_purchase_order/${invoiceId}`));
+      if (poIdxSnap.exists()) purchaseOrderId = poIdxSnap.val().purchaseOrderId;
+    }
+
+    if (!purchaseOrderId) {
+      console.error('[Webhook] Purchase Order ID not found for invoice:', invoiceId);
+      await set(processedRef, true);
+      return ok({ error: 'Purchase order ID not found' });
+    }
+
+    // Normalize payment method
+    let paymentMethod = metadata.method || payload.payment_method;
+    if (payload.payment_channel) {
+      paymentMethod = payload.payment_channel.toLowerCase(); // PAYMAYA → paymaya, GCASH → gcash
+    } else if (payload.ewallet_type) {
+      paymentMethod = payload.ewallet_type.toLowerCase();
+    }
+
+    // Compute payment status
+    let paymentStatus = 'pending';
+    if (status === 'PAID' || status === 'SETTLED') paymentStatus = 'paid';
+    else if (status === 'EXPIRED' || status === 'VOIDED') paymentStatus = 'unpaid';
+
+    // Update purchase order
+    const poRef = ref(database, `purchase_orders/${purchaseOrderId}`);
+    const poSnapshot = await get(poRef);
+
+    if (poSnapshot.exists()) {
+      await update(poRef, {
+        paymentStatus,
+        paymentMethod,
+        'paymentInfo/invoiceId': invoiceId,
+        'paymentInfo/paidAt': payload.paid_at || payload.updated || new Date().toISOString(),
+        'paymentInfo/status': status,
+        updatedAt: new Date().toISOString(),
+      });
+      console.log(`[✅ Purchase Order] Updated payment status to '${paymentStatus}' for PO ${purchaseOrderId}`);
+    } else {
+      console.warn('[Webhook] Purchase order not found:', purchaseOrderId);
+    }
+
+    // Update purchase order ledger
+    const poStoreId = metadata.store_id;
+    if (poStoreId) {
+      const poLedgerRef = ref(database, `ledgers/purchase_orders/${poStoreId}/transactions/${invoiceId}`);
+      await update(poLedgerRef, {
+        status,
+        paidAt: payload.paid_at || payload.updated || new Date().toISOString(),
+        method: paymentMethod,
+      });
+      console.log(`[📊 Ledger] Updated purchase order ledger for store ${poStoreId}`);
+    }
+
+    // Mark processed and return (skip customer order logic)
+    await set(processedRef, true);
+    return ok({ ok: true, type: 'purchase_order' });
+  }
+
+  // ====================================
+  // CUSTOMER ORDER PAYMENT HANDLING (existing logic)
+  // ====================================
+
   // Resolve storeId via index or metadata
   let storeId: string | undefined = metadata.store_id;
   if (!storeId) {
@@ -50,7 +123,7 @@ export async function POST(req: NextRequest) {
 
   if (storeId) {
     const ledgerRef = ref(database, `ledgers/stores/${storeId}/transactions/${invoiceId}`);
-    
+
     // ✅ Normalize payment method: Use payment_channel (PAYMAYA/GCASH) if available, otherwise fall back
     let paymentMethod = metadata.method || payload.payment_method;
     if (payload.payment_channel) {
@@ -60,13 +133,13 @@ export async function POST(req: NextRequest) {
       // Fallback: Use ewallet_type if payment_channel not available
       paymentMethod = payload.ewallet_type.toLowerCase();
     }
-    
+
     const updates: any = {
       status,
       paidAt: payload.paid_at || payload.updated || new Date().toISOString(),
       method: paymentMethod, // ✅ Now uses 'paymaya' or 'gcash' instead of 'EWALLET'
     };
-    
+
     // ✅ Only add customer fields if they have values (avoid undefined)
     if (metadata.customer_name || payload.payer_email) {
       updates.customerName = metadata.customer_name || payload.payer_email?.split('@')[0];
@@ -77,7 +150,7 @@ export async function POST(req: NextRequest) {
     if (metadata.customer_phone) {
       updates.customerPhone = metadata.customer_phone;
     }
-    
+
     await update(ledgerRef, updates);
 
     // Credit wallet on successful payment
@@ -85,11 +158,11 @@ export async function POST(req: NextRequest) {
       const storeAmount = roundCurrency(metadata.store_amount || (amount - (metadata.commission || 0)));
       const walletRef = ref(database, `wallets/${storeId}`);
       const walletSnap = await get(walletRef);
-      
+
       const currentAvailable = walletSnap.exists() ? (walletSnap.val().available || 0) : 0;
       const currentPending = walletSnap.exists() ? (walletSnap.val().pending || 0) : 0;
       const currentTotal = walletSnap.exists() ? (walletSnap.val().total || 0) : 0;
-      
+
       const newAvailable = roundCurrency(currentAvailable + storeAmount);
       const newTotal = roundCurrency(currentTotal + storeAmount);
 
@@ -148,9 +221,9 @@ export async function POST(req: NextRequest) {
     else if (status === 'EXPIRED' || status === 'VOIDED') paymentStatus = 'pending';
 
     // Prepare order updates with normalized payment method
-    const orderUpdates: any = { 
-      paymentStatus, 
-      updatedAt: new Date().toISOString() 
+    const orderUpdates: any = {
+      paymentStatus,
+      updatedAt: new Date().toISOString()
     };
     // ✅ Only update paymentMethod if we have a valid normalized value
     if (paymentMethod && paymentMethod !== 'EWALLET') {
@@ -162,7 +235,7 @@ export async function POST(req: NextRequest) {
       const snap = await get(orderRef);
       if (snap.exists()) {
         await update(orderRef, orderUpdates);
-        
+
         // Note: Stock deduction is now handled client-side when payment confirmation is detected
         // This avoids Firebase permission issues and uses transactions for safety
         console.log(`[📦 Inventory] Payment confirmed for order ${orderId} - stock will be deducted client-side`);
