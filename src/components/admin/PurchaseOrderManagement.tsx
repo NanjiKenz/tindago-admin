@@ -16,6 +16,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
+import { RefreshButton } from '@/components/ui/RefreshButton';
 
 // Payment Method Logo Components - Styled badges matching Figma design
 const GCashLogo = () => (
@@ -206,441 +208,728 @@ export default function PurchaseOrderManagement() {
     return matchesSearch && matchesPaymentStatus && matchesPaymentMethod;
   });
 
-  if (loading) {
-    return (
-      <div style={{ padding: '32px', textAlign: 'center' }}>
-        <div style={{ fontSize: '18px', color: '#666', fontFamily: 'Clash Grotesk Variable' }}>
-          Loading purchase orders...
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div style={{ padding: '0 32px 32px 32px' }}>
-      {/* Stats Cards Row - 270px x 150px each */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(270px, 1fr))',
-        gap: '20px',
-        marginBottom: '32px'
-      }}>
-        {/* Total Orders */}
-        <div style={{
-          width: '100%',
-          maxWidth: '270px',
-          height: '150px',
-          background: 'white',
-          borderRadius: '20px',
-          padding: '20px',
-          boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.08)',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between'
-        }}>
-          <div style={{
-            width: '50px',
-            height: '50px',
-            backgroundColor: '#E3F2FD',
-            borderRadius: '12px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}>
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2196F3" strokeWidth="2">
-              <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-            </svg>
-          </div>
-          <div>
-            <p style={{
-              fontFamily: 'Clash Grotesk Variable',
-              fontSize: '14px',
-              color: '#64748B',
-              marginBottom: '4px'
-            }}>Total Orders</p>
-            <p style={{
-              fontFamily: 'Clash Grotesk Variable',
-              fontSize: '32px',
-              fontWeight: 700,
-              color: '#1E293B'
-            }}>{stats.total}</p>
+    <div
+      className="relative"
+      style={{
+        width: '100%',
+        minHeight: '1024px',
+        backgroundColor: '#F3F5F9',
+        fontFamily: 'Clash Grotesk Variable'
+      }}
+    >
+      <div
+        className="absolute w-full lg:px-5 px-4"
+        style={{
+          left: '0px',
+          top: '40px',
+          minHeight: '1200px'
+        }}
+      >
+        {/* Header Section */}
+        <div
+          className="absolute"
+          style={{
+            left: '35px',
+            top: '0px',
+            width: 'calc(100% - 70px)',
+            height: '80px',
+            borderBottom: '1px solid rgba(0, 0, 0, 0.05)',
+            paddingBottom: '20px',
+            marginBottom: '40px'
+          }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div>
+              <h1
+                style={{
+                  fontFamily: 'Clash Grotesk Variable',
+                  fontWeight: 500,
+                  fontSize: '48px',
+                  lineHeight: '1.2em',
+                  color: '#1E1E1E',
+                  marginBottom: '8px',
+                  margin: 0
+                }}
+              >
+                Purchase Orders
+              </h1>
+              <p
+                style={{
+                  fontFamily: 'Clash Grotesk Variable',
+                  fontWeight: 400,
+                  fontSize: '16px',
+                  color: 'rgba(30, 30, 30, 0.6)',
+                  margin: 0,
+                  marginTop: '8px'
+                }}
+              >
+                Monitor B2B purchase transactions where store owners buy inventory from suppliers
+              </p>
+            </div>
+
+            {/* Refresh Button */}
+            <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+              <RefreshButton 
+                onClick={() => loadPurchaseOrders()} 
+                loading={loading} 
+              />
+            </div>
           </div>
         </div>
 
-        {/* Total Amount */}
-        <div style={{
-          width: '100%',
-          maxWidth: '270px',
-          height: '150px',
-          background: 'white',
-          borderRadius: '20px',
-          padding: '20px',
-          boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.08)',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between'
-        }}>
-          <div style={{
-            width: '50px',
-            height: '50px',
-            backgroundColor: '#FFF3E0',
-            borderRadius: '12px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}>
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#FF8D2F" strokeWidth="2">
-              <path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
-            </svg>
-          </div>
-          <div>
-            <p style={{
-              fontFamily: 'Clash Grotesk Variable',
-              fontSize: '14px',
-              color: '#64748B',
-              marginBottom: '4px'
-            }}>Total Purchase Value</p>
-            <p style={{
-              fontFamily: 'Clash Grotesk Variable',
-              fontSize: '28px',
-              fontWeight: 700,
-              color: '#1E293B'
-            }}>₱{stats.totalAmount.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</p>
-          </div>
-        </div>
-
-        {/* Paid Amount */}
-        <div style={{
-          width: '100%',
-          maxWidth: '270px',
-          height: '150px',
-          background: 'white',
-          borderRadius: '20px',
-          padding: '20px',
-          boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.08)',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between'
-        }}>
-          <div style={{
-            width: '50px',
-            height: '50px',
-            backgroundColor: '#E8F5E9',
-            borderRadius: '12px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}>
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" strokeWidth="2">
-              <path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
-            </svg>
-          </div>
-          <div>
-            <p style={{
-              fontFamily: 'Clash Grotesk Variable',
-              fontSize: '14px',
-              color: '#64748B',
-              marginBottom: '4px'
-            }}>Paid ({stats.paid} orders)</p>
-            <p style={{
-              fontFamily: 'Clash Grotesk Variable',
-              fontSize: '28px',
-              fontWeight: 700,
-              color: '#10B981'
-            }}>₱{stats.paidAmount.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</p>
-          </div>
-        </div>
-
-        {/* Unpaid Amount */}
-        <div style={{
-          width: '100%',
-          maxWidth: '270px',
-          height: '150px',
-          background: 'white',
-          borderRadius: '20px',
-          padding: '20px',
-          boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.08)',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between'
-        }}>
-          <div style={{
-            width: '50px',
-            height: '50px',
-            backgroundColor: '#FFEBEE',
-            borderRadius: '12px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}>
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#F44336" strokeWidth="2">
-              <circle cx="12" cy="12" r="10"/>
-              <path d="M15 9l-6 6M9 9l6 6"/>
-            </svg>
-          </div>
-          <div>
-            <p style={{
-              fontFamily: 'Clash Grotesk Variable',
-              fontSize: '14px',
-              color: '#64748B',
-              marginBottom: '4px'
-            }}>Unpaid ({stats.unpaid} orders)</p>
-            <p style={{
-              fontFamily: 'Clash Grotesk Variable',
-              fontSize: '28px',
-              fontWeight: 700,
-              color: '#EF4444'
-            }}>₱{(stats.totalAmount - stats.paidAmount).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Filters Card */}
-      <div style={{
-        background: 'white',
-        borderRadius: '20px',
-        padding: '24px',
-        marginBottom: '24px',
-        boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.05)'
-      }}>
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: '16px',
-          alignItems: 'end'
-        }}>
-          {/* Search */}
-          <div>
-            <label style={{
-              display: 'block',
-              fontFamily: 'Clash Grotesk Variable',
-              fontSize: '13px',
-              fontWeight: 500,
-              color: '#64748B',
-              marginBottom: '8px'
-            }}>Search</label>
-            <input
-              type="text"
-              placeholder="PO number, store, or supplier..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '10px 14px',
-                border: '1.5px solid #E2E8F0',
-                borderRadius: '12px',
-                fontSize: '14px',
-                fontFamily: 'Clash Grotesk Variable',
-                outline: 'none'
-              }}
-            />
-          </div>
-
-          {/* Payment Status Filter */}
-          <div>
-            <label style={{
-              display: 'block',
-              fontFamily: 'Clash Grotesk Variable',
-              fontSize: '13px',
-              fontWeight: 500,
-              color: '#64748B',
-              marginBottom: '8px'
-            }}>Payment Status</label>
-            <select
-              value={paymentStatusFilter}
-              onChange={(e) => setPaymentStatusFilter(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '10px 14px',
-                border: '1.5px solid #E2E8F0',
-                borderRadius: '12px',
-                fontSize: '14px',
-                fontFamily: 'Clash Grotesk Variable',
-                outline: 'none',
-                backgroundColor: 'white'
-              }}
-            >
-              <option value="all">All Status</option>
-              <option value="paid">Paid</option>
-              <option value="unpaid">Unpaid</option>
-              <option value="pending">Pending</option>
-            </select>
-          </div>
-
-          {/* Payment Method Filter */}
-          <div>
-            <label style={{
-              display: 'block',
-              fontFamily: 'Clash Grotesk Variable',
-              fontSize: '13px',
-              fontWeight: 500,
-              color: '#64748B',
-              marginBottom: '8px'
-            }}>Payment Method</label>
-            <select
-              value={paymentMethodFilter}
-              onChange={(e) => setPaymentMethodFilter(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '10px 14px',
-                border: '1.5px solid #E2E8F0',
-                borderRadius: '12px',
-                fontSize: '14px',
-                fontFamily: 'Clash Grotesk Variable',
-                outline: 'none',
-                backgroundColor: 'white'
-              }}
-            >
-              <option value="all">All Methods</option>
-              <option value="cash">Cash</option>
-              <option value="gcash">GCash</option>
-              <option value="paymaya">PayMaya</option>
-              <option value="debt">Debt</option>
-            </select>
-          </div>
-
-          {/* Refresh Button */}
-          <button
-            onClick={loadPurchaseOrders}
+        {/* Stats Cards */}
+        <div
+          className="absolute"
+          style={{
+            left: '35px',
+            top: '120px',
+            width: '1095px',
+            height: '150px'
+          }}
+        >
+          <div
+            className="relative"
             style={{
-              padding: '10px 20px',
-              backgroundColor: '#3B82F6',
-              color: 'white',
-              border: 'none',
-              borderRadius: '12px',
-              fontSize: '14px',
-              fontWeight: 600,
-              fontFamily: 'Clash Grotesk Variable',
-              cursor: 'pointer',
-              height: '42px'
+              width: '1095px',
+              height: '150px'
             }}
           >
-            Refresh
-          </button>
-        </div>
-      </div>
-
-      {/* Results Count */}
-      <div style={{
-        marginBottom: '16px',
-        fontFamily: 'Clash Grotesk Variable',
-        fontSize: '14px',
-        color: '#64748B'
-      }}>
-        Showing {filteredOrders.length} of {purchaseOrders.length} purchase orders
-      </div>
-
-      {/* Table Card */}
-      <div style={{
-        background: 'white',
-        borderRadius: '20px',
-        boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.08)',
-        overflow: 'hidden'
-      }}>
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr style={{ borderBottom: '1px solid #F1F5F9' }}>
-                <th style={{
-                  padding: '16px 20px',
-                  textAlign: 'left',
-                  fontFamily: 'Clash Grotesk Variable',
-                  fontSize: '13px',
-                  fontWeight: 600,
-                  color: '#64748B',
-                  backgroundColor: '#F8FAFC'
-                }}>PO Number</th>
-                <th style={{
-                  padding: '16px 20px',
-                  textAlign: 'left',
-                  fontFamily: 'Clash Grotesk Variable',
-                  fontSize: '13px',
-                  fontWeight: 600,
-                  color: '#64748B',
-                  backgroundColor: '#F8FAFC'
-                }}>Store</th>
-                <th style={{
-                  padding: '16px 20px',
-                  textAlign: 'left',
-                  fontFamily: 'Clash Grotesk Variable',
-                  fontSize: '13px',
-                  fontWeight: 600,
-                  color: '#64748B',
-                  backgroundColor: '#F8FAFC'
-                }}>Supplier</th>
-                <th style={{
-                  padding: '16px 20px',
-                  textAlign: 'left',
-                  fontFamily: 'Clash Grotesk Variable',
-                  fontSize: '13px',
-                  fontWeight: 600,
-                  color: '#64748B',
-                  backgroundColor: '#F8FAFC'
-                }}>Items</th>
-                <th style={{
-                  padding: '16px 20px',
-                  textAlign: 'right',
-                  fontFamily: 'Clash Grotesk Variable',
-                  fontSize: '13px',
-                  fontWeight: 600,
-                  color: '#64748B',
-                  backgroundColor: '#F8FAFC'
-                }}>Amount</th>
-                <th style={{
-                  padding: '16px 20px',
-                  textAlign: 'left',
-                  fontFamily: 'Clash Grotesk Variable',
-                  fontSize: '13px',
-                  fontWeight: 600,
-                  color: '#64748B',
-                  backgroundColor: '#F8FAFC'
-                }}>Payment</th>
-                <th style={{
-                  padding: '16px 20px',
-                  textAlign: 'left',
-                  fontFamily: 'Clash Grotesk Variable',
-                  fontSize: '13px',
-                  fontWeight: 600,
-                  color: '#64748B',
-                  backgroundColor: '#F8FAFC'
-                }}>Status</th>
-                <th style={{
-                  padding: '16px 20px',
-                  textAlign: 'left',
-                  fontFamily: 'Clash Grotesk Variable',
-                  fontSize: '13px',
-                  fontWeight: 600,
-                  color: '#64748B',
-                  backgroundColor: '#F8FAFC'
-                }}>Date</th>
-                <th style={{
-                  padding: '16px 20px',
-                  textAlign: 'center',
-                  fontFamily: 'Clash Grotesk Variable',
-                  fontSize: '13px',
-                  fontWeight: 600,
-                  color: '#64748B',
-                  backgroundColor: '#F8FAFC'
-                }}>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredOrders.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={9}
+            {/* Total Orders Card */}
+            <div
+              className="absolute bg-white rounded-2xl"
+              style={{
+                left: '0px',
+                top: '0px',
+                width: '270px',
+                height: '150px',
+                boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
+                border: '1px solid rgba(0, 0, 0, 0.05)'
+              }}
+            >
+              <div className="relative w-full h-full">
+                <div
+                  className="absolute rounded-xl flex items-center justify-center"
+                  style={{
+                    right: '20px',
+                    top: '20px',
+                    width: '32px',
+                    height: '32px',
+                    backgroundColor: '#3B82F6'
+                  }}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                    <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                  </svg>
+                </div>
+                <div
+                  className="absolute"
+                  style={{
+                    left: '20px',
+                    top: '20px',
+                    width: '150px'
+                  }}
+                >
+                  <p
                     style={{
-                      textAlign: 'center',
-                      padding: '60px 20px',
-                      color: '#94A3B8',
-                      fontFamily: 'Clash Grotesk Variable'
+                      fontFamily: 'Clash Grotesk Variable',
+                      fontWeight: 500,
+                      fontSize: '14px',
+                      lineHeight: '1.2em',
+                      color: '#1E1E1E',
+                      marginBottom: '4px'
                     }}
                   >
-                    No purchase orders found
-                  </td>
-                </tr>
-              ) : (
-                filteredOrders.map((po) => (
+                    Total Orders
+                  </p>
+                </div>
+                <div
+                  className="absolute"
+                  style={{
+                    left: '20px',
+                    bottom: '20px'
+                  }}
+                >
+                  <p
+                    style={{
+                      fontFamily: 'Clash Grotesk Variable',
+                      fontWeight: 700,
+                      fontSize: '32px',
+                      lineHeight: '1.1em',
+                      color: '#1E1E1E',
+                      margin: 0
+                    }}
+                  >
+                    {stats.total.toLocaleString()}
+                  </p>
+                  <p
+                    style={{
+                      fontFamily: 'Clash Grotesk Variable',
+                      fontWeight: 400,
+                      fontSize: '12px',
+                      color: 'transparent',
+                      margin: 0,
+                      marginTop: '4px',
+                      userSelect: 'none'
+                    }}
+                  >
+                    &nbsp;
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Total Amount Card */}
+            <div
+              className="absolute bg-white rounded-2xl"
+              style={{
+                left: '275px',
+                top: '0px',
+                width: '270px',
+                height: '150px',
+                boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
+                border: '1px solid rgba(0, 0, 0, 0.05)'
+              }}
+            >
+              <div className="relative w-full h-full">
+                <div
+                  className="absolute rounded-xl flex items-center justify-center"
+                  style={{
+                    right: '20px',
+                    top: '20px',
+                    width: '32px',
+                    height: '32px',
+                    backgroundColor: '#FF8D2F',
+                    color: '#FFFFFF',
+                    fontSize: '18px',
+                    fontWeight: 'bold',
+                    fontFamily: 'Clash Grotesk Variable'
+                  }}
+                >
+                  ₱
+                </div>
+                <div
+                  className="absolute"
+                  style={{
+                    left: '20px',
+                    top: '20px',
+                    width: '180px'
+                  }}
+                >
+                  <p
+                    style={{
+                      fontFamily: 'Clash Grotesk Variable',
+                      fontWeight: 500,
+                      fontSize: '14px',
+                      lineHeight: '1.2em',
+                      color: '#1E1E1E',
+                      marginBottom: '4px'
+                    }}
+                  >
+                    Total Purchase Value
+                  </p>
+                </div>
+                <div
+                  className="absolute"
+                  style={{
+                    left: '20px',
+                    bottom: '20px'
+                  }}
+                >
+                  <p
+                    style={{
+                      fontFamily: 'Clash Grotesk Variable',
+                      fontWeight: 700,
+                      fontSize: '28px',
+                      lineHeight: '1.1em',
+                      color: '#1E1E1E',
+                      margin: 0
+                    }}
+                  >
+                    ₱{stats.totalAmount.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
+                  </p>
+                  <p
+                    style={{
+                      fontFamily: 'Clash Grotesk Variable',
+                      fontWeight: 400,
+                      fontSize: '12px',
+                      color: 'transparent',
+                      margin: 0,
+                      marginTop: '4px',
+                      userSelect: 'none'
+                    }}
+                  >
+                    &nbsp;
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Paid Amount Card */}
+            <div
+              className="absolute bg-white rounded-2xl"
+              style={{
+                left: '550px',
+                top: '0px',
+                width: '270px',
+                height: '150px',
+                boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
+                border: '1px solid rgba(0, 0, 0, 0.05)'
+              }}
+            >
+              <div className="relative w-full h-full">
+                <div
+                  className="absolute rounded-xl flex items-center justify-center"
+                  style={{
+                    right: '20px',
+                    top: '20px',
+                    width: '32px',
+                    height: '32px',
+                    backgroundColor: '#22C55E'
+                  }}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                </div>
+                <div
+                  className="absolute"
+                  style={{
+                    left: '20px',
+                    top: '20px',
+                    width: '150px'
+                  }}
+                >
+                  <p
+                    style={{
+                      fontFamily: 'Clash Grotesk Variable',
+                      fontWeight: 500,
+                      fontSize: '14px',
+                      lineHeight: '1.2em',
+                      color: '#1E1E1E',
+                      marginBottom: '4px'
+                    }}
+                  >
+                    Paid
+                  </p>
+                </div>
+                <div
+                  className="absolute"
+                  style={{
+                    left: '20px',
+                    bottom: '20px'
+                  }}
+                >
+                  <p
+                    style={{
+                      fontFamily: 'Clash Grotesk Variable',
+                      fontWeight: 700,
+                      fontSize: '32px',
+                      lineHeight: '1.1em',
+                      color: '#1E1E1E',
+                      margin: 0
+                    }}
+                  >
+                    {stats.paid.toLocaleString()}
+                  </p>
+                  <p
+                    style={{
+                      fontFamily: 'Clash Grotesk Variable',
+                      fontWeight: 400,
+                      fontSize: '12px',
+                      color: 'rgba(30, 30, 30, 0.6)',
+                      margin: 0,
+                      marginTop: '4px'
+                    }}
+                  >
+                    ₱{stats.paidAmount.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Unpaid Amount Card */}
+            <div
+              className="absolute bg-white rounded-2xl"
+              style={{
+                left: '825px',
+                top: '0px',
+                width: '270px',
+                height: '150px',
+                boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
+                border: '1px solid rgba(0, 0, 0, 0.05)'
+              }}
+            >
+              <div className="relative w-full h-full">
+                <div
+                  className="absolute rounded-xl flex items-center justify-center"
+                  style={{
+                    right: '20px',
+                    top: '20px',
+                    width: '32px',
+                    height: '32px',
+                    backgroundColor: '#EF4444'
+                  }}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="15" y1="9" x2="9" y2="15"/>
+                    <line x1="9" y1="9" x2="15" y2="15"/>
+                  </svg>
+                </div>
+                <div
+                  className="absolute"
+                  style={{
+                    left: '20px',
+                    top: '20px',
+                    width: '150px'
+                  }}
+                >
+                  <p
+                    style={{
+                      fontFamily: 'Clash Grotesk Variable',
+                      fontWeight: 500,
+                      fontSize: '14px',
+                      lineHeight: '1.2em',
+                      color: '#1E1E1E',
+                      marginBottom: '4px'
+                    }}
+                  >
+                    Unpaid
+                  </p>
+                </div>
+                <div
+                  className="absolute"
+                  style={{
+                    left: '20px',
+                    bottom: '20px'
+                  }}
+                >
+                  <p
+                    style={{
+                      fontFamily: 'Clash Grotesk Variable',
+                      fontWeight: 700,
+                      fontSize: '32px',
+                      lineHeight: '1.1em',
+                      color: '#1E1E1E',
+                      margin: 0
+                    }}
+                  >
+                    {stats.unpaid.toLocaleString()}
+                  </p>
+                  <p
+                    style={{
+                      fontFamily: 'Clash Grotesk Variable',
+                      fontWeight: 400,
+                      fontSize: '12px',
+                      color: 'rgba(30, 30, 30, 0.6)',
+                      margin: 0,
+                      marginTop: '4px'
+                    }}
+                  >
+                    ₱{(stats.totalAmount - stats.paidAmount).toLocaleString('en-PH', { minimumFractionDigits: 2 })}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Search and Filter Section */}
+        <div
+          className="absolute"
+          style={{
+            left: '35px',
+            top: '290px',
+            width: '1095px',
+            marginBottom: '20px'
+          }}
+        >
+          <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+            {/* Search Input */}
+            <div style={{ position: 'relative', flex: 1 }}>
+              <Image
+                src="/images/admin-dashboard/search-icon.png"
+                alt="Search"
+                width={20}
+                height={20}
+                style={{
+                  position: 'absolute',
+                  left: '16px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  opacity: 0.4
+                }}
+              />
+              <input
+                type="text"
+                placeholder="Search by PO number, store, or supplier..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '12px 16px 12px 48px',
+                  borderRadius: '12px',
+                  border: '1px solid rgba(0, 0, 0, 0.1)',
+                  backgroundColor: '#FFFFFF',
+                  fontFamily: 'Clash Grotesk Variable',
+                  fontSize: '14px',
+                  outline: 'none'
+                }}
+              />
+            </div>
+
+            {/* Payment Status Filter Badges */}
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+              {(['all', 'paid', 'unpaid', 'pending'] as const).map((status) => {
+                const isActive = paymentStatusFilter === status;
+                const displayName = status === 'all' ? 'All' : status.charAt(0).toUpperCase() + status.slice(1);
+                return (
+                  <button
+                    key={status}
+                    onClick={() => setPaymentStatusFilter(status)}
+                    style={{
+                      padding: '8px 16px',
+                      fontSize: '14px',
+                      fontFamily: 'Clash Grotesk Variable',
+                      fontWeight: 500,
+                      borderRadius: '6px',
+                      border: '1px solid',
+                      borderColor: isActive ? '#3BB77E' : '#CBD5E1',
+                      backgroundColor: isActive ? '#3BB77E' : '#FFFFFF',
+                      color: isActive ? '#FFFFFF' : '#64748B',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isActive) {
+                        e.currentTarget.style.backgroundColor = '#F1F5F9';
+                        e.currentTarget.style.borderColor = '#94A3B8';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isActive) {
+                        e.currentTarget.style.backgroundColor = '#FFFFFF';
+                        e.currentTarget.style.borderColor = '#CBD5E1';
+                      }
+                    }}
+                  >
+                    {displayName}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* Purchase Orders Table */}
+        <div
+          className="absolute"
+          style={{
+            left: '35px',
+            top: '360px',
+            width: '1095px',
+            minHeight: '600px'
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: '#FFFFFF',
+              borderRadius: '20px',
+              border: '1px solid rgba(0, 0, 0, 0.05)',
+              boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
+              overflow: 'hidden'
+            }}
+          >
+            {loading ? (
+              <div
+                style={{
+                  padding: '48px 24px',
+                  textAlign: 'center'
+                }}
+              >
+                <p
+                  style={{
+                    fontFamily: 'Clash Grotesk Variable',
+                    fontWeight: 400,
+                    fontSize: '16px',
+                    color: '#64748B',
+                    margin: 0
+                  }}
+                >
+                  Loading purchase orders...
+                </p>
+              </div>
+            ) : filteredOrders.length === 0 ? (
+              <div
+                style={{
+                  padding: '48px 24px',
+                  textAlign: 'center'
+                }}
+              >
+                <h3
+                  style={{
+                    fontFamily: 'Clash Grotesk Variable',
+                    fontWeight: 600,
+                    fontSize: '18px',
+                    color: '#1E293B',
+                    marginBottom: '8px'
+                  }}
+                >
+                  No purchase orders found
+                </h3>
+                <p
+                  style={{
+                    fontFamily: 'Clash Grotesk Variable',
+                    fontWeight: 400,
+                    fontSize: '14px',
+                    color: '#64748B',
+                    margin: 0
+                  }}
+                >
+                  Try adjusting your search or filter criteria
+                </p>
+              </div>
+            ) : (
+              <div>
+                <table style={{ width: '100%' }}>
+                  <thead>
+                    <tr
+                      style={{
+                        borderBottom: '1px solid #E2E8F0',
+                        backgroundColor: '#F8FAFC'
+                      }}
+                    >
+                      <th
+                        style={{
+                          padding: '20px 20px',
+                          textAlign: 'left',
+                          fontFamily: 'Clash Grotesk Variable',
+                          fontWeight: 500,
+                          fontSize: '14px',
+                          color: 'rgba(30, 30, 30, 0.6)',
+                          textTransform: 'none',
+                          borderBottom: '1px solid rgba(0, 0, 0, 0.05)'
+                        }}
+                      >
+                        PO Number
+                      </th>
+                      <th
+                        style={{
+                          padding: '20px 20px',
+                          textAlign: 'left',
+                          fontFamily: 'Clash Grotesk Variable',
+                          fontWeight: 500,
+                          fontSize: '14px',
+                          color: 'rgba(30, 30, 30, 0.6)',
+                          textTransform: 'none',
+                          borderBottom: '1px solid rgba(0, 0, 0, 0.05)'
+                        }}
+                      >
+                        Store
+                      </th>
+                      <th
+                        style={{
+                          padding: '20px 20px',
+                          textAlign: 'left',
+                          fontFamily: 'Clash Grotesk Variable',
+                          fontWeight: 500,
+                          fontSize: '14px',
+                          color: 'rgba(30, 30, 30, 0.6)',
+                          textTransform: 'none',
+                          borderBottom: '1px solid rgba(0, 0, 0, 0.05)'
+                        }}
+                      >
+                        Supplier
+                      </th>
+                      <th
+                        style={{
+                          padding: '20px 20px',
+                          textAlign: 'left',
+                          fontFamily: 'Clash Grotesk Variable',
+                          fontWeight: 500,
+                          fontSize: '14px',
+                          color: 'rgba(30, 30, 30, 0.6)',
+                          textTransform: 'none',
+                          borderBottom: '1px solid rgba(0, 0, 0, 0.05)'
+                        }}
+                      >
+                        Items
+                      </th>
+                      <th
+                        style={{
+                          padding: '20px 20px',
+                          textAlign: 'left',
+                          fontFamily: 'Clash Grotesk Variable',
+                          fontWeight: 500,
+                          fontSize: '14px',
+                          color: 'rgba(30, 30, 30, 0.6)',
+                          textTransform: 'none',
+                          borderBottom: '1px solid rgba(0, 0, 0, 0.05)'
+                        }}
+                      >
+                        Amount
+                      </th>
+                      <th
+                        style={{
+                          padding: '20px 20px',
+                          textAlign: 'left',
+                          fontFamily: 'Clash Grotesk Variable',
+                          fontWeight: 500,
+                          fontSize: '14px',
+                          color: 'rgba(30, 30, 30, 0.6)',
+                          textTransform: 'none',
+                          borderBottom: '1px solid rgba(0, 0, 0, 0.05)'
+                        }}
+                      >
+                        Payment
+                      </th>
+                      <th
+                        style={{
+                          padding: '20px 20px',
+                          textAlign: 'left',
+                          fontFamily: 'Clash Grotesk Variable',
+                          fontWeight: 500,
+                          fontSize: '14px',
+                          color: 'rgba(30, 30, 30, 0.6)',
+                          textTransform: 'none',
+                          borderBottom: '1px solid rgba(0, 0, 0, 0.05)'
+                        }}
+                      >
+                        Status
+                      </th>
+                      <th
+                        style={{
+                          padding: '20px 20px',
+                          textAlign: 'left',
+                          fontFamily: 'Clash Grotesk Variable',
+                          fontWeight: 500,
+                          fontSize: '14px',
+                          color: 'rgba(30, 30, 30, 0.6)',
+                          textTransform: 'none',
+                          borderBottom: '1px solid rgba(0, 0, 0, 0.05)'
+                        }}
+                      >
+                        Date
+                      </th>
+                      <th
+                        style={{
+                          padding: '20px 20px',
+                          textAlign: 'left',
+                          fontFamily: 'Clash Grotesk Variable',
+                          fontWeight: 500,
+                          fontSize: '14px',
+                          color: 'rgba(30, 30, 30, 0.6)',
+                          textTransform: 'none',
+                          borderBottom: '1px solid rgba(0, 0, 0, 0.05)'
+                        }}
+                      >
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredOrders.map((po, index) => (
                   <tr
                     key={po.id}
                     style={{
@@ -747,11 +1036,13 @@ export default function PurchaseOrderManagement() {
                         View
                       </button>
                     </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
