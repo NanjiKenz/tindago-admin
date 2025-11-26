@@ -138,11 +138,12 @@ interface PurchaseOrder {
   totalCost: number;
   paymentMethod: 'cash' | 'gcash' | 'paymaya' | 'debt';
   paymentStatus: 'paid' | 'unpaid' | 'pending';
-  status: 'pending' | 'delivered';
+  status: 'pending' | 'received' | 'cancelled'; // ✅ FIXED: Changed 'delivered' to 'received' to match mobile app
   items: any[];
   totalItems?: number;
   totalQuantity?: number;
   createdAt: string;
+  receivedDate?: string; // Date when order was marked as received
   storeInfo?: {
     name: string;
     address: string;
@@ -710,9 +711,9 @@ export default function PurchaseOrderManagement() {
                         fontFamily: 'Clash Grotesk Variable',
                         fontSize: '13px',
                         fontWeight: 600,
-                        color: po.status === 'delivered' ? '#10B981' : '#F59E0B'
+                        color: po.status === 'received' ? '#10B981' : po.status === 'cancelled' ? '#EF4444' : '#F59E0B'
                       }}>
-                        {po.status === 'delivered' ? 'DELIVERED' : 'PENDING'}
+                        {po.status === 'received' ? 'DELIVERED' : po.status === 'cancelled' ? 'CANCELLED' : 'PENDING'}
                       </span>
                     </td>
                     <td style={{
