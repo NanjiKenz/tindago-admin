@@ -193,12 +193,9 @@ export const TransactionManagement: React.FC = () => {
   };
 
   useEffect(() => {
-
     loadTransactions();
-
-    // Refresh every 5 minutes (was 30 seconds - causing excessive reads)
-    const interval = setInterval(loadTransactions, 300000);
-    return () => clearInterval(interval);
+    // Auto-refresh disabled to reduce Firebase read costs
+    // Use the manual Refresh button instead
   }, []);
 
   // Calculate stats

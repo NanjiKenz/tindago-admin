@@ -178,9 +178,8 @@ export default function PurchaseOrderManagement() {
 
   useEffect(() => {
     loadPurchaseOrders();
-    // Refresh every 5 minutes
-    const interval = setInterval(loadPurchaseOrders, 300000);
-    return () => clearInterval(interval);
+    // Auto-refresh disabled to reduce Firebase read costs
+    // Use the manual Refresh button instead
   }, []);
 
   // Calculate stats
