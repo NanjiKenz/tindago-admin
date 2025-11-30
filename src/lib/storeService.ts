@@ -391,6 +391,7 @@ export class StoreService {
 
   /**
    * Update store status
+   * IMPORTANT: Validates location data exists when activating stores
    */
   static async updateStoreStatus(
     storeId: string,
@@ -405,6 +406,31 @@ export class StoreService {
       });
 
       const storeRef = ref(database, `stores/${storeId}`);
+      
+      // First, get current store data to preserve location and other fields
+      const currentSnapshot = await get(storeRef);
+      if (!currentSnapshot.exists()) {
+        throw new Error(`Store ${storeId} not found`);
+      }
+      
+      const currentData = currentSnapshot.val();
+      
+      // Verify location data exists when activating store
+      if (status === 'active') {
+        const hasLocation = currentData.location?.coordinates?.latitude && 
+                          currentData.location?.coordinates?.longitude;
+        
+        if (!hasLocation) {
+          console.error(`❌ [updateStoreStatus] Cannot activate store without location data`);
+          throw new Error('Store must have a location set before activation. Please ensure the store owner has completed location setup.');
+        }
+        
+        console.log(`✅ [updateStoreStatus] Location verified:`, {
+          lat: currentData.location.coordinates.latitude,
+          lng: currentData.location.coordinates.longitude,
+          address: currentData.location.address || 'N/A'
+        });
+      }
 
       const updateData: Record<string, unknown> = {
         status,
@@ -413,6 +439,13 @@ export class StoreService {
 
       if (reason) {
         updateData.statusReason = reason;
+      }
+      
+      // When activating, also set these flags
+      if (status === 'active') {
+        updateData.isOpen = true;
+        updateData.adminApproved = true;
+        updateData.activatedAt = new Date().toISOString();
       }
 
       console.log(`📝 [updateStoreStatus] Update data:`, updateData);
@@ -428,16 +461,24 @@ export class StoreService {
         console.log(`✓ [updateStoreStatus] Verified status in database:`, {
           status: verifiedData.status,
           statusReason: verifiedData.statusReason,
-          statusUpdatedAt: verifiedData.statusUpdatedAt
+          statusUpdatedAt: verifiedData.statusUpdatedAt,
+          hasLocation: !!(verifiedData.location?.coordinates?.latitude && verifiedData.location?.coordinates?.longitude),
+          isOpen: verifiedData.isOpen,
+          adminApproved: verifiedData.adminApproved
         });
       } else {
         console.warn(`⚠️ [updateStoreStatus] Store ${storeId} not found after update!`);
       }
+      
+      // Also update store_registrations collection to keep them in sync
+      const registrationRef = ref(database, `store_registrations/${storeId}`);
+      await update(registrationRef, updateData);
+      console.log(`✅ [updateStoreStatus] Also updated store_registrations/${storeId}`);
 
       // Log the status change
       const logRef = ref(database, `store_status_logs/${storeId}/${Date.now()}`);
       await set(logRef, {
-        oldStatus: 'unknown', // Could be fetched if needed
+        oldStatus: currentData.status || 'unknown',
         newStatus: status,
         reason: reason || '',
         updatedAt: new Date().toISOString(),
