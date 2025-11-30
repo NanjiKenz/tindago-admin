@@ -88,15 +88,14 @@ export class UserManagementService {
       const now = new Date();
       const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
-      const totalUsers = admins.length + customers.length + storeOwners.length;
+      // Total users excludes admins (they're in Admin Management)
+      const totalUsers = customers.length + storeOwners.length;
       const activeUsers = [
-        ...admins.filter(u => u.status === 'active'),
         ...customers.filter(u => u.status === 'active'),
         ...storeOwners.filter(u => u.status === 'active')
       ].length;
 
       const newUsersThisMonth = [
-        ...admins.filter(u => new Date(u.createdAt) >= startOfMonth),
         ...customers.filter(u => new Date(u.createdAt) >= startOfMonth),
         ...storeOwners.filter(u => new Date(u.createdAt) >= startOfMonth)
       ].length;

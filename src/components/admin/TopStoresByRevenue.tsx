@@ -1,7 +1,7 @@
 /**
- * Top 5 Stores by Revenue Component - Pixel Perfect Figma Implementation
+ * Top 5 Stores by Commission Component - Pixel Perfect Figma Implementation
  *
- * Horizontal bar chart showing best performing stores this month
+ * Horizontal bar chart showing stores generating highest platform commission this month
  * Exact positioning and styling from Figma design
  */
 
@@ -11,7 +11,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 
 interface StoreData {
   name: string;
-  revenue: number;
+  commission: number;
   gradient: string;
 }
 
@@ -19,7 +19,7 @@ interface TopStoresByRevenueProps {
   timeRange?: string;
 }
 
-export const TopStoresByRevenue: React.FC<TopStoresByRevenueProps> = ({ timeRange = new Date().toLocaleString('en-US', { month: 'long' }) }) => {
+export const TopStoresByRevenue: React.FC<TopStoresByRevenueProps> = ({ timeRange = new Date().toLocaleString('en-US', { month: 'long', year: 'numeric' }) }) => {
   const [transactions, setTransactions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -55,9 +55,10 @@ export const TopStoresByRevenue: React.FC<TopStoresByRevenueProps> = ({ timeRang
 
   // Calculate stores data based on time range
   const storesData = useMemo(() => {
-    // Parse the selected month (e.g., "January") - assume current year
-    const monthIndex = new Date(Date.parse(timeRange + ' 1, 2025')).getMonth();
-    const year = new Date().getFullYear();
+    // Parse the selected month and year (e.g., "January 2025")
+    const dateObj = new Date(Date.parse(timeRange + ' 1'));
+    const monthIndex = dateObj.getMonth();
+    const year = dateObj.getFullYear();
     
     // Get start and end dates for the selected month
     const startDate = new Date(year, monthIndex, 1);
@@ -70,31 +71,32 @@ export const TopStoresByRevenue: React.FC<TopStoresByRevenueProps> = ({ timeRang
       return isPaid && txDate >= startDate && txDate <= endDate;
     });
 
-    // Calculate revenue per store (same logic as Sales table)
-    const storeRevenueMap = new Map<string, { name: string; revenue: number; orderCount: number }>();
+    // Calculate commission per store (1% platform fee)
+    const storeCommissionMap = new Map<string, { name: string; commission: number; orderCount: number }>();
     filteredTransactions.forEach(t => {
       const storeId = t.storeId;
       const storeName = t.storeName || 'Unknown Store';
-      const revenue = Number(t.amount || 0);
+      const transactionAmount = Number(t.amount || 0);
+      const commission = Number(t.commission || 0) || (transactionAmount * 0.01); // Use stored commission or calculate 1%
 
-      if (storeRevenueMap.has(storeId)) {
-        const existing = storeRevenueMap.get(storeId)!;
-        existing.revenue += revenue;
+      if (storeCommissionMap.has(storeId)) {
+        const existing = storeCommissionMap.get(storeId)!;
+        existing.commission += commission;
         existing.orderCount += 1;
       } else {
-        storeRevenueMap.set(storeId, { name: storeName, revenue, orderCount: 1 });
+        storeCommissionMap.set(storeId, { name: storeName, commission, orderCount: 1 });
       }
     });
 
-    // Debug: Log revenue calculation
-    console.log('=== TOP 5 STORES REVENUE CALCULATION ===');
-    storeRevenueMap.forEach((data, storeId) => {
-      console.log(`${data.name}: ${data.orderCount} orders = ₱${data.revenue.toFixed(2)}`);
+    // Debug: Log commission calculation
+    console.log('=== TOP 5 STORES COMMISSION CALCULATION ===');
+    storeCommissionMap.forEach((data, storeId) => {
+      console.log(`${data.name}: ${data.orderCount} orders = ₱${data.commission.toFixed(2)} commission`);
     });
 
-    // Convert to array and sort by revenue (highest first)
-    const sortedStores = Array.from(storeRevenueMap.values())
-      .sort((a, b) => b.revenue - a.revenue)
+    // Convert to array and sort by commission (highest first)
+    const sortedStores = Array.from(storeCommissionMap.values())
+      .sort((a, b) => b.commission - a.commission)
       .slice(0, 5); // Top 5 only
 
     // Assign gradients to stores - VERTICAL for vertical bars
@@ -108,12 +110,12 @@ export const TopStoresByRevenue: React.FC<TopStoresByRevenueProps> = ({ timeRang
 
     return sortedStores.map((store, index) => ({
       name: store.name,
-      revenue: store.revenue,
+      commission: store.commission,
       gradient: gradients[index % gradients.length]
     }));
   }, [transactions, timeRange]);
 
-  const maxRevenue = storesData.length > 0 ? Math.max(...storesData.map(s => s.revenue)) : 1;
+  const maxCommission = storesData.length > 0 ? Math.max(...storesData.map(s => s.commission)) : 1;
 
   // Calculate nice rounded Y-axis labels and scale
   const getYAxisScale = (max: number) => {
@@ -140,14 +142,14 @@ export const TopStoresByRevenue: React.FC<TopStoresByRevenueProps> = ({ timeRang
     return { roundedMax, labels };
   };
 
-  const { roundedMax: yAxisMax, labels: yAxisLabels } = getYAxisScale(maxRevenue);
+  const { roundedMax: yAxisMax, labels: yAxisLabels } = getYAxisScale(maxCommission);
   
   // Safety check - ensure yAxisMax is valid
-  const safeYAxisMax = yAxisMax > 0 ? yAxisMax : maxRevenue > 0 ? maxRevenue : 1;
+  const safeYAxisMax = yAxisMax > 0 ? yAxisMax : maxCommission > 0 ? maxCommission : 1;
   
   // Debug log
-  console.log('Top 5 Stores Revenue Data:', storesData);
-  console.log('Max Revenue:', maxRevenue);
+  console.log('Top 5 Stores Commission Data:', storesData);
+  console.log('Max Commission:', maxCommission);
   console.log('Y-Axis Max (Rounded):', yAxisMax);
   console.log('Safe Y-Axis Max:', safeYAxisMax);
   console.log('Y-Axis Labels:', yAxisLabels);
@@ -176,7 +178,7 @@ export const TopStoresByRevenue: React.FC<TopStoresByRevenueProps> = ({ timeRang
               margin: 0
             }}
           >
-            Top 5 Stores by Revenue
+            Top 5 Stores by Commission
           </h3>
           <p
             style={{
@@ -189,7 +191,7 @@ export const TopStoresByRevenue: React.FC<TopStoresByRevenueProps> = ({ timeRang
               marginTop: '4px'
             }}
           >
-            Best performing stores in selected period
+            Stores generating highest platform commission
           </p>
         </div>
 
@@ -221,7 +223,7 @@ export const TopStoresByRevenue: React.FC<TopStoresByRevenueProps> = ({ timeRang
           </div>
         ) : storesData.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '40px 0', color: '#64748B', fontFamily: 'Clash Grotesk Variable' }}>
-            No store revenue data available for this time range
+            No commission data available for this time range
           </div>
         ) : (
           <>
@@ -261,9 +263,9 @@ export const TopStoresByRevenue: React.FC<TopStoresByRevenueProps> = ({ timeRang
               {/* Bars container - exactly matches grid height */}
               <div className="flex items-end justify-between gap-2 px-2" style={{ height: '100%' }}>
                 {storesData.map((store, index) => {
-                  // Calculate height based on Y-axis scale (not maxRevenue)
-                  const heightPercentage = (store.revenue / safeYAxisMax) * 100;
-                  console.log(`Store: ${store.name}, Revenue: ${store.revenue}, Y-Axis Max: ${safeYAxisMax}, Height: ${heightPercentage}%`);
+                  // Calculate height based on Y-axis scale (not maxCommission)
+                  const heightPercentage = (store.commission / safeYAxisMax) * 100;
+                  console.log(`Store: ${store.name}, Commission: ${store.commission}, Y-Axis Max: ${safeYAxisMax}, Height: ${heightPercentage}%`);
 
                   return (
                     <div key={index} className="flex flex-col items-center justify-end group" style={{ flex: '1 1 0', minWidth: '0', height: '100%' }}>
@@ -284,7 +286,7 @@ export const TopStoresByRevenue: React.FC<TopStoresByRevenueProps> = ({ timeRang
                             fontSize: '11px'
                           }}
                         >
-                          ₱{store.revenue.toLocaleString()}
+                          ₱{store.commission.toLocaleString()}
                         </div>
                       </div>
                     </div>

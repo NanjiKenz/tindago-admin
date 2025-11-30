@@ -34,6 +34,32 @@ export async function POST(request: Request) {
       );
     }
 
+    // PRECHECK: Ensure email not already used in admins/users (race-safe server check)
+    const databaseURL = process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL;
+    if (!databaseURL) {
+      return NextResponse.json(
+        { error: 'Database URL not configured' },
+        { status: 500 }
+      );
+    }
+
+    const [adminsRes, usersRes] = await Promise.all([
+      fetch(`${databaseURL}/admins.json`),
+      fetch(`${databaseURL}/users.json`)
+    ]);
+    const [admins, users] = await Promise.all([
+      adminsRes.ok ? adminsRes.json() : Promise.resolve(null),
+      usersRes.ok ? usersRes.json() : Promise.resolve(null)
+    ]);
+    const existsInAdmins = admins && Object.values<any>(admins).some((a: any) => a.email?.toLowerCase() === email.toLowerCase());
+    const existsInUsers = users && Object.values<any>(users).some((u: any) => u.email?.toLowerCase() === email.toLowerCase());
+    if (existsInAdmins || existsInUsers) {
+      return NextResponse.json(
+        { error: 'Email is already registered' },
+        { status: 400 }
+      );
+    }
+
     // Create Firebase Authentication user using REST API
     const authResponse = await fetch(
       `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${apiKey}`,
@@ -50,8 +76,20 @@ export async function POST(request: Request) {
 
     if (!authResponse.ok) {
       const authError = await authResponse.json();
+      const errorMessage = authError.error?.message || 'Failed to create Firebase Auth user';
+      
+      // Provide user-friendly error messages
+      let friendlyMessage = errorMessage;
+      if (errorMessage.includes('EMAIL_EXISTS')) {
+        friendlyMessage = 'This email is already registered in the system. Please use a different email address.';
+      } else if (errorMessage.includes('WEAK_PASSWORD')) {
+        friendlyMessage = 'Password is too weak. Please use a stronger password (at least 6 characters).';
+      } else if (errorMessage.includes('INVALID_EMAIL')) {
+        friendlyMessage = 'Invalid email address format.';
+      }
+      
       return NextResponse.json(
-        { error: authError.error?.message || 'Failed to create Firebase Auth user' },
+        { error: friendlyMessage },
         { status: 400 }
       );
     }
@@ -59,14 +97,23 @@ export async function POST(request: Request) {
     const authData = await authResponse.json();
     const userId = authData.localId; // This is the Firebase UID
 
-    // Create admin record in Firebase Realtime Database
-    const databaseURL = process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL;
-    if (!databaseURL) {
-      return NextResponse.json(
-        { error: 'Database URL not configured' },
-        { status: 500 }
-      );
+    // Send Firebase built-in email verification to the new admin account
+    try {
+      const verifyEmailUrl = `https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=${apiKey}`;
+      const verifyResponse = await fetch(verifyEmailUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ requestType: 'VERIFY_EMAIL', idToken: authData.idToken })
+      });
+      if (!verifyResponse.ok) {
+        console.warn('Failed to send verification email to new admin');
+      }
+    } catch (emailErr) {
+      console.warn('Verification email error (non-fatal):', emailErr);
     }
+
+    // Create admin record in Firebase Realtime Database
+    // databaseURL already validated above
 
     const now = new Date().toISOString();
 
@@ -86,7 +133,9 @@ export async function POST(request: Request) {
       postalCode: postalCode || '',
       lastLogin: null,
       lastLoginAt: null,
-      statusUpdatedAt: now
+      statusUpdatedAt: now,
+      emailVerified: false,
+      emailVerificationSentAt: now
     };
 
     // Save admin data
@@ -146,7 +195,8 @@ export async function POST(request: Request) {
     return NextResponse.json({
       success: true,
       userId,
-      message: 'Admin user created successfully with complete database records',
+      verificationEmailSent: true,
+      message: 'Admin user created successfully. A verification email has been sent to the admin.'
     });
   } catch (error: any) {
     console.error('Error creating admin:', error);

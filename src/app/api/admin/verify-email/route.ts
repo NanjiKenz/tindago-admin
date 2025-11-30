@@ -109,6 +109,42 @@ export async function POST(request: Request) {
       }
     }
 
+    // Also check Firebase Authentication
+    const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
+    if (apiKey) {
+      try {
+        // Use Firebase Auth REST API to check if email exists
+        // We'll use the fetchSignInMethodsForEmail equivalent
+        const authCheckUrl = `https://identitytoolkit.googleapis.com/v1/accounts:createAuthUri?key=${apiKey}`;
+        const authCheckResponse = await fetch(authCheckUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            identifier: email,
+            continueUri: 'http://localhost:3000'
+          })
+        });
+
+        if (authCheckResponse.ok) {
+          const authData = await authCheckResponse.json();
+          // If registered is true or signInMethods exist, email is already in use
+          if (authData.registered || (authData.allProviders && authData.allProviders.length > 0)) {
+            return NextResponse.json(
+              { 
+                exists: true, 
+                userType: 'firebase_auth',
+                message: 'This email is already registered in the system'
+              },
+              { status: 200 }
+            );
+          }
+        }
+      } catch (authCheckError) {
+        console.warn('Firebase Auth check failed:', authCheckError);
+        // Continue if Firebase Auth check fails - we already checked the database
+      }
+    }
+
     // Email is available
     return NextResponse.json(
       { 

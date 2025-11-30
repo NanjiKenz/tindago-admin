@@ -25,6 +25,7 @@ import { UserCreateModal } from '@/components/admin/UserCreateModal';
 import { StatusChangeModal } from '@/components/admin/StatusChangeModal';
 import { ViewDetailsModal } from '@/components/admin/ViewDetailsModal';
 import { RefreshButton } from '@/components/ui/RefreshButton';
+import { AuthService } from '@/lib/authService';
 
 export const AdminManagement: React.FC = () => {
   const router = useRouter();
@@ -160,6 +161,14 @@ export const AdminManagement: React.FC = () => {
       // Log reason if provided
       if (reason) {
         console.log(`Status change reason: ${reason}`);
+      }
+
+      // If the admin just deactivated themselves, sign them out immediately
+      const current = AuthService.getCurrentUser();
+      if (current && statusModal.itemId === current.uid && newStatus !== 'active') {
+        await AuthService.signOut();
+        router.push('/auth/login');
+        return;
       }
 
       // Refresh data
@@ -627,7 +636,7 @@ export const AdminManagement: React.FC = () => {
                   Email: admin.email,
                   Status: admin.status || 'inactive',
                   Role: admin.role || 'admin',
-                  'Last Login': admin.lastLoginAt ? new Date(admin.lastLoginAt).toLocaleString() : 'Never'
+                  'Last Login': admin.lastLogin ? new Date(admin.lastLogin).toLocaleString() : 'Never'
                 }));
 
                 const headers = Object.keys(csvData[0] || {});
@@ -926,7 +935,7 @@ export const AdminManagement: React.FC = () => {
                             color: 'rgba(30, 30, 30, 0.6)',
                             margin: 0
                           }}>
-                            {admin.lastLoginAt ? new Date(admin.lastLoginAt).toLocaleDateString('en-US', {
+                            {admin.lastLogin ? new Date(admin.lastLogin).toLocaleDateString('en-US', {
                               year: 'numeric',
                               month: 'short',
                               day: 'numeric'
@@ -1411,7 +1420,7 @@ export const AdminManagement: React.FC = () => {
               },
               {
                 label: 'Last Login',
-                value: viewModal.data?.lastLoginAt ? new Date(viewModal.data.lastLoginAt).toLocaleDateString('en-US', {
+                value: viewModal.data?.lastLogin ? new Date(viewModal.data.lastLogin).toLocaleDateString('en-US', {
                   year: 'numeric',
                   month: 'long',
                   day: 'numeric',

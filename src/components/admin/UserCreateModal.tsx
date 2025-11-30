@@ -22,28 +22,37 @@ export const UserCreateModal: React.FC<UserCreateModalProps> = ({
   onClose,
   onUserCreated
 }) => {
+  // Get today's date in YYYY-MM-DD format
+  const getTodayDate = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
-    dateOfBirth: ''
+    createdAt: getTodayDate()
   });
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [verifyingEmail, setVerifyingEmail] = useState(false);
-  const [emailVerified, setEmailVerified] = useState(false);
+  const [emailAvailable, setEmailAvailable] = useState(false);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     if (error) setError('');
-    // Reset email verification when email changes
+    // Reset email availability check when email changes
     if (field === 'email') {
-      setEmailVerified(false);
+      setEmailAvailable(false);
     }
   };
 
-  const verifyEmail = async () => {
+  const checkEmailAvailability = async () => {
     // Validate email format first
     if (!formData.email.trim()) {
       setError('Please enter an email address');
@@ -58,30 +67,22 @@ export const UserCreateModal: React.FC<UserCreateModalProps> = ({
     setError('');
 
     try {
-      const response = await fetch('/api/admin/verify-email', {
+      // Only check availability; Firebase verification email will be sent after account creation
+      const availability = await fetch('/api/admin/verify-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: formData.email })
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        setError(data.message || data.error || 'Failed to verify email');
-        setEmailVerified(false);
+      const availabilityData = await availability.json();
+      if (!availability.ok || availabilityData.exists) {
+        setError(availabilityData.message || availabilityData.error || 'Email is not available');
+        setEmailAvailable(false);
         return;
       }
-
-      if (data.exists) {
-        setError(data.message || 'This email is already registered');
-        setEmailVerified(false);
-      } else {
-        setEmailVerified(true);
-      }
+      setEmailAvailable(true); // Mark as available
     } catch (error) {
-      console.error('Error verifying email:', error);
-      setError('Failed to verify email. Please try again.');
-      setEmailVerified(false);
+      setError('Failed to verify email availability.');
+      setEmailAvailable(false);
     } finally {
       setVerifyingEmail(false);
     }
@@ -103,16 +104,9 @@ export const UserCreateModal: React.FC<UserCreateModalProps> = ({
       setError('Please enter a valid email address');
       return;
     }
-    if (!emailVerified) {
-      setError('Please verify the email address first');
-      return;
-    }
+    // Email availability check is optional; if the admin pressed Verify it will be true
     if (!formData.password || formData.password.length < 6) {
       setError('Password must be at least 6 characters');
-      return;
-    }
-    if (!formData.dateOfBirth.trim()) {
-      setError('Date of Birth is required');
       return;
     }
 
@@ -126,8 +120,8 @@ export const UserCreateModal: React.FC<UserCreateModalProps> = ({
         role: 'admin',
         status: 'active',
         permissions: []
-        // Note: dateOfBirth, country, city, postalCode are collected but not stored in UserFormData
-        // These fields can be added to a future user profile extension
+        // Note: createdAt date is collected but not stored in UserFormData
+        // This field can be added to a future user profile extension
       });
 
       // Reset form
@@ -135,9 +129,9 @@ export const UserCreateModal: React.FC<UserCreateModalProps> = ({
         name: '',
         email: '',
         password: '',
-        dateOfBirth: ''
+        createdAt: getTodayDate()
       });
-      setEmailVerified(false);
+      setEmailAvailable(false);
 
       onUserCreated();
       onClose();
@@ -152,7 +146,7 @@ export const UserCreateModal: React.FC<UserCreateModalProps> = ({
   // Reset verification state when modal closes
   React.useEffect(() => {
     if (!isOpen) {
-      setEmailVerified(false);
+      setEmailAvailable(false);
       setError('');
     }
   }, [isOpen]);
@@ -337,7 +331,7 @@ export const UserCreateModal: React.FC<UserCreateModalProps> = ({
                       height: '50px',
                       backgroundColor: '#FFFFFF',
                       borderRadius: '16px',
-                      border: emailVerified ? '2px solid #3BB77E' : 'none',
+                      border: emailAvailable ? '2px solid #3BB77E' : 'none',
                       padding: '0 20px',
                       fontFamily: 'Clash Grotesk Variable',
                       fontWeight: 400,
@@ -351,53 +345,44 @@ export const UserCreateModal: React.FC<UserCreateModalProps> = ({
                   />
                   <button
                     type="button"
-                    onClick={verifyEmail}
-                    disabled={verifyingEmail || !formData.email || emailVerified}
+                    onClick={checkEmailAvailability}
+                    disabled={verifyingEmail || !formData.email || emailAvailable}
                     style={{
                       height: '50px',
                       padding: '0 20px',
-                      backgroundColor: emailVerified ? '#3BB77E' : '#2563EB',
+                      backgroundColor: emailAvailable ? '#3BB77E' : '#2563EB',
                       borderRadius: '16px',
                       border: 'none',
                       fontFamily: 'Clash Grotesk Variable',
                       fontWeight: 600,
                       fontSize: '14px',
                       color: '#FFFFFF',
-                      cursor: (verifyingEmail || !formData.email || emailVerified) ? 'not-allowed' : 'pointer',
+                      cursor: (verifyingEmail || !formData.email || emailAvailable) ? 'not-allowed' : 'pointer',
                       transition: 'all 0.2s ease',
-                      opacity: (verifyingEmail || !formData.email || emailVerified) ? 0.6 : 1,
-                      minWidth: '100px',
+                      opacity: (verifyingEmail || !formData.email || emailAvailable) ? 0.6 : 1,
+                      minWidth: '120px',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       gap: '6px'
                     }}
-                    onMouseEnter={(e) => {
-                      if (!verifyingEmail && formData.email && !emailVerified) {
-                        e.currentTarget.style.backgroundColor = '#1D4ED8';
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (!verifyingEmail && formData.email && !emailVerified) {
-                        e.currentTarget.style.backgroundColor = '#2563EB';
-                      }
-                    }}
                   >
                     {verifyingEmail ? (
-                      'Verifying...'
-                    ) : emailVerified ? (
+                      'Checking...'
+                    ) : emailAvailable ? (
                       <>
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                           <polyline points="20 6 9 17 4 12" />
                         </svg>
-                        Verified
+                        Available
                       </>
                     ) : (
-                      'Verify'
+                      'Check Email'
                     )}
                   </button>
                 </div>
-                {emailVerified && (
+
+                {emailAvailable && (
                   <div
                     style={{
                       marginTop: '8px',
@@ -407,7 +392,7 @@ export const UserCreateModal: React.FC<UserCreateModalProps> = ({
                       fontWeight: 500
                     }}
                   >
-                    ✓ Email is available and verified
+                    ✓ Email is available. Verification email will be sent after account creation.
                   </div>
                 )}
               </div>
@@ -451,7 +436,7 @@ export const UserCreateModal: React.FC<UserCreateModalProps> = ({
                 />
               </div>
 
-              {/* Date of Birth Field */}
+              {/* Created At Field */}
               <div style={{ marginBottom: '32px' }}>
                 <label
                   style={{
@@ -464,12 +449,12 @@ export const UserCreateModal: React.FC<UserCreateModalProps> = ({
                     marginBottom: '8px'
                   }}
                 >
-                  Date of Birth
+                  Created At
                 </label>
                 <input
                   type="date"
-                  value={formData.dateOfBirth}
-                  onChange={(e) => handleInputChange('dateOfBirth', e.target.value)}
+                  value={formData.createdAt}
+                  readOnly
                   style={{
                     width: '100%',
                     height: '50px',
@@ -483,7 +468,8 @@ export const UserCreateModal: React.FC<UserCreateModalProps> = ({
                     lineHeight: '19.68px',
                     color: '#1E1E1E',
                     outline: 'none',
-                    boxSizing: 'border-box'
+                    boxSizing: 'border-box',
+                    cursor: 'default'
                   }}
                   className="placeholder:text-gray-400"
                 />

@@ -131,7 +131,9 @@ export const UserManagement: React.FC<UserManagementProps> = () => {
             phone: user.phone,
             userType
           };
-        });
+        })
+        // Filter out admin users since they're managed in Admin Management
+        .filter(user => user.userType !== 'admin');
 
         setUsers(displayUsers);
 
@@ -192,7 +194,9 @@ export const UserManagement: React.FC<UserManagementProps> = () => {
           phone: user.phone,
           userType
         };
-      });
+      })
+      // Filter out admin users since they're managed in Admin Management
+      .filter(user => user.userType !== 'admin');
 
       setUsers(displayUsers);
     });

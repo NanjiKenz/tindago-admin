@@ -12,7 +12,8 @@ export interface AdminUser {
   role: 'super_admin' | 'admin' | 'moderator' | 'viewer';
   status: 'active' | 'inactive' | 'suspended';
   createdAt: string;
-  lastLoginAt?: string;
+  lastLogin?: string;
+  lastLoginAt?: string; // Deprecated: use lastLogin instead
   permissions: UserPermission[];
   avatar?: string;
   phone?: string;

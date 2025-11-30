@@ -26,7 +26,7 @@ interface TransactionSummaryProps {
   timeRange?: string;
 }
 
-export const TransactionSummary: React.FC<TransactionSummaryProps> = ({ timeRange = new Date().toLocaleString('en-US', { month: 'long' }) }) => {
+export const TransactionSummary: React.FC<TransactionSummaryProps> = ({ timeRange = new Date().toLocaleString('en-US', { month: 'long', year: 'numeric' }) }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStore, setSelectedStore] = useState('all');
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('all');
@@ -88,9 +88,10 @@ export const TransactionSummary: React.FC<TransactionSummaryProps> = ({ timeRang
 
   // Filter and group transactions by store
   const groupedStoreData = useMemo(() => {
-    // Parse the selected month (e.g., "January") - assume current year
-    const monthIndex = new Date(Date.parse(timeRange + ' 1, 2025')).getMonth();
-    const year = new Date().getFullYear();
+    // Parse the selected month and year (e.g., "January 2025")
+    const dateObj = new Date(Date.parse(timeRange + ' 1'));
+    const monthIndex = dateObj.getMonth();
+    const year = dateObj.getFullYear();
     
     // Get start and end dates for the selected month
     const startDate = new Date(year, monthIndex, 1);

@@ -40,16 +40,31 @@ export class AuthService {
       const firebaseUser = userCredential.user;
 
       // Verify admin role from database
-      const adminUser = await this.verifyAdminRole(firebaseUser);
+      let adminUser: AdminUser;
+      try {
+        adminUser = await this.verifyAdminRole(firebaseUser);
+      } catch (verificationError) {
+        // If verification fails, sign the user out immediately
+        await signOut(auth);
+        throw verificationError;
+      }
 
       // Update last login timestamp
       await this.updateLastLogin(adminUser.uid);
 
       return adminUser;
     } catch (error: unknown) {
-      console.error('Sign in error:', error);
-      const authError = error as { code?: string };
-      throw new Error(this.getAuthErrorMessage(authError.code || 'unknown-error'));
+      // NOTE: Avoid console.error here to prevent noisy dev overlay issues for expected auth blocks
+      if (error instanceof Error && error.message) {
+        // Check if it's a Firebase auth error or our custom error
+        const authError = error as { code?: string };
+        if (authError.code) {
+          throw new Error(this.getAuthErrorMessage(authError.code));
+        }
+        // It's our custom error (admin verification failure), throw as-is
+        throw error;
+      }
+      throw new Error('Authentication failed. Please try again.');
     }
   }
 
@@ -107,6 +122,11 @@ export class AuthService {
    */
   static async verifyAdminRole(firebaseUser: FirebaseUser): Promise<AdminUser> {
     try {
+      // Check if email is verified
+      if (!firebaseUser.emailVerified) {
+        throw new Error('Please verify your email address before logging in. Check your inbox for the verification link.');
+      }
+
       // Read admin data directly from database using Client SDK
       const { ref, get, update } = await import('firebase/database');
       const { database } = await import('./firebase.js');
@@ -120,9 +140,23 @@ export class AuthService {
 
       const data = snapshot.val();
 
-      // Update last login timestamp
+      // Check if admin is active
+      if (data.status && data.status !== 'active') {
+        const statusMessages: Record<string, string> = {
+          inactive: 'Your account has been deactivated.',
+          suspended: 'Your account has been suspended.',
+          banned: 'Your account has been banned.'
+        };
+        const message = statusMessages[data.status] || 'Your account is not active.';
+        throw new Error(message);
+      }
+
+      // Update last login timestamp and sync emailVerified status from Firebase Auth
       const nowIso = new Date().toISOString();
-      await update(adminRef, { lastLogin: nowIso }).catch(err => {
+      await update(adminRef, { 
+        lastLogin: nowIso,
+        emailVerified: firebaseUser.emailVerified 
+      }).catch(err => {
         console.warn('Failed to update last login:', err);
         // Don't block login if update fails
       });
@@ -137,7 +171,8 @@ export class AuthService {
         lastLogin: nowIso,
       };
     } catch (error) {
-      console.error('Admin verification error:', error);
+      // Expected errors here (inactive/suspended/banned) are part of normal control flow during login
+      // Avoid logging as console.error to keep dev overlay clean.
       throw error;
     }
   }
@@ -165,7 +200,9 @@ export class AuthService {
           const adminUser = await this.verifyAdminRole(firebaseUser);
           callback(adminUser);
         } catch (error) {
-          console.error('Auth state verification error:', error);
+          // Avoid console.error to prevent duplicate dev overlay issues when blocked by status
+          // Sign out the user if verification fails (e.g., deactivated admin)
+          await signOut(auth).catch(() => {});
           callback(null);
         }
       } else {

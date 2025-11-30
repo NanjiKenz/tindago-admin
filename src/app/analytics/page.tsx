@@ -13,12 +13,13 @@ import { AdminHeader } from '@/components/admin/AdminHeader';
 import { TopStoresByRevenue } from '@/components/admin/TopStoresByRevenue';
 import { TransactionSummary } from '@/components/admin/TransactionSummary';
 import { RefreshButton } from '@/components/ui/RefreshButton';
+import { YearMonthPicker } from '@/components/ui/YearMonthPicker';
 
 const AnalyticsPage: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  // Default to current month
-  const currentMonth = new Date().toLocaleString('en-US', { month: 'long' });
-  const [timeRange, setTimeRange] = useState(currentMonth);
+  // Default to current month and year
+  const currentMonthYear = new Date().toLocaleString('en-US', { month: 'long', year: 'numeric' });
+  const [timeRange, setTimeRange] = useState(currentMonthYear);
   const [isGeneratingReport, setIsGeneratingReport] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
@@ -42,10 +43,11 @@ const AnalyticsPage: React.FC = () => {
       const data = await response.json();
       const transactions = data.transactions || [];
 
-      // Filter by time range (month name)
-      // Parse the selected month (e.g., "January") - assume current year
-      const monthIndex = new Date(Date.parse(timeRange + ' 1, 2025')).getMonth();
-      const year = new Date().getFullYear();
+      // Filter by time range (month name and year)
+      // Parse the selected month (e.g., "January 2025")
+      const dateObj = new Date(Date.parse(timeRange + ' 1'));
+      const monthIndex = dateObj.getMonth();
+      const year = dateObj.getFullYear();
       
       // Filter transactions for the selected month
       const startDate = new Date(year, monthIndex, 1);
@@ -231,37 +233,12 @@ const AnalyticsPage: React.FC = () => {
           >
           {/* Filter Controls Bar */}
             <div className="flex items-center justify-end gap-5" style={{ marginBottom: '32px' }}>
-              {/* Time Range Dropdown */}
-              <div className="relative">
-                <select
-                  value={timeRange}
-                  onChange={(e) => setTimeRange(e.target.value)}
-                  className="appearance-none cursor-pointer focus:outline-none"
-                  style={{
-                    padding: '12px 16px',
-                    borderRadius: '12px',
-                    border: '1px solid rgba(0, 0, 0, 0.1)',
-                    backgroundColor: '#FFFFFF',
-                    fontFamily: 'Clash Grotesk Variable',
-                    fontSize: '14px',
-                    fontWeight: 500,
-                    color: '#1E1E1E',
-                    minWidth: '180px',
-                    outline: 'none'
-                  }}
-                >
-                  {/* Generate month options */}
-                  {['January', 'February', 'March', 'April', 'May', 'June', 
-                    'July', 'August', 'September', 'October', 'November', 'December'].map((month, i) => (
-                    <option key={i} value={month}>{month}</option>
-                  ))}
-                </select>
-                <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                  <svg width="10" height="6" viewBox="0 0 10 6" fill="none">
-                    <path d="M1 1L5 5L9 1" stroke="#1E1E1E" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </div>
-              </div>
+              {/* Year-Month Picker */}
+              <YearMonthPicker 
+                value={timeRange} 
+                onChange={setTimeRange}
+                yearsBack={3}
+              />
 
               {/* Generate Report Button - Matches Management Pages Export CSV */}
               <button

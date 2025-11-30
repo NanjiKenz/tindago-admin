@@ -11,8 +11,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { AuthService } from '@/lib/authService';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -30,44 +29,15 @@ export default function LoginPage() {
     setError('');
 
     try {
-      // Firebase authentication
-      const userCredential = await signInWithEmailAndPassword(auth, formData.email, formData.password);
-
-      // Update last login timestamp in admin record
-      const user = userCredential.user;
-      if (user) {
-        try {
-          const { ref, update } = await import('firebase/database');
-          const { database } = await import('@/lib/firebase');
-          const adminRef = ref(database, `admins/${user.uid}`);
-          await update(adminRef, {
-            lastLoginAt: new Date().toISOString(),
-            status: 'active' // Ensure admin is active when they log in
-          });
-        } catch (updateError) {
-          console.error('Error updating last login:', updateError);
-          // Don't block login if update fails
-        }
-      }
+      // Use AuthService which includes admin status verification
+      await AuthService.signIn(formData.email, formData.password);
 
       // Redirect to Dashboard page
       router.push('/dashboard');
     } catch (err: unknown) {
-      console.error('Login error:', err);
-      
-      const error = err as { code?: string };
-      // User-friendly error messages
-      if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
-        setError('Invalid email or password. Please try again.');
-      } else if (error.code === 'auth/too-many-requests') {
-        setError('Too many failed login attempts. Please try again later.');
-      } else if (error.code === 'auth/user-disabled') {
-        setError('This account has been disabled. Contact support for assistance.');
-      } else if (error.code === 'auth/invalid-email') {
-        setError('Please enter a valid email address.');
-      } else {
-        setError('Login failed. Please check your credentials and try again.');
-      }
+      // Display the error message (AuthService already provides user-friendly messages)
+      const errorMessage = err instanceof Error ? err.message : 'Login failed. Please check your credentials and try again.';
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
