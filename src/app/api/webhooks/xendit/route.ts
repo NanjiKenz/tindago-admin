@@ -234,6 +234,16 @@ export async function POST(req: NextRequest) {
       const orderRef = ref(database, `orders/${orderId}`);
       const snap = await get(orderRef);
       if (snap.exists()) {
+        const existingOrder = snap.val();
+        
+        // ✅ If this is a debt payment order and payment is successful, update debt status
+        if ((existingOrder.isDebtPayment || existingOrder.debtStatus) && 
+            (status === 'PAID' || status === 'SETTLED')) {
+          orderUpdates.debtStatus = 'paid';
+          orderUpdates.debtPaidDate = new Date().toISOString();
+          console.log(`[💳 Debt Payment] Marking debt as paid for order ${orderId}`);
+        }
+        
         await update(orderRef, orderUpdates);
 
         // Note: Stock deduction is now handled client-side when payment confirmation is detected
@@ -246,6 +256,16 @@ export async function POST(req: NextRequest) {
       const orderRef = ref(database, `orders/${orderNumber}`);
       const orderSnap = await get(orderRef);
       if (orderSnap.exists()) {
+        const existingOrder = orderSnap.val();
+        
+        // ✅ If this is a debt payment order and payment is successful, update debt status
+        if ((existingOrder.isDebtPayment || existingOrder.debtStatus) && 
+            (status === 'PAID' || status === 'SETTLED')) {
+          orderUpdates.debtStatus = 'paid';
+          orderUpdates.debtPaidDate = new Date().toISOString();
+          console.log(`[💳 Debt Payment] Marking debt as paid for order ${orderNumber}`);
+        }
+        
         await update(orderRef, orderUpdates);
       } else {
         // Fallback: legacy query by child (non-fatal if index missing)
@@ -255,7 +275,18 @@ export async function POST(req: NextRequest) {
           if (snap.exists()) {
             const orders = snap.val() as Record<string, any>;
             for (const oid of Object.keys(orders)) {
-              await update(ref(database, `orders/${oid}`), orderUpdates);
+              const existingOrder = orders[oid];
+              
+              // ✅ If this is a debt payment order and payment is successful, update debt status
+              const updates = { ...orderUpdates };
+              if ((existingOrder.isDebtPayment || existingOrder.debtStatus) && 
+                  (status === 'PAID' || status === 'SETTLED')) {
+                updates.debtStatus = 'paid';
+                updates.debtPaidDate = new Date().toISOString();
+                console.log(`[💳 Debt Payment] Marking debt as paid for order ${oid}`);
+              }
+              
+              await update(ref(database, `orders/${oid}`), updates);
             }
           } else {
             console.warn('[Webhook] Order not found at orders/' + orderNumber + ' and no query match; skipping order update');

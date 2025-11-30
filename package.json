@@ -38,6 +38,7 @@
     "figma-api": "^2.0.2-beta",
     "style-dictionary": "^5.0.4",
     "tailwindcss": "^4",
+    "tsx": "^4.20.6",
     "typescript": "^5"
   }
 }
