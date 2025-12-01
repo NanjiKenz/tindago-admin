@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import Xendit from 'xendit-node';
 import { ref, set } from 'firebase/database';
 import { database } from '@/lib/firebase';
+import { createInvoice } from '@/lib/xenditService';
+import { requireEnv, XENDIT_SECRET_KEY } from '@/lib/config';
 
-const xendit = new Xendit({
-  secretKey: process.env.XENDIT_SECRET_KEY!,
-});
+// Ensure Xendit secret key is configured at runtime
+requireEnv('XENDIT_SECRET_KEY', XENDIT_SECRET_KEY);
 
 export const runtime = 'nodejs';
 
@@ -49,53 +49,53 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Create Xendit invoice for B2B payment tracking
+    // Determine Xendit payment methods based on selected method (gcash/paymaya)
+    const paymentMethods = method === 'gcash'
+      ? ['GCASH']
+      : method === 'paymaya'
+        ? ['PAYMAYA']
+        : ['GCASH', 'PAYMAYA'];
+
+    // Create Xendit invoice for B2B payment tracking (store owner -> supplier)
     console.log('[Purchase Order Payment] Calling Xendit API with:', {
-      external_id: `PO-${purchaseOrderId}`,
+      externalId: `PO-${purchaseOrderId}`,
       amount: total,
-      payer_email: storeOwner.email,
-      mobile_number: storeOwner.phone,
-      payment_methods: [method.toUpperCase()],
-      items: items,
+      payerEmail: storeOwner.email,
+      mobileNumber: storeOwner.phone,
+      paymentMethods,
+      items,
     });
 
-    const invoice = await xendit.Invoice.createInvoice({
-      data: {
-        external_id: `PO-${purchaseOrderId}`,
-        amount: total,
-        payer_email: storeOwner.email,
-        description: `Purchase Order ${purchaseOrderNumber} - Supplier: ${supplierName || 'N/A'}`,
-        invoice_duration: 86400, // 24 hours
-        success_redirect_url: `tindago://purchase-details?purchaseOrderId=${purchaseOrderId}&payment=success`,
-        failure_redirect_url: `tindago://purchase-details?purchaseOrderId=${purchaseOrderId}&payment=failed`,
-        currency: 'PHP',
-        items: items?.map((item: any) => ({
-          name: item.name,
-          quantity: item.quantity,
-          price: item.price,
-          category: 'Inventory Purchase',
-        })) || [],
-        customer: {
-          given_names: storeOwner.name,
-          email: storeOwner.email,
-          mobile_number: storeOwner.phone,
-        },
-        customer_notification_preference: {
-          invoice_created: ['email'],
-          invoice_reminder: ['email'],
-          invoice_paid: ['email'],
-          invoice_expired: ['email'],
-        },
-        payment_methods: [method.toUpperCase()],
-        metadata: {
-          purchase_order_id: purchaseOrderId,
-          purchase_order_number: purchaseOrderNumber,
-          store_id: store.id,
-          store_name: store.name,
-          supplier_name: supplierName || 'N/A',
-          method: method,
-        },
-      }
+    const invoice = await createInvoice({
+      externalId: `PO-${purchaseOrderId}`,
+      amount: total,
+      payerEmail: storeOwner.email,
+      description: `Purchase Order ${purchaseOrderNumber} - Supplier: ${supplierName || 'N/A'}`,
+      customer: {
+        given_names: storeOwner.name,
+        email: storeOwner.email,
+        mobile_number: storeOwner.phone,
+      },
+      items: items?.map((item: any) => ({
+        name: item.name,
+        quantity: item.quantity,
+        price: item.price,
+        category: 'Inventory Purchase',
+      })) || [],
+      paymentMethods,
+      successRedirectUrl: `tindago://purchase-details?purchaseOrderId=${purchaseOrderId}&payment=success`,
+      failureRedirectUrl: `tindago://purchase-details?purchaseOrderId=${purchaseOrderId}&payment=failed`,
+      currency: 'PHP',
+      invoiceDuration: 86400,
+      metadata: {
+        purchase_order_id: purchaseOrderId,
+        purchase_order_number: purchaseOrderNumber,
+        store_id: store.id,
+        store_name: store.name,
+        supplier_name: supplierName || 'N/A',
+        method,
+        type: 'purchase_order',
+      },
     });
 
     console.log('[Purchase Order Payment] Invoice created:', invoice.id);
@@ -113,7 +113,7 @@ export async function POST(req: NextRequest) {
       purchaseOrderId,
       purchaseOrderNumber,
       amount: total,
-      method: method,
+      method,
       status: 'PENDING',
       supplierName,
       createdAt: new Date().toISOString(),
