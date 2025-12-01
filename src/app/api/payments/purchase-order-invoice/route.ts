@@ -35,40 +35,42 @@ export async function POST(req: NextRequest) {
 
     // Create Xendit invoice for B2B payment tracking
     const invoice = await xendit.Invoice.createInvoice({
-      externalId: `PO-${purchaseOrderId}`,
-      amount: total,
-      payerEmail: storeOwner.email,
-      description: `Purchase Order ${purchaseOrderNumber} - Supplier: ${supplierName}`,
-      invoiceDuration: 86400, // 24 hours
-      successRedirectUrl: `tindago://purchase-details?purchaseOrderId=${purchaseOrderId}&payment=success`,
-      failureRedirectUrl: `tindago://purchase-details?purchaseOrderId=${purchaseOrderId}&payment=failed`,
-      currency: 'PHP',
-      items: items.map((item: any) => ({
-        name: item.name,
-        quantity: item.quantity,
-        price: item.price,
-        category: 'Inventory Purchase',
-      })),
-      customer: {
-        given_names: storeOwner.name,
-        email: storeOwner.email,
-        mobile_number: storeOwner.phone,
-      },
-      customerNotificationPreference: {
-        invoice_created: ['email'],
-        invoice_reminder: ['email'],
-        invoice_paid: ['email'],
-        invoice_expired: ['email'],
-      },
-      paymentMethods: [method.toUpperCase()],
-      metadata: {
-        purchase_order_id: purchaseOrderId,
-        purchase_order_number: purchaseOrderNumber,
-        store_id: store.id,
-        store_name: store.name,
-        supplier_name: supplierName,
-        method: method,
-      },
+      data: {
+        externalId: `PO-${purchaseOrderId}`,
+        amount: total,
+        payerEmail: storeOwner.email,
+        description: `Purchase Order ${purchaseOrderNumber} - Supplier: ${supplierName}`,
+        invoiceDuration: 86400, // 24 hours
+        successRedirectUrl: `tindago://purchase-details?purchaseOrderId=${purchaseOrderId}&payment=success`,
+        failureRedirectUrl: `tindago://purchase-details?purchaseOrderId=${purchaseOrderId}&payment=failed`,
+        currency: 'PHP',
+        items: items.map((item: any) => ({
+          name: item.name,
+          quantity: item.quantity,
+          price: item.price,
+          category: 'Inventory Purchase',
+        })),
+        customer: {
+          given_names: storeOwner.name,
+          email: storeOwner.email,
+          mobile_number: storeOwner.phone,
+        },
+        customerNotificationPreference: {
+          invoice_created: ['email'],
+          invoice_reminder: ['email'],
+          invoice_paid: ['email'],
+          invoice_expired: ['email'],
+        },
+        paymentMethods: [method.toUpperCase()],
+        metadata: {
+          purchase_order_id: purchaseOrderId,
+          purchase_order_number: purchaseOrderNumber,
+          store_id: store.id,
+          store_name: store.name,
+          supplier_name: supplierName,
+          method: method,
+        },
+      }
     });
 
     console.log('[Purchase Order Payment] Invoice created:', invoice.id);
