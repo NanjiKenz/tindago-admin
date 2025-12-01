@@ -69,7 +69,9 @@ export async function POST(req: NextRequest) {
       customer: {
         given_names: customer.name,
         email: customer.email,
-        mobile_number: customer.phone || '',
+        // Only send mobile_number to Xendit when we actually have a phone.
+        // Sending an empty string causes Xendit API_VALIDATION_ERROR.
+        ...(customer.phone ? { mobile_number: customer.phone } : {}),
       },
       items: items.map(i => ({ 
         name: i.name, 

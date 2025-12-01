@@ -95,8 +95,8 @@ export async function POST(req: NextRequest) {
         category: 'Inventory Purchase',
       })) || [],
       paymentMethods,
-      successRedirectUrl: `tindago://purchase-details?purchaseOrderId=${purchaseOrderId}&payment=success`,
-      failureRedirectUrl: `tindago://purchase-details?purchaseOrderId=${purchaseOrderId}&payment=failed`,
+      successRedirectUrl: 'tindago://payment/success',
+      failureRedirectUrl: 'tindago://payment/failed',
       currency: 'PHP',
       invoiceDuration: 86400,
       metadata: {
