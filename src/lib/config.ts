@@ -16,3 +16,31 @@ export function requireEnv(varName: string, value: string) {
   }
   return value;
 }
+
+/**
+ * Validate and format Philippine phone number for Xendit
+ * Returns formatted phone or throws descriptive error
+ */
+export function validatePhoneNumber(phone: string | undefined, fieldName: string = 'Phone number'): string {
+  if (!phone || phone.trim() === '') {
+    throw new Error(`${fieldName} is required for GCash/PayMaya payments`);
+  }
+
+  let cleaned = phone.trim().replace(/[\s\-()]/g, '');
+
+  // Handle Philippine country code
+  if (cleaned.startsWith('+63')) {
+    cleaned = cleaned.substring(3);
+  } else if (cleaned.startsWith('63')) {
+    cleaned = cleaned.substring(2);
+  } else if (cleaned.startsWith('0')) {
+    cleaned = cleaned.substring(1);
+  }
+
+  // Philippine mobile numbers should be 10 digits
+  if (cleaned.length !== 10 || !/^[0-9]{10}$/.test(cleaned)) {
+    throw new Error(`Invalid ${fieldName} format. Must be a valid Philippine mobile number (e.g., 09171234567)`);
+  }
+
+  return `+63${cleaned}`;
+}

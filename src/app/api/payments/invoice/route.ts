@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server';
 import { ref, set, get } from 'firebase/database';
 import { database } from '@/lib/firebase.js';
 import { roundCurrency } from '@/lib/commission';
-import { requireEnv, XENDIT_SECRET_KEY, PLATFORM_COMMISSION_RATE } from '@/lib/config';
+import { requireEnv, XENDIT_SECRET_KEY, PLATFORM_COMMISSION_RATE, validatePhoneNumber } from '@/lib/config';
 import { createInvoice } from '@/lib/xenditService';
 
 export const runtime = 'nodejs';
@@ -50,6 +50,15 @@ export async function POST(req: NextRequest) {
     const paymentMethods = method === 'gcash' ? ['GCASH'] 
       : method === 'paymaya' ? ['PAYMAYA'] 
       : ['GCASH', 'PAYMAYA', 'CREDIT_CARD', 'DEBIT_CARD'];
+
+    // Validate phone number if provided (required for GCash/PayMaya)
+    if (customer.phone) {
+      try {
+        customer.phone = validatePhoneNumber(customer.phone, 'Customer phone');
+      } catch (error: any) {
+        return new Response(JSON.stringify({ error: error.message }), { status: 400 });
+      }
+    }
 
     // Create invoice using xenditService
     const data = await createInvoice({

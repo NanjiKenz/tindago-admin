@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ref, set } from 'firebase/database';
 import { database } from '@/lib/firebase';
 import { createInvoice } from '@/lib/xenditService';
-import { requireEnv, XENDIT_SECRET_KEY } from '@/lib/config';
+import { requireEnv, XENDIT_SECRET_KEY, validatePhoneNumber } from '@/lib/config';
 
 // Ensure Xendit secret key is configured at runtime
 requireEnv('XENDIT_SECRET_KEY', XENDIT_SECRET_KEY);
@@ -45,6 +45,18 @@ export async function POST(req: NextRequest) {
       console.error('[Purchase Order Payment] Invalid storeOwner data:', storeOwner);
       return NextResponse.json(
         { success: false, error: 'Missing or invalid storeOwner information (email, name, phone required)' },
+        { status: 400 }
+      );
+    }
+
+    // Validate and format phone number
+    try {
+      storeOwner.phone = validatePhoneNumber(storeOwner.phone, 'Store owner phone');
+      console.log('[Purchase Order Payment] Formatted phone:', storeOwner.phone);
+    } catch (error: any) {
+      console.error('[Purchase Order Payment] Phone validation error:', error.message);
+      return NextResponse.json(
+        { success: false, error: error.message },
         { status: 400 }
       );
     }
