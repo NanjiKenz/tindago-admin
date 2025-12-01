@@ -36,13 +36,13 @@ export async function POST(req: NextRequest) {
     // Create Xendit invoice for B2B payment tracking
     const invoice = await xendit.Invoice.createInvoice({
       data: {
-        externalId: `PO-${purchaseOrderId}`,
+        external_id: `PO-${purchaseOrderId}`,
         amount: total,
-        payerEmail: storeOwner.email,
+        payer_email: storeOwner.email,
         description: `Purchase Order ${purchaseOrderNumber} - Supplier: ${supplierName}`,
-        invoiceDuration: 86400, // 24 hours
-        successRedirectUrl: `tindago://purchase-details?purchaseOrderId=${purchaseOrderId}&payment=success`,
-        failureRedirectUrl: `tindago://purchase-details?purchaseOrderId=${purchaseOrderId}&payment=failed`,
+        invoice_duration: 86400, // 24 hours
+        success_redirect_url: `tindago://purchase-details?purchaseOrderId=${purchaseOrderId}&payment=success`,
+        failure_redirect_url: `tindago://purchase-details?purchaseOrderId=${purchaseOrderId}&payment=failed`,
         currency: 'PHP',
         items: items.map((item: any) => ({
           name: item.name,
@@ -55,13 +55,13 @@ export async function POST(req: NextRequest) {
           email: storeOwner.email,
           mobile_number: storeOwner.phone,
         },
-        customerNotificationPreference: {
+        customer_notification_preference: {
           invoice_created: ['email'],
           invoice_reminder: ['email'],
           invoice_paid: ['email'],
           invoice_expired: ['email'],
         },
-        paymentMethods: [method.toUpperCase()],
+        payment_methods: [method.toUpperCase()],
         metadata: {
           purchase_order_id: purchaseOrderId,
           purchase_order_number: purchaseOrderNumber,
